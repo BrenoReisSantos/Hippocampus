@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  hippocampus:
+    image: brenoreissan/hippocampus:local
+    build:
+      context: ./
+      dockerfile: ./.docker/Dockerfile
+    ports:
+      - 5000:80
