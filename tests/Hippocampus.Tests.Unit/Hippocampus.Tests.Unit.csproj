@@ -16,4 +16,9 @@
     <PackageReference Include="coverlet.collector" Version="3.1.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Hippocampus.Tests.Common\Hippocampus.Tests.Common.csproj" />
+    <ProjectReference Include="..\..\src\Hippocampus\Hippocampus.csproj" />
+  </ItemGroup>
+
 </Project>
