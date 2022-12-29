@@ -11,10 +11,17 @@ public class RecipientLogConfiguraton : IEntityTypeConfiguration<RecipientLog>
         guid => new(guid)
     );
 
+    static readonly ValueConverter<State, string> RecipientLogStateConverter = new(
+        state => state.ToString(),
+        stateString => Enum.Parse<State>(stateString)
+    );
+
     public void Configure(EntityTypeBuilder<RecipientLog> builder)
     {
         builder.HasKey(rlog => rlog.Id);
         builder.Property(rlog => rlog.Id).HasConversion(RecipientLogIdConverter);
+
+        builder.Property(rlog => rlog.State).HasConversion(RecipientLogStateConverter);
 
         builder.HasIndex(rlog => rlog.MacAddress).IsUnique();
     }
