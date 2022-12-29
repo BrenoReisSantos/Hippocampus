@@ -4,6 +4,8 @@ namespace Hippocampus.Models.Context;
 
 public class LogContext : DbContext
 {
+    public DbSet<RecipientLog> RecipientLogs { get; set; }
+
     public LogContext(DbContextOptions options) : base(options)
     {
     }
