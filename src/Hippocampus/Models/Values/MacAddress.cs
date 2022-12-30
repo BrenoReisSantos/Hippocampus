@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Hippocampus.Types;
+namespace Hippocampus.Models.Values;
 public partial class MacAddress
 {
     public const int DefaultLength = 12;

@@ -1,4 +1,4 @@
-using Hippocampus.Types;
+using Hippocampus.Models.Values;
 
 namespace Hippocampus.Tests.Unit;
 

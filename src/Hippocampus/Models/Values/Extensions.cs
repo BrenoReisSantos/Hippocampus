@@ -1,4 +1,4 @@
-namespace Hippocampus.Types;
+namespace Hippocampus.Models.Values;
 public static class TypesExtensions
 {
     public static string FormatMask(this string value, string mask)
