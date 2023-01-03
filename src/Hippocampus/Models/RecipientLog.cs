@@ -1,3 +1,5 @@
+using Hippocampus.Models.Values;
+
 namespace Hippocampus.Models;
 
 public record RecipientLogId(Guid Value)
@@ -16,7 +18,7 @@ public class RecipientLog
 {
     public RecipientLogId Id { get; init; } = RecipientLogId.New();
 
-    public string MacAddress { get; init; } = string.Empty;
+    public MacAddress MacAddress { get; init; } = new();
 
     public int Level { get; init; }
 

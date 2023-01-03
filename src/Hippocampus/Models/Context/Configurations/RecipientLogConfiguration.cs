@@ -22,7 +22,5 @@ public class RecipientLogConfiguraton : IEntityTypeConfiguration<RecipientLog>
         builder.Property(rlog => rlog.Id).HasConversion(RecipientLogIdConverter);
 
         builder.Property(rlog => rlog.State).HasConversion(RecipientLogStateConverter);
-
-        builder.HasIndex(rlog => rlog.MacAddress).IsUnique();
     }
 }
