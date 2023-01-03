@@ -1,11 +1,10 @@
 using Hippocampus.Models.Values;
+using StronglyTypedIds;
 
 namespace Hippocampus.Models;
 
-public record RecipientLogId(Guid Value)
-{
-    public static RecipientLogId New() => new(Guid.NewGuid());
-}
+[StronglyTypedId]
+public partial struct RecipientLogId { }
 
 public enum State
 {
