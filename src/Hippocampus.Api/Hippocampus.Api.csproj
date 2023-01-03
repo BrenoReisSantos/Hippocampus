@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Hippocampus\Hippocampus.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="$(AssemblyName).Tests.Integration" />
+  </ItemGroup>
+
 </Project>

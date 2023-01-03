@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hippocampus.Tests.Common\Hippocampus.Tests.Common.csproj" />
+    <ProjectReference Include="..\..\src\Hippocampus.Api\Hippocampus.Api.csproj" />
   </ItemGroup>
 
 </Project>
