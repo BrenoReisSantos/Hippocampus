@@ -1,8 +1,10 @@
 using Bogus;
+using Hippocampus.Models.Context;
+using Microsoft.EntityFrameworkCore;
 
-namespace Hippocampus.Tests.Unit;
+namespace Hippocampus.Tests.Specs;
 
 public class BaseTest
 {
-    readonly Faker faker = new("pt_BR");
+    protected readonly Faker faker = new("pt_BR");
 }

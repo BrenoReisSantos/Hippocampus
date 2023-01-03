@@ -1,6 +1,6 @@
 using Hippocampus.Models.Values;
 
-namespace Hippocampus.Tests.Unit;
+namespace Hippocampus.Tests.Specs;
 
 public class TypeExtensionTests : BaseTest
 {
