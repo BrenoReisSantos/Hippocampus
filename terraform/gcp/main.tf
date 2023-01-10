@@ -2,9 +2,6 @@ resource "google_cloud_run_service" "default" {
   name     = "cloudrun-terraform-test"
   location = "us-central1"
   project = "cloudrun-teste"
-  lifecycle {
-    
-  }
 
   template {
     spec {
@@ -20,7 +17,7 @@ resource "google_cloud_run_service" "default" {
     }
     
   }
-
+  
   traffic {
     percent         = 100
     latest_revision = true

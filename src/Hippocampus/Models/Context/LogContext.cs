@@ -1,3 +1,4 @@
+using Hippocampus.Models.Values;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Models.Context;
@@ -10,6 +11,9 @@ public class LogContext : DbContext
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
-       modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogContext).Assembly);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Ignore<MacAddress>();
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogContext).Assembly);
+    }
 }

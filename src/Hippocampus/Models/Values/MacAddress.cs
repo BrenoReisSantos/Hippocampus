@@ -38,7 +38,7 @@ public partial class MacAddress
 
     public override string ToString() => Value;
 
-    string Format(Mask mask = Mask.None) =>
+    public string Format(Mask mask = Mask.None) =>
         mask switch
         {
             Mask.Colon =>

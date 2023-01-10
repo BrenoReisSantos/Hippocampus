@@ -1,7 +1,6 @@
 ﻿using Hippocampus.Models;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Dto;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +11,7 @@ public static class LogRoutes
     public static void MapLogRoutes(this IEndpointRouteBuilder app)
     {
         app.MapGroup("log");
-        app.MapGet("/{id}", GetLog);
+        app.MapGet("/{recipientId}", GetLog);
         app.MapPost("/register", RegisterNewLog);
     }
 

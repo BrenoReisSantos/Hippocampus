@@ -1,26 +1,31 @@
+using Hippocampus.Models.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Hippocampus.Models.Context.Configuration;
+namespace Hippocampus.Models.Context.Configurations;
 
-public class RecipientLogConfiguraton : IEntityTypeConfiguration<RecipientLog>
+public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
 {
-    public static readonly ValueConverter<RecipientLogId, Guid> RecipientLogIdConverter = new(
+    public static readonly ValueConverter<RecipientLogId, Guid> recipientLogIdConverter = new(
         recipientLogId => recipientLogId.Value,
         guid => new(guid)
     );
 
-    static readonly ValueConverter<State, string> RecipientLogStateConverter = new(
+    static readonly ValueConverter<State, string> recipientLogStateConverter = new(
         state => state.ToString(),
         stateString => Enum.Parse<State>(stateString)
     );
 
+    static readonly ValueConverter<MacAddress, string> recipientLogMacAddressConverter = new(
+        macAddress => macAddress.Format(MacAddress.Mask.Colon).ToString(),
+        stringMacAddress => new MacAddress(stringMacAddress));
+
     public void Configure(EntityTypeBuilder<RecipientLog> builder)
     {
         builder.HasKey(rlog => rlog.Id);
-        builder.Property(rlog => rlog.Id).HasConversion(RecipientLogIdConverter);
-
-        builder.Property(rlog => rlog.State).HasConversion(RecipientLogStateConverter);
+        builder.Property(rlog => rlog.Id).HasConversion(recipientLogIdConverter);
+        builder.Property(rlog => rlog.State).HasConversion(recipientLogStateConverter);
+        builder.Property(rlog => rlog.MacAddress).HasConversion(recipientLogMacAddressConverter);
     }
 }

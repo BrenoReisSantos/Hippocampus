@@ -15,7 +15,7 @@ WORKDIR /${PROJECT_NAME}/${PROJECT_NAME}.Api
 RUN dotnet restore
 RUN dotnet publish -c ${CONFIGURATION} --self-contained --use-current-runtime -o ./publish
 
-FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine3.17
+FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine3.17 as run
 
 ARG PROJECT_NAME
 ENV EXECUTABLE_NAME=${PROJECT_NAME}
