@@ -1,6 +1,7 @@
 ﻿using Hippocampus.Models;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Dto;
+using Hippocampus.Services.ApplicationValues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,12 +18,13 @@ public static class LogRoutes
 
     static async Task<IResult> RegisterNewLog(
         [FromServices] LogContext context,
-        [FromBody] RecipientLogRegisterDto newRegister)
+        [FromServices] IClock clock,
+        RecipientLogRegisterDto newRegister)
     {
-        var newLog = newRegister.ToEntity();
+        var newLog = newRegister.ToEntity(clock);
         context.RecipientLogs.Add(newLog);
         await context.SaveChangesAsync();
-        return Results.Created("", newRegister);
+        return Results.Created($"api/{newLog.RecipientLogId}", newLog);
     }
 
     static async Task<IResult> GetLog(
@@ -30,7 +32,7 @@ public static class LogRoutes
         [FromRoute] RecipientLogId recipientId
     )
     {
-        var recipient = await context.RecipientLogs.SingleOrDefaultAsync(rlog => rlog.Id == recipientId);
+        var recipient = await context.RecipientLogs.SingleOrDefaultAsync(rlog => rlog.RecipientLogId == recipientId);
         return recipient is not null
             ? Results.Ok(recipient)
             : Results.NotFound();
