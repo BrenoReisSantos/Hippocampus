@@ -1,5 +1,8 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Hippocampus.Api;
 using Hippocampus.Models.Context;
+using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +19,19 @@ builder.Services
         options => options.UseNpgsql(
             builder.Configuration.GetConnectionString("DefaultConnection")
         ));
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.SerializerOptions.Converters.Add(new MacAddressJsonConverter());
+    options.SerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.WriteIndented = false;
+}).Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
+    options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
+});
 
 var app = builder.Build();
 
