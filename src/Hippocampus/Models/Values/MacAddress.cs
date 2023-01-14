@@ -1,12 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Hippocampus.Models.Values;
+
+[JsonConverter(typeof(MacAddressJsonConverter))]
 public partial class MacAddress
 {
     public const int DefaultLength = 12;
     public string Value { get; }
 
-    const string _pattern = @"^(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})(?:(?:\1|\.)(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})){2}$";
+    const string _pattern =
+        @"^(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})(?:(?:\1|\.)(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})){2}$";
 
     public enum Mask
     {
@@ -22,10 +27,11 @@ public partial class MacAddress
     {
         if (!Validate(macAddress))
             throw MacAddressException(macAddress);
-        Value = Format(Mask.Colon);
+        Value = macAddress.CleanMask();
     }
 
-    static Exception MacAddressException(string macAddress) => new FormatException($"Invalid Mac Address: {macAddress}");
+    static Exception MacAddressException(string macAddress) =>
+        new FormatException($"Invalid Mac Address: {macAddress}");
 
     public MacAddress Empty() => new();
 
@@ -34,11 +40,12 @@ public partial class MacAddress
 
     public static bool Validate(string macAddress) => MacAddressRegex().Match(macAddress).Success;
 
-    public static implicit operator string(MacAddress macAddress) => macAddress;
+    public static implicit operator string(MacAddress macAddress) => macAddress.ToString();
 
-    public override string ToString() => Value;
+    public string ToString(Mask mask = Mask.None) => Format(mask);
+    public override string ToString() => Format(Mask.Colon);
 
-    public string Format(Mask mask = Mask.None) =>
+    private string Format(Mask mask) =>
         mask switch
         {
             Mask.Colon =>
@@ -52,4 +59,18 @@ public partial class MacAddress
             _ =>
                 Value,
         };
+}
+
+public class MacAddressJsonConverter : JsonConverter<MacAddress>
+{
+    public override MacAddress? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var macAddressString = reader.GetString();
+        return macAddressString is null ? new MacAddress() : new MacAddress(macAddressString);
+    }
+
+    public override void Write(Utf8JsonWriter writer, MacAddress value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString(MacAddress.Mask.Colon));
+    }
 }
