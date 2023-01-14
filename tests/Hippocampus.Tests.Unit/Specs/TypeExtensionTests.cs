@@ -1,6 +1,7 @@
 using Hippocampus.Models.Values;
+using Hippocampus.Tests.Specs;
 
-namespace Hippocampus.Tests.Specs;
+namespace Hippocampus.Tests.Unit.Specs;
 
 public class TypeExtensionTests : BaseTest
 {
@@ -15,21 +16,21 @@ public class TypeExtensionTests : BaseTest
     [TestCase("12345678912", "###.###.###-##", "123.456.789-12")]
     [TestCase("123456789AB", "###.###.###-##", "123.456.789-AB")]
     [TestCase("ABCDEFGHIJK", "###.###.###-##", "ABC.DEF.GHI-JK")]
-    public void FormatMaskShouldReturnWithCorrectFormat(string value, string format, string expected)
+    public void FormatMask_Should_Return_With_Correct_Format(string value, string format, string expected)
     {
         string maskedString = value.FormatMask(format);
         maskedString.Should().Be(expected);
     }
 
     [Test]
-    public void FormatMaskShoulReturnSameStringAsPassedWhenPassedStringIsEmpty()
+    public void FormatMask_Shoul_Return_Same_String_As_Passed_When_Passed_String_Is_Empty()
     {
         string maskedString = "".FormatMask("###.###");
         maskedString.Should().Be("");
     }
 
     [Test]
-    public void FormatMaskShouldReturnEmptyStringWhenPassedFormatIsEmptyString()
+    public void FormatMask_Should_Return_Empty_String_When_Passed_Format_Is_Empty_String()
     {
         string maskedString = "123456789".FormatMask("");
         maskedString.Should().Be("");
@@ -40,7 +41,9 @@ public class TypeExtensionTests : BaseTest
     [TestCase("...-")]
     [TestCase("::::")]
     [TestCase("-.!@$^&*()")]
-    public void FormatMaskShouldReturnFormatStringWithoutSubstituteCharWhenPassedFormatDoesntContainSubstituteChar(string format)
+    public void
+        FormatMask_Should_Return_Format_String_Without_Substitute_Char_When_Passed_Format_Doesnt_Contain_SubstituteChar(
+            string format)
     {
         string maskedString = "123456789".FormatMask(format);
         maskedString.Should().Be(format);

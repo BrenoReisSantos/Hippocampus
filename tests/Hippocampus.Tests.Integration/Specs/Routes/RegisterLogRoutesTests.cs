@@ -1,7 +1,12 @@
+using System.Net.Http.Json;
+using System.Text.Json;
+using FakeItEasy;
 using Hippocampus.Models;
 using Hippocampus.Models.Context;
+using Hippocampus.Models.Dto;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
+using Hippocampus.Tests.Common.Mocks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -14,6 +19,7 @@ namespace Hippocampus.Tests.Integration.Specs.Routes;
 
 public class RegisterLogRoutesTests
 {
+    private Faker _faker = new("pt_BR");
     WebApplicationFactory<Program> _webApplicationFactory = null!;
     HttpClient _webApp = null!;
     AsyncServiceScope _scope;
@@ -26,6 +32,7 @@ public class RegisterLogRoutesTests
         _webApplicationFactory = new();
         _webApplicationFactory.WithWebHostBuilder(builder =>
         {
+            builder.ConfigureTestServices(services => services.AddSingleton(ClockMocker.MockClock()));
             builder.UseContentRoot(Directory.GetCurrentDirectory());
             builder.ConfigureAppConfiguration(configurationBuilder =>
                 configurationBuilder.AddInMemoryCollection(
@@ -62,27 +69,30 @@ public class RegisterLogRoutesTests
     }
 
     [Test]
-    public async Task Test()
+    public async Task RegisterPath_Shoul_Save_New_RecipientLog_In_The_Database()
     {
-        RecipientLogId id = RecipientLogId.New();
-        var registerDate = _clock.Now;
-        _context.RecipientLogs.Add(new RecipientLog()
+        var mac = _faker.Internet.Mac();
+        var macAddress = new MacAddress(mac);
+        var state = _faker.PickRandom<State>();
+        var levelValue = _faker.Random.Byte(0, 100);
+        var level = new RecipientLevel(levelValue);
+
+        var newLog = new RecipientLogRegisterDto()
         {
-            Id = id,
-            Level = 50,
-            State = State.Average,
-            MacAddress = new MacAddress("11:11:11:11:11:11"),
-            RegisterDate = registerDate
-        });
-        await _context.SaveChangesAsync();
-        var test = await _context.RecipientLogs.SingleOrDefaultAsync(log => log.Id == id);
-        test.Should().BeEquivalentTo(new RecipientLog()
-        {
-            Id = id,
-            Level = 50,
-            State = State.Average,
-            MacAddress = new MacAddress("11:11:11:11:11:11"),
-            RegisterDate = registerDate
-        });
+            MacAddress = macAddress,
+            State = state,
+            Level = level
+        };
+        Console.WriteLine(JsonSerializer.Serialize(newLog));
+        var response = await _webApp.PostAsJsonAsync("api/register", newLog);
+
+        response.Should().Be201Created().And.BeAs(
+            new RecipientLog()
+            {
+                MacAddress = macAddress,
+                Level = level,
+                State = state,
+                RegisterDate = _clock.Now
+            }, options => options.Excluding(log => log.RecipientLogId).Excluding(log => log.RegisterDate));
     }
 }
