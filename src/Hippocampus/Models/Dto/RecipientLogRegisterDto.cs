@@ -1,24 +1,26 @@
-﻿using Hippocampus.Models.Values;
+﻿using System.Text.Json.Serialization;
+using Hippocampus.Models.Values;
+using Hippocampus.Services.ApplicationValues;
 
 namespace Hippocampus.Models.Dto;
 
 public class RecipientLogRegisterDto
 {
-    public MacAddress MacAddress { get; init; } = new();
+    public required MacAddress MacAddress { get; init; }
 
-    public int Level { get; init; }
+    public required RecipientLevel Level { get; init; }
 
-    public State State { get; init; }
+    public required State State { get; init; }
 }
 
 public static class RecipientLogRegisterDtoExtensions
 {
-    public static RecipientLog ToEntity(this RecipientLogRegisterDto recipientDto) => new RecipientLog
+    public static RecipientLog ToEntity(this RecipientLogRegisterDto recipientDto, IClock clock) => new RecipientLog
     {
         MacAddress = recipientDto.MacAddress,
         State = recipientDto.State,
         Level = recipientDto.Level,
-        Id = RecipientLogId.New(),
-        RegisterDate = DateTime.Now
+        RecipientLogId = RecipientLogId.New(),
+        RegisterDate = clock.Now
     };
 }
