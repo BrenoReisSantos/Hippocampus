@@ -14,6 +14,7 @@ public class LogContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Ignore<MacAddress>();
+        modelBuilder.Ignore<RecipientLevel>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LogContext).Assembly);
     }
 }
