@@ -4,7 +4,15 @@ using StronglyTypedIds;
 namespace Hippocampus.Models;
 
 [StronglyTypedId]
-public partial struct RecipientLogId { }
+public partial struct RecipientLogId
+{
+    public static bool TryParse(string value, out RecipientLogId id)
+    {
+        var couldConvert = Guid.TryParse(value, out var guid);
+        id = new RecipientLogId(guid);
+        return couldConvert;
+    }
+}
 
 public enum State
 {
@@ -15,13 +23,9 @@ public enum State
 
 public class RecipientLog
 {
-    public RecipientLogId Id { get; init; } = RecipientLogId.New();
-
-    public MacAddress MacAddress { get; init; } = new();
-
-    public int Level { get; init; }
-
-    public State State { get; init; }
-
-    public DateTime RegisterDate { get; init; }
+    public RecipientLogId RecipientLogId { get; init; } = RecipientLogId.New();
+    public required MacAddress MacAddress { get; init; }
+    public required RecipientLevel Level { get; set; }
+    public required State State { get; init; }
+    public required DateTime RegisterDate { get; init; }
 }
