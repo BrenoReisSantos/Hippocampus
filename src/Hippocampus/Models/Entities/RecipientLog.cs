@@ -14,13 +14,6 @@ public partial struct RecipientLogId
     }
 }
 
-public enum State
-{
-    Empty,
-    Average,
-    Full
-}
-
 public class RecipientLog
 {
     public RecipientLogId RecipientLogId { get; init; } = RecipientLogId.New();
