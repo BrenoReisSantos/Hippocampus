@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
+using Hippocampus.Api.Configurations;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
@@ -34,6 +35,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var app = builder.Build();
+
+await app.MigrateDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,19 +1,17 @@
 using System.Net.Http.Json;
-using System.Text.Json;
-using FakeItEasy;
 using Hippocampus.Models;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Dto;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
 using Hippocampus.Tests.Common.Mocks;
+using Hippocampus.Tests.Common.TestUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Hippocampus.Tests.Integration.Specs.Routes;
 
@@ -24,15 +22,20 @@ public class RegisterLogRoutesTests
     HttpClient _webApp = null!;
     AsyncServiceScope _scope;
     LogContext _context = null!;
-    IClock _clock;
+    IClock _clock = null!;
 
     [OneTimeSetUp]
     public void RegisterLogRoutesTestsOneTimeSetUp()
     {
+        AssertionConfiguration.ConfigureOptions();
         _webApplicationFactory = new();
         _webApplicationFactory.WithWebHostBuilder(builder =>
         {
-            builder.ConfigureTestServices(services => services.AddSingleton(ClockMocker.MockClock()));
+            builder.ConfigureTestServices(services =>
+            {
+                services.RemoveAll<IClock>();
+                services.AddSingleton(ClockMocker.MockClock());
+            });
             builder.UseContentRoot(Directory.GetCurrentDirectory());
             builder.ConfigureAppConfiguration(configurationBuilder =>
                 configurationBuilder.AddInMemoryCollection(
@@ -69,7 +72,7 @@ public class RegisterLogRoutesTests
     }
 
     [Test]
-    public async Task RegisterPath_Shoul_Save_New_RecipientLog_In_The_Database()
+    public async Task RegisterPath_Should_Save_New_RecipientLog_In_The_Database()
     {
         var mac = _faker.Internet.Mac();
         var macAddress = new MacAddress(mac);
@@ -83,8 +86,8 @@ public class RegisterLogRoutesTests
             State = state,
             Level = level
         };
-        Console.WriteLine(JsonSerializer.Serialize(newLog));
-        var response = await _webApp.PostAsJsonAsync("api/register", newLog);
+
+        var response = await _webApp.PostAsync("api/register", JsonContent.Create(newLog));
 
         response.Should().Be201Created().And.BeAs(
             new RecipientLog()
@@ -93,6 +96,6 @@ public class RegisterLogRoutesTests
                 Level = level,
                 State = state,
                 RegisterDate = _clock.Now
-            }, options => options.Excluding(log => log.RecipientLogId).Excluding(log => log.RegisterDate));
+            }, options => options.Excluding(log => log.RecipientLogId));
     }
 }
