@@ -1,3 +1,4 @@
+using Hippocampus.Models.Entities;
 using Hippocampus.Models.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -7,7 +8,7 @@ namespace Hippocampus.Models.Context.Configurations;
 
 public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
 {
-    public static readonly ValueConverter<RecipientLogId, Guid> recipientLogIdConverter = new(
+    public static readonly ValueConverter<Entities.RecipientLogId, Guid> recipientLogIdConverter = new(
         recipientLogId => recipientLogId.Value,
         guid => new(guid)
     );
@@ -23,7 +24,7 @@ public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
 
     public void Configure(EntityTypeBuilder<RecipientLog> builder)
     {
-        builder.Property(rlog => rlog.RecipientLogId).HasConversion<RecipientLogId.EfCoreValueConverter>();
+        builder.Property(rlog => rlog.RecipientLogId).HasConversion<Entities.RecipientLogId.EfCoreValueConverter>();
         builder.Property(rlog => rlog.State).HasConversion(recipientLogStateConverter);
         builder.Property(rlog => rlog.MacAddress).HasConversion(recipientLogMacAddressConverter);
         builder.HasIndex(rlog => rlog.MacAddress).IsUnique();

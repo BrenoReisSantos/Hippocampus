@@ -1,6 +1,7 @@
 ﻿using Hippocampus.Models;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Dto;
+using Hippocampus.Models.Entities;
 using Hippocampus.Services.ApplicationValues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

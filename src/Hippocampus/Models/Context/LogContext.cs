@@ -1,3 +1,4 @@
+using Hippocampus.Models.Entities;
 using Hippocampus.Models.Values;
 using Microsoft.EntityFrameworkCore;
 

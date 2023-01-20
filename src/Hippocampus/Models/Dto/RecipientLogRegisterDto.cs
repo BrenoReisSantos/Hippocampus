@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+﻿using Hippocampus.Models.Entities;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
 
@@ -20,7 +20,7 @@ public static class RecipientLogRegisterDtoExtensions
         MacAddress = recipientDto.MacAddress,
         State = recipientDto.State,
         Level = recipientDto.Level,
-        RecipientLogId = RecipientLogId.New(),
+        RecipientLogId = Entities.RecipientLogId.New(),
         RegisterDate = clock.Now
     };
 }

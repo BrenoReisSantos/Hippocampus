@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
-using Hippocampus.Models;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Dto;
+using Hippocampus.Models.Entities;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
 using Hippocampus.Tests.Common.Mocks;
