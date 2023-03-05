@@ -4,19 +4,19 @@ using StronglyTypedIds;
 namespace Hippocampus.Models.Entities;
 
 [StronglyTypedId]
-public partial struct RecipientId
+public partial struct RecipientMonitorId
 {
-    public static bool TryParse(string value, out RecipientId id)
+    public static bool TryParse(string value, out RecipientMonitorId monitorId)
     {
         var couldConvert = Guid.TryParse(value, out var guid);
-        id = new RecipientId(guid);
+        monitorId = new RecipientMonitorId(guid);
         return couldConvert;
     }
 }
 
-public class Recipient
+public class RecipientMonitor
 {
-    public RecipientId RecipientId { get; init; } = RecipientId.New();
+    public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.New();
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
     public RecipientLevelLimit RecipientLevelLimit { get; init; } = new();

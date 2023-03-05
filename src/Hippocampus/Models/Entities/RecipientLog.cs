@@ -10,20 +10,20 @@ public class RecipientLog
     public State State { get; private set; } = State.Average;
 
     public DateTime RegisterDate { get; private set; }
-    public RecipientId RecipientId { get; private set; } = RecipientId.Empty;
+    public RecipientMonitorId RecipientMonitorId { get; private set; } = RecipientMonitorId.Empty;
 
     public RecipientLog()
     {
     }
 
     public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
-        DateTime registerDate, RecipientId recipientId)
+        DateTime registerDate, RecipientMonitorId recipientMonitorId)
     {
         RecipientLogId = recipientLogId;
         LevelPercentage = levelPercentage;
         State = state;
         RegisterDate = registerDate;
-        RecipientId = recipientId;
+        RecipientMonitorId = recipientMonitorId;
     }
 
     public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
