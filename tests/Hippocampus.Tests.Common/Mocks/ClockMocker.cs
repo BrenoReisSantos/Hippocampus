@@ -6,13 +6,11 @@ namespace Hippocampus.Tests.Common.Mocks;
 
 public static class ClockMocker
 {
-    public static IClock MockClock()
+    public static IClock Mock()
     {
         var faker = new Faker("pt_BR");
-        var recentDate = faker.Date.Recent();
         var fakeClock = A.Fake<IClock>();
-        A.CallTo(() => fakeClock.Now).Returns(recentDate);
-        A.CallTo(() => fakeClock.Today).Returns(DateOnly.FromDateTime(recentDate));
+        A.CallTo(() => fakeClock.Now).Returns(faker.Date.Recent());
         return fakeClock;
     }
 }

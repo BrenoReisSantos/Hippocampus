@@ -1,10 +1,10 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
-using Hippocampus.Api.Configurations;
 using Hippocampus.Models.Context;
 using Hippocampus.Models.Values;
 using Hippocampus.Services.ApplicationValues;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +16,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services
     .AddSingleton<IClock>(new Clock())
-    .AddDbContext<LogContext>(
+    .AddDbContext<HippocampusContext>(
         options => options.UseNpgsql(
             builder.Configuration.GetConnectionString("DefaultConnection")
         ));
@@ -28,7 +28,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.SerializerOptions.WriteIndented = false;
-}).Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+}).Configure<JsonOptions>(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
     options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
@@ -36,7 +36,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
-await app.MigrateDatabaseAsync();
+// await app.MigrateDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

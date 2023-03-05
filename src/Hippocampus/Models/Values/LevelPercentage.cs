@@ -4,15 +4,15 @@ using System.Text.Json.Serialization;
 namespace Hippocampus.Models.Values;
 
 [JsonConverter(typeof(RecipientLevelJsonConverter))]
-public class RecipientLevel
+public class LevelPercentage
 {
     public static readonly byte MaximumLevel = 100;
     public static readonly byte MinimumLevel = 0;
     public byte Value { get; }
 
-    public RecipientLevel() => Value = 50;
+    public LevelPercentage() => Value = 50;
 
-    public RecipientLevel(byte value)
+    public LevelPercentage(byte value)
     {
         if (!InBounds(value)) throw RecipientLevelOutOfBounds(value);
         Value = value;
@@ -23,19 +23,19 @@ public class RecipientLevel
     static Exception RecipientLevelOutOfBounds(int value) =>
         new ArgumentException($"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}");
 
-    public static implicit operator byte(RecipientLevel recipientLevel) => recipientLevel.Value;
-    public static implicit operator RecipientLevel(byte value) => new(value);
+    public static implicit operator byte(LevelPercentage levelPercentage) => levelPercentage.Value;
+    public static implicit operator LevelPercentage(byte value) => new(value);
 }
 
-public class RecipientLevelJsonConverter : JsonConverter<RecipientLevel>
+public class RecipientLevelJsonConverter : JsonConverter<LevelPercentage>
 {
-    public override RecipientLevel Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override LevelPercentage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var level = reader.GetByte();
-        return new RecipientLevel(level);
+        return new LevelPercentage(level);
     }
 
-    public override void Write(Utf8JsonWriter writer, RecipientLevel value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, LevelPercentage value, JsonSerializerOptions options)
     {
         writer.WriteNumberValue(value.Value);
     }

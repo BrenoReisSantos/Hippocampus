@@ -3,22 +3,42 @@ using StronglyTypedIds;
 
 namespace Hippocampus.Models.Entities;
 
-[StronglyTypedId]
-public partial struct RecipientLogId
+public class RecipientLog
 {
-    public static bool TryParse(string value, out RecipientLogId id)
+    public int RecipientLogId { get; }
+    public LevelPercentage LevelPercentage { get; private set; } = new();
+    public State State { get; private set; } = State.Average;
+
+    public DateTime RegisterDate { get; private set; }
+    public RecipientId RecipientId { get; private set; } = RecipientId.Empty;
+
+    public RecipientLog()
     {
-        var couldConvert = Guid.TryParse(value, out var guid);
-        id = new RecipientLogId(guid);
-        return couldConvert;
+    }
+
+    public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
+        DateTime registerDate, RecipientId recipientId)
+    {
+        RecipientLogId = recipientLogId;
+        LevelPercentage = levelPercentage;
+        State = state;
+        RegisterDate = registerDate;
+        RecipientId = recipientId;
+    }
+
+    public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
+        DateTime registerDate)
+    {
+        RecipientLogId = recipientLogId;
+        LevelPercentage = levelPercentage;
+        State = state;
+        RegisterDate = registerDate;
     }
 }
 
-public class RecipientLog
+public enum State
 {
-    public RecipientLogId RecipientLogId { get; init; } = RecipientLogId.New();
-    public required MacAddress MacAddress { get; init; }
-    public required RecipientLevel Level { get; init; }
-    public required State State { get; init; }
-    public required DateTime RegisterDate { get; init; }
+    Empty,
+    Average,
+    Full
 }
