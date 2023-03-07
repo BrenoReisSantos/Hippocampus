@@ -1,4 +1,4 @@
-﻿namespace Hippocampus.Services.ApplicationValues;
+﻿namespace Hippocampus.Domain.Services.ApplicationValues;
 
 public interface IClock
 {

@@ -1,7 +1,7 @@
-﻿using Hippocampus.Models.Values;
+﻿using Hippocampus.Domain.Models.Values;
 using StronglyTypedIds;
 
-namespace Hippocampus.Models.Entities;
+namespace Hippocampus.Domain.Models.Entities;
 
 [StronglyTypedId]
 public partial struct RecipientMonitorId

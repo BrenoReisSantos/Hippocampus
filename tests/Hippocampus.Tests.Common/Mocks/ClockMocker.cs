@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using FakeItEasy;
-using Hippocampus.Services.ApplicationValues;
+using Hippocampus.Domain.Services.ApplicationValues;
 
 namespace Hippocampus.Tests.Common.Mocks;
 

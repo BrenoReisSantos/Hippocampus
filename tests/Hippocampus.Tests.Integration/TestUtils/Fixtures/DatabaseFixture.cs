@@ -1,4 +1,4 @@
-﻿using Hippocampus.Models.Context;
+﻿using Hippocampus.Domain.Models.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +8,7 @@ namespace Hippocampus.Tests.Integration.TestUtils.Fixtures;
 public class DatabaseFixture : ServiceFixture
 {
     protected static string TestDatabaseConnectionString =>
-        $"Server=localhost;Port=5432;Database=Hippocampus{Guid.NewGuid():N};User Id=postgres;Password=postgres;";
+        $"Server=localhost;Port=5432;Database=Hippocampus.Domain{Guid.NewGuid():N};User Id=postgres;Password=postgres;";
 
     AsyncServiceScope _dbScope;
     protected HippocampusContext Context { get; private set; }

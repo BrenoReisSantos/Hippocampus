@@ -1,6 +1,6 @@
 ﻿using AutoBogus;
 using Bogus;
-using Hippocampus.Models.Entities;
+using Hippocampus.Domain.Models.Entities;
 
 namespace Hippocampus.Tests.Common.Builders;
 

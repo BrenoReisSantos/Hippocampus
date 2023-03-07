@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using FakeItEasy;
-using Hippocampus.Models.Values;
+using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Tests.Unit.Specs;
 

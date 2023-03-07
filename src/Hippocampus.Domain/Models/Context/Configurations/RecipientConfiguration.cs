@@ -1,10 +1,10 @@
-﻿using Hippocampus.Models.Entities;
-using Hippocampus.Models.Values;
+﻿using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Hippocampus.Models.Context.Configurations;
+namespace Hippocampus.Domain.Models.Context.Configurations;
 
 public class RecipientConfiguration : IEntityTypeConfiguration<RecipientMonitor>
 {

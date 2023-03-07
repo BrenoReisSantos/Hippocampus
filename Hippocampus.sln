@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{442FC5DC-C1DB-417B-9BFD-4A2786555749}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.Api", "src\Hippocampus.Api\Hippocampus.Api.csproj", "{66C55B6C-1EDD-4116-9715-88E488B452BC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus", "src\Hippocampus\Hippocampus.csproj", "{66C55B6C-1EDD-4116-9715-88E488B452BC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4D1AA090-68F4-4A67-B882-9E7B2ACB446B}"
 EndProject
@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.Tests.Integrati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.Tests.Unit", "tests\Hippocampus.Tests.Unit\Hippocampus.Tests.Unit.csproj", "{E926A816-5E2B-4BEB-9BDB-A46C4EFF4593}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus", "src\Hippocampus\Hippocampus.csproj", "{E2E5748B-58FF-4064-8B78-E90D4CA5AACC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hippocampus.Domain", "src\Hippocampus.Domain\Hippocampus.Domain.csproj", "{E2E5748B-58FF-4064-8B78-E90D4CA5AACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

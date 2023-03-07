@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Hippocampus.Models.Values;
+namespace Hippocampus.Domain.Models.Values;
 
 [JsonConverter(typeof(RecipientLevelJsonConverter))]
 public class LevelPercentage

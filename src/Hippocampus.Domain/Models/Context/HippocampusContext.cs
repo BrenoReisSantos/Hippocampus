@@ -1,8 +1,8 @@
-using Hippocampus.Models.Entities;
-using Hippocampus.Models.Values;
+using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hippocampus.Models.Context;
+namespace Hippocampus.Domain.Models.Context;
 
 public class HippocampusContext : DbContext
 {

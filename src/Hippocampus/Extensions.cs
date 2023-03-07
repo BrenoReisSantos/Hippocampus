@@ -1,5 +1,5 @@
-﻿using Hippocampus.Models;
-using Hippocampus.Models.Context;
+﻿using Hippocampus.Domain.Models;
+using Hippocampus.Domain.Models.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Api;

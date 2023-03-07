@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Hippocampus.Models.Values;
+using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Api.Configurations;
 

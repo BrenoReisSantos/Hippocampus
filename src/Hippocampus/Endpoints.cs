@@ -1,8 +1,8 @@
-﻿using Hippocampus.Models.Context;
-using Hippocampus.Models.Dto;
-using Hippocampus.Models.Entities;
-using Hippocampus.Models.Values;
-using Hippocampus.Services.ApplicationValues;
+﻿using Hippocampus.Domain.Models.Context;
+using Hippocampus.Domain.Models.Dto;
+using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
+using Hippocampus.Domain.Services.ApplicationValues;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

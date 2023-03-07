@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Hippocampus.Models.Values;
+using Hippocampus.Domain.Models.Values;
 using Hippocampus.Tests.Specs;
 
 namespace Hippocampus.Tests.Unit.Specs;

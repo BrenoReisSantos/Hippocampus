@@ -1,5 +1,5 @@
 using Bogus;
-using Hippocampus.Models.Context;
+using Hippocampus.Domain.Models.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Tests.Specs;

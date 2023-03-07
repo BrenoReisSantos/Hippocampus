@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hippocampus\Hippocampus.csproj" />
+    <ProjectReference Include="..\..\src\Hippocampus.Domain\Hippocampus.Domain.csproj" />
   </ItemGroup>
 
 </Project>

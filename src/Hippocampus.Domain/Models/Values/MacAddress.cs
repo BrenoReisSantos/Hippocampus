@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace Hippocampus.Models.Values;
+namespace Hippocampus.Domain.Models.Values;
 
 [JsonConverter(typeof(MacAddressJsonConverter))]
 public partial class MacAddress

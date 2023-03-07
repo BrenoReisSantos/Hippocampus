@@ -1,5 +1,5 @@
 ﻿using AutoBogus;
-using Hippocampus.Models.Entities;
+using Hippocampus.Domain.Models.Entities;
 
 namespace Hippocampus.Tests.Common.Builders;
 

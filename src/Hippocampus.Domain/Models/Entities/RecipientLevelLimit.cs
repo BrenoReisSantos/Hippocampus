@@ -1,4 +1,4 @@
-﻿namespace Hippocampus.Models.Entities;
+﻿namespace Hippocampus.Domain.Models.Entities;
 
 public class RecipientLevelLimit
 {

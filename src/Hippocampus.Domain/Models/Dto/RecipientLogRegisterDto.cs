@@ -1,8 +1,8 @@
-﻿using Hippocampus.Models.Entities;
-using Hippocampus.Models.Values;
-using Hippocampus.Services.ApplicationValues;
+﻿using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
+using Hippocampus.Domain.Services.ApplicationValues;
 
-namespace Hippocampus.Models.Dto;
+namespace Hippocampus.Domain.Models.Dto;
 
 public class RecipientLogRegisterDto
 {

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Hippocampus.Models.Values;
+namespace Hippocampus.Domain.Models.Values;
 
 public static class TypesExtensions
 {

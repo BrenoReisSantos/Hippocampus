@@ -1,8 +1,8 @@
-using Hippocampus.Models.Entities;
+using Hippocampus.Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hippocampus.Models.Context.Configurations;
+namespace Hippocampus.Domain.Models.Context.Configurations;
 
 public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
 {
