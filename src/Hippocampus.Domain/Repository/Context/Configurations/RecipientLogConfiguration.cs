@@ -2,7 +2,7 @@ using Hippocampus.Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hippocampus.Domain.Models.Context.Configurations;
+namespace Hippocampus.Domain.Repository.Context.Configurations;
 
 public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
 {

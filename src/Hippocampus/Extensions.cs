@@ -1,5 +1,4 @@
-﻿using Hippocampus.Domain.Models;
-using Hippocampus.Domain.Models.Context;
+﻿using Hippocampus.Domain.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Api;

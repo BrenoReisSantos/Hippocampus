@@ -1,4 +1,4 @@
-﻿using Hippocampus.Domain.Models.Context;
+﻿using Hippocampus.Domain.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

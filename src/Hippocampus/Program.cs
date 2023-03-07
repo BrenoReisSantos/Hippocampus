@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
-using Hippocampus.Domain.Models.Context;
 using Hippocampus.Domain.Models.Values;
+using Hippocampus.Domain.Repository.Context;
 using Hippocampus.Domain.Services.ApplicationValues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
