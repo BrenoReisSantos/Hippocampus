@@ -1,13 +1,4 @@
-﻿using Hippocampus.Domain.Models.Context;
-using Hippocampus.Domain.Models.Dto;
-using Hippocampus.Domain.Models.Entities;
-using Hippocampus.Domain.Models.Values;
-using Hippocampus.Domain.Services.ApplicationValues;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace Hippocampus.Api;
+﻿namespace Hippocampus.Api;
 
 public static class LogRoutes
 {

@@ -1,4 +1,4 @@
-﻿using Hippocampus.Services.ApplicationValues;
+﻿using Hippocampus.Domain.Services.ApplicationValues;
 using Hippocampus.Tests.Common.Mocks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

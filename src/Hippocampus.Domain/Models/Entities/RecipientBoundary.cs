@@ -1,9 +1,8 @@
 ﻿namespace Hippocampus.Domain.Models.Entities;
 
-public class RecipientLevelLimit
+public class RecipientBoundary
 {
     public float MaxHeight { get; init; }
-
     private float _minHeight;
 
     public float MinHeight

@@ -89,7 +89,7 @@ namespace Hippocampus.Domain.Migrations
 
             modelBuilder.Entity("Hippocampus.Domain.Models.Entities.RecipientMonitor", b =>
                 {
-                    b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientLevelLimit", "RecipientLevelLimit", b1 =>
+                    b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientBoundary", "RecipientBoundary", b1 =>
                         {
                             b1.Property<Guid>("RecipientMonitorId")
                                 .HasColumnType("uuid");
@@ -108,7 +108,7 @@ namespace Hippocampus.Domain.Migrations
                                 .HasForeignKey("RecipientMonitorId");
                         });
 
-                    b.Navigation("RecipientLevelLimit")
+                    b.Navigation("RecipientBoundary")
                         .IsRequired();
                 });
 

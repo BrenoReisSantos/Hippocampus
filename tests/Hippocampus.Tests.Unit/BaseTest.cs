@@ -1,8 +1,4 @@
-using Bogus;
-using Hippocampus.Domain.Models.Context;
-using Microsoft.EntityFrameworkCore;
-
-namespace Hippocampus.Tests.Specs;
+namespace Hippocampus.Tests.Unit;
 
 public class BaseTest
 {

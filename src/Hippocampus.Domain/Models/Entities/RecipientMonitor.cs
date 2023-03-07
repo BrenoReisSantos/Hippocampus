@@ -19,7 +19,7 @@ public class RecipientMonitor
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.New();
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
-    public RecipientLevelLimit RecipientLevelLimit { get; init; } = new();
+    public RecipientBoundary RecipientBoundary { get; init; } = new();
     public bool IsActive { get; init; } = true;
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; init; }

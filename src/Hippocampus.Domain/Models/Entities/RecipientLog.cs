@@ -1,5 +1,4 @@
 using Hippocampus.Domain.Models.Values;
-using StronglyTypedIds;
 
 namespace Hippocampus.Domain.Models.Entities;
 
@@ -8,7 +7,6 @@ public class RecipientLog
     public int RecipientLogId { get; }
     public LevelPercentage LevelPercentage { get; private set; } = new();
     public State State { get; private set; } = State.Average;
-
     public DateTime RegisterDate { get; private set; }
     public RecipientMonitorId RecipientMonitorId { get; private set; } = RecipientMonitorId.Empty;
 

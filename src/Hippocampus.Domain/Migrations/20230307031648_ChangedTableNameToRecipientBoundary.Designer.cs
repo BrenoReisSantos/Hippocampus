@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hippocampus.Domain.Migrations
 {
     [DbContext(typeof(HippocampusContext))]
-    [Migration("20230305060553_FirstMigration")]
-    partial class FirstMigration
+    [Migration("20230307031648_ChangedTableNameToRecipientBoundary")]
+    partial class ChangedTableNameToRecipientBoundary
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,7 @@ namespace Hippocampus.Domain.Migrations
 
             modelBuilder.Entity("Hippocampus.Domain.Models.Entities.RecipientMonitor", b =>
                 {
-                    b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientLevelLimit", "RecipientLevelLimit", b1 =>
+                    b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientBoundary", "RecipientBoundary", b1 =>
                         {
                             b1.Property<Guid>("RecipientMonitorId")
                                 .HasColumnType("uuid");
@@ -111,7 +111,7 @@ namespace Hippocampus.Domain.Migrations
                                 .HasForeignKey("RecipientMonitorId");
                         });
 
-                    b.Navigation("RecipientLevelLimit")
+                    b.Navigation("RecipientBoundary")
                         .IsRequired();
                 });
 
