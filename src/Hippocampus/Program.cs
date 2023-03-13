@@ -2,7 +2,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
 using Hippocampus.Domain.Models.Values;
+using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Repository.Context;
+using Hippocampus.Domain.Services;
 using Hippocampus.Domain.Services.ApplicationValues;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
     options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
 });
+
+builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorMonitorRepository>();
+builder.Services.AddTransient<IRecipientMonitorServices, RecipientMonitorServices>();
 
 var app = builder.Build();
 

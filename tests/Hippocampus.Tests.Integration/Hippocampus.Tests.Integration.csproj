@@ -23,4 +23,8 @@
         <ProjectReference Include="..\..\src\Hippocampus\Hippocampus.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Specs\Endpoints" />
+    </ItemGroup>
+
 </Project>
