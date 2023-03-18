@@ -67,8 +67,20 @@ namespace Hippocampus.Domain.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("RecipientType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("WifiPassword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WifiSsid")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("RecipientMonitorId");
 

@@ -32,6 +32,9 @@ public class RecipientMonitorServices : DatabaseFixture
                 MaxHeight = recipientMonitorPostDto.MaxHeight,
                 MinHeight = recipientMonitorPostDto.MinHeight
             },
+            RecipientType = recipientMonitorPostDto.RecipientType,
+            WifiSsid = recipientMonitorPostDto.WifiSsid,
+            WifiPassword = recipientMonitorPostDto.WifiPassword,
             MacAddress = recipientMonitorPostDto.MacAddress
         };
 

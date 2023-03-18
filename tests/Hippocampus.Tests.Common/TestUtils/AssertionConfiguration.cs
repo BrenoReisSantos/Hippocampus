@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace Hippocampus.Tests.Common.TestUtils;
 
-public class AssertionConfiguration
+public static class AssertionConfiguration
 {
     public static void ConfigureOptions()
     {

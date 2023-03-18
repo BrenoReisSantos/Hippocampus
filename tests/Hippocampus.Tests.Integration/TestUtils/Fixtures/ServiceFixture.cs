@@ -1,5 +1,6 @@
 ﻿using Hippocampus.Domain.Services.ApplicationValues;
 using Hippocampus.Tests.Common.Mocks;
+using Hippocampus.Tests.Common.TestUtils;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -14,7 +15,7 @@ class ProgramFactory : WebApplicationFactory<Program>
     readonly Action<IWebHostBuilder> _configure;
 
     public ProgramFactory(Action<IWebHostBuilder> configure) =>
-        this._configure = configure;
+        _configure = configure;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -37,6 +38,7 @@ public class ServiceFixture
         ApplicationFactory = InitializeProgramFactory();
         TestScope = CreateScope();
         Clock = GetService<IClock>();
+        AssertionConfiguration.ConfigureOptions();
     }
 
     [TearDown]

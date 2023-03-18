@@ -29,6 +29,9 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             CreatedAt = Clock.Now.ToUniversalTime(),
             MacAddress = recipientInsert.MacAddress,
             IsActive = true,
+            RecipientType = recipientInsert.RecipientType,
+            WifiSsid = recipientInsert.WifiSsid,
+            WifiPassword = recipientInsert.WifiPassword,
             RecipientBoundary = recipientInsert.RecipientBoundary,
             UpdatedAt = null,
         };
@@ -56,9 +59,12 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
         var expected = new RecipientMonitor()
         {
             Name = recipientToinsert.Name,
-            CreatedAt = insertedRecipientMonitor.CreatedAt,
+            CreatedAt = Clock.Now.ToUniversalTime(),
             MacAddress = recipientToinsert.MacAddress,
             IsActive = true,
+            RecipientType = recipientToinsert.RecipientType,
+            WifiSsid = recipientToinsert.WifiSsid,
+            WifiPassword = recipientToinsert.WifiPassword,
             RecipientBoundary = insertedRecipientMonitor.RecipientBoundary,
             RecipientMonitorId = insertedRecipientMonitor.RecipientMonitorId,
             UpdatedAt = null

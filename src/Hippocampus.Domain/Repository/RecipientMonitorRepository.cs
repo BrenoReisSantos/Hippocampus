@@ -29,6 +29,9 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
             IsActive = true,
             MacAddress = recipientMonitor.MacAddress,
             RecipientBoundary = recipientMonitor.RecipientBoundary,
+            WifiSsid = recipientMonitor.WifiSsid,
+            WifiPassword = recipientMonitor.WifiPassword,
+            RecipientType = recipientMonitor.RecipientType,
             RecipientMonitorId = RecipientMonitorId.New(),
         };
 

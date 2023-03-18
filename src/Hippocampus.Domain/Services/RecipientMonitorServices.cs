@@ -30,6 +30,9 @@ public class RecipientMonitorServices : IRecipientMonitorServices
             RecipientMonitorId = RecipientMonitorId.New(),
             Name = monitor.Name,
             CreatedAt = _clock.Now,
+            RecipientType = monitor.RecipientType,
+            WifiSsid = monitor.WifiSsid,
+            WifiPassword = monitor.WifiPassword,
             MacAddress = monitor.MacAddress,
             RecipientBoundary = new RecipientBoundary()
             {
@@ -46,6 +49,9 @@ public class RecipientMonitorServices : IRecipientMonitorServices
             MacAddress = newMonitor.MacAddress,
             CreatedAt = newMonitor.CreatedAt,
             Name = newMonitor.Name,
+            WifiSsid = newMonitor.WifiSsid,
+            WifiPassword = newMonitor.WifiPassword,
+            RecipientType = newMonitor.RecipientType,
             RecipientBoundary = new()
             {
                 MaxHeight = newMonitor.RecipientBoundary.MaxHeight,

@@ -8,6 +8,9 @@ public class RecipientMonitorCreatedDto
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.Empty;
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
+    public RecipientType RecipientType { get; init; }
+    public string WifiSsid { get; init; } = string.Empty;
+    public string WifiPassword { get; init; } = string.Empty;
     public RecipientBoundary RecipientBoundary { get; init; } = new();
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 }
