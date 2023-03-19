@@ -25,6 +25,10 @@ public class RecipientMonitorServices : IRecipientMonitorServices
     public async Task<ServiceResult<RecipientMonitorCreatedDto>> InsertNewRecipientMonitor(
         RecipientMonitorPostDto monitor)
     {
+        if (monitor.MaxHeight < monitor.MinHeight)
+            return ServiceResult<RecipientMonitorCreatedDto>.Error(
+                "Altura máxima não pode ser menor que altura mínima");
+
         var monitorToInsert = new RecipientMonitor()
         {
             RecipientMonitorId = RecipientMonitorId.New(),

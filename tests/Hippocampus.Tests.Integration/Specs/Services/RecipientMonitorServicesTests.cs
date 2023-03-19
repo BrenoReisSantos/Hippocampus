@@ -6,12 +6,12 @@ using Hippocampus.Tests.Integration.TestUtils.Fixtures;
 
 namespace Hippocampus.Tests.Integration.Specs.Services;
 
-public class RecipientMonitorServices : DatabaseFixture
+public class RecipientMonitorServicesTests : DatabaseFixture
 {
     private IRecipientMonitorServices _recipientMonitorServices = null!;
 
     [SetUp]
-    public void RecipientMonitorServicesTests()
+    public void RecipientMonitorServicesTestsSetUp()
     {
         _recipientMonitorServices = GetService<IRecipientMonitorServices>();
     }
@@ -41,5 +41,18 @@ public class RecipientMonitorServices : DatabaseFixture
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Success(expectedResult);
 
         subject.Should().BeEquivalentTo(expected, config => config.Excluding(r => r.Result!.RecipientMonitorId));
+    }
+
+    [Test]
+    public async Task InsertNewRecipientMonitor_Should_Return_Error_For_MinHeight_Bigger_Than_MaxHeight()
+    {
+        var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder().WithInvalidMaxAndMinHeight().Generate();
+
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
+
+        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
+            "Altura máxima não pode ser menor que altura mínima");
+
+        subject.Should().BeEquivalentTo(expected);
     }
 }
