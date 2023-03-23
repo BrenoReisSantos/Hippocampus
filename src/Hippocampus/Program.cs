@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
+using Hippocampus.Domain.Configurations.AutoMapper;
 using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Repository.Context;
@@ -22,6 +23,9 @@ builder.Services
         options => options.UseNpgsql(
             builder.Configuration.GetConnectionString("DefaultConnection")
         ));
+
+builder.Services.AddAutoMapper(config =>
+    config.AddProfile(typeof(AutoMapperProfile)));
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {

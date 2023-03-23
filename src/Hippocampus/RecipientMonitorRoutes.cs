@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hippocampus.Api;
 
-public static class LogRoutes
+public static class RecipientMonitorRoutes
 {
     public static void MapLogRoutes(this IEndpointRouteBuilder app)
     {

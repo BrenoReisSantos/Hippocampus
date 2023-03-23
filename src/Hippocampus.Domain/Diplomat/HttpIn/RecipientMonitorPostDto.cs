@@ -1,4 +1,5 @@
-﻿using Hippocampus.Domain.Models.Entities;
+﻿using Hippocampus.Domain.Diplomat.HttpOut;
+using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Domain.Diplomat.HttpIn;
@@ -10,6 +11,5 @@ public class RecipientMonitorPostDto
     public float MinHeight { get; init; }
     public float MaxHeight { get; init; }
     public RecipientType RecipientType { get; init; }
-    public string WifiSsid { get; init; } = string.Empty;
-    public string WifiPassword { get; init; } = string.Empty;
+    public MacAddress RecipientMonitorLinkedToMacAddress { get; init; } = new();
 }

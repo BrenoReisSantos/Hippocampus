@@ -1,6 +1,8 @@
-﻿using Hippocampus.Domain.Diplomat.HttpIn;
+﻿using AutoMapper;
+using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services.ApplicationValues;
 
@@ -15,11 +17,13 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 {
     private readonly IRecipientMonitorRepository _monitorRepository;
     private readonly IClock _clock;
+    private readonly IMapper _mapper;
 
-    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository, IClock clock)
+    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository, IClock clock, IMapper mapper)
     {
         _monitorRepository = monitorRepository;
         _clock = clock;
+        _mapper = mapper;
     }
 
     public async Task<ServiceResult<RecipientMonitorCreatedDto>> InsertNewRecipientMonitor(
@@ -29,39 +33,21 @@ public class RecipientMonitorServices : IRecipientMonitorServices
             return ServiceResult<RecipientMonitorCreatedDto>.Error(
                 "Altura máxima não pode ser menor que altura mínima");
 
-        var monitorToInsert = new RecipientMonitor()
-        {
-            RecipientMonitorId = RecipientMonitorId.New(),
-            Name = monitor.Name,
-            CreatedAt = _clock.Now,
-            RecipientType = monitor.RecipientType,
-            WifiSsid = monitor.WifiSsid,
-            WifiPassword = monitor.WifiPassword,
-            MacAddress = monitor.MacAddress,
-            RecipientBoundary = new RecipientBoundary()
-            {
-                MaxHeight = monitor.MaxHeight,
-                MinHeight = monitor.MinHeight,
-            },
-            IsActive = true,
-        };
+        RecipientMonitor? monitorLinkedTo =
+            await _monitorRepository.GetRecipientMonitor(monitor.RecipientMonitorLinkedToMacAddress);
+
+        if (monitorLinkedTo is null && monitor.RecipientMonitorLinkedToMacAddress is not null)
+            return ServiceResult<RecipientMonitorCreatedDto>.Error("Monitor Relacionado não encontrado");
+        if (monitor.RecipientType == monitorLinkedTo.RecipientType)
+            return ServiceResult<RecipientMonitorCreatedDto>.Error(
+                "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
+
+        var monitorToInsert = _mapper.Map<RecipientMonitor>(monitor);
+        monitorToInsert.MonitorLinkedTo = monitorLinkedTo;
+
         var newMonitor = await _monitorRepository.InsertRecipientMonitor(monitorToInsert);
 
-        var recipientMonitorCreatedDto = new RecipientMonitorCreatedDto()
-        {
-            RecipientMonitorId = newMonitor.RecipientMonitorId,
-            MacAddress = newMonitor.MacAddress,
-            CreatedAt = newMonitor.CreatedAt,
-            Name = newMonitor.Name,
-            WifiSsid = newMonitor.WifiSsid,
-            WifiPassword = newMonitor.WifiPassword,
-            RecipientType = newMonitor.RecipientType,
-            RecipientBoundary = new()
-            {
-                MaxHeight = newMonitor.RecipientBoundary.MaxHeight,
-                MinHeight = newMonitor.RecipientBoundary.MinHeight,
-            }
-        };
+        var recipientMonitorCreatedDto = _mapper.Map<RecipientMonitorCreatedDto>(newMonitor);
 
         return ServiceResult<RecipientMonitorCreatedDto>.Success(recipientMonitorCreatedDto);
     }

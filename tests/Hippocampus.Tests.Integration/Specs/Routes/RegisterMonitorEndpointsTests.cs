@@ -29,8 +29,6 @@ public class RegisterMonitorEndpointsTests : ApiFixture
                 MinHeight = recipientToCreate.MinHeight
             },
             RecipientType = recipientToCreate.RecipientType,
-            WifiPassword = recipientToCreate.WifiPassword,
-            WifiSsid = recipientToCreate.WifiSsid,
         };
 
         subject.Should().Be200Ok().And.BeAs(expected, config => config.Excluding(r => r.RecipientMonitorId));

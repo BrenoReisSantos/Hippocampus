@@ -62,6 +62,9 @@ namespace Hippocampus.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("MonitorLinkedToRecipientMonitorId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -74,15 +77,9 @@ namespace Hippocampus.Domain.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("WifiPassword")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("WifiSsid")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("RecipientMonitorId");
+
+                    b.HasIndex("MonitorLinkedToRecipientMonitorId");
 
                     b.ToTable("RecipientMonitors");
                 });
@@ -98,6 +95,10 @@ namespace Hippocampus.Domain.Migrations
 
             modelBuilder.Entity("Hippocampus.Domain.Models.Entities.RecipientMonitor", b =>
                 {
+                    b.HasOne("Hippocampus.Domain.Models.Entities.RecipientMonitor", "MonitorLinkedTo")
+                        .WithMany()
+                        .HasForeignKey("MonitorLinkedToRecipientMonitorId");
+
                     b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientBoundary", "RecipientBoundary", b1 =>
                         {
                             b1.Property<Guid>("RecipientMonitorId")
@@ -116,6 +117,8 @@ namespace Hippocampus.Domain.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("RecipientMonitorId");
                         });
+
+                    b.Navigation("MonitorLinkedTo");
 
                     b.Navigation("RecipientBoundary")
                         .IsRequired();

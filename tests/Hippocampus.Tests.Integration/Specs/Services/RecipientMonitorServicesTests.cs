@@ -33,14 +33,18 @@ public class RecipientMonitorServicesTests : DatabaseFixture
                 MinHeight = recipientMonitorPostDto.MinHeight
             },
             RecipientType = recipientMonitorPostDto.RecipientType,
-            WifiSsid = recipientMonitorPostDto.WifiSsid,
-            WifiPassword = recipientMonitorPostDto.WifiPassword,
             MacAddress = recipientMonitorPostDto.MacAddress
         };
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Success(expectedResult);
 
-        subject.Should().BeEquivalentTo(expected, config => config.Excluding(r => r.Result!.RecipientMonitorId));
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .Excluding(r => r.Result!.RecipientMonitorId));
     }
 
     [Test]

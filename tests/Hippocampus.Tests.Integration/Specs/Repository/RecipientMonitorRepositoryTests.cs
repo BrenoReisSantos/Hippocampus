@@ -30,8 +30,6 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MacAddress = recipientInsert.MacAddress,
             IsActive = true,
             RecipientType = recipientInsert.RecipientType,
-            WifiSsid = recipientInsert.WifiSsid,
-            WifiPassword = recipientInsert.WifiPassword,
             RecipientBoundary = recipientInsert.RecipientBoundary,
             UpdatedAt = null,
         };
@@ -63,8 +61,6 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MacAddress = recipientToinsert.MacAddress,
             IsActive = true,
             RecipientType = recipientToinsert.RecipientType,
-            WifiSsid = recipientToinsert.WifiSsid,
-            WifiPassword = recipientToinsert.WifiPassword,
             RecipientBoundary = insertedRecipientMonitor.RecipientBoundary,
             RecipientMonitorId = insertedRecipientMonitor.RecipientMonitorId,
             UpdatedAt = null
@@ -74,5 +70,74 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             .Should()
             .BeEquivalentTo(
                 expected);
+    }
+
+    [Test]
+    public async Task InsertRecipientMonitor_Should_Return_Created_RecipientMonitor_With_Linked_Monitor()
+    {
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(linkedMonitor);
+        await Context.SaveChangesAsync();
+
+        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+
+        var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
+
+        var expected = new RecipientMonitor()
+        {
+            Name = monitor.Name,
+            CreatedAt = Clock.Now.ToUniversalTime(),
+            MacAddress = monitor.MacAddress,
+            IsActive = true,
+            RecipientType = monitor.RecipientType,
+            RecipientBoundary = monitor.RecipientBoundary,
+            RecipientMonitorId = monitor.RecipientMonitorId,
+            UpdatedAt = null,
+            MonitorLinkedTo = new()
+            {
+                Name = linkedMonitor.Name,
+                CreatedAt = linkedMonitor.CreatedAt,
+                MacAddress = linkedMonitor.MacAddress,
+                IsActive = true,
+                RecipientType = linkedMonitor.RecipientType,
+                RecipientBoundary = linkedMonitor.RecipientBoundary,
+                RecipientMonitorId = linkedMonitor.RecipientMonitorId,
+                UpdatedAt = null,
+            }
+        };
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .Excluding(r => r.RecipientMonitorId)
+                        .Excluding(r => r.MonitorLinkedTo.MonitorLinkedTo)
+                        .IgnoringCyclicReferences());
+    }
+
+    [Test]
+    public async Task InsertRecipientMonitor_Should_Save_Linked_Monitor_FK_And_Can_Use_Navigation()
+    {
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(linkedMonitor);
+        await Context.SaveChangesAsync();
+
+        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+
+        var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
+
+        var expected =
+            await Context.RecipientMonitors.SingleOrDefaultAsync(
+                r => r.RecipientMonitorId == subject.RecipientMonitorId);
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .IgnoringCyclicReferences());
     }
 }

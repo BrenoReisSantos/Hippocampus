@@ -7,7 +7,7 @@ namespace Hippocampus.Domain.Repository.Context;
 public class HippocampusContext : DbContext
 {
     public DbSet<RecipientLog> RecipientLogs => Set<RecipientLog>();
-    public DbSet<RecipientMonitor> RecipientMonitors => Set<RecipientMonitor>();
+    public DbSet<RecipientMonitor?> RecipientMonitors => Set<RecipientMonitor>();
 
     public HippocampusContext(DbContextOptions options) : base(options)
     {
