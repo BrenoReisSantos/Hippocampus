@@ -8,7 +8,7 @@ namespace Hippocampus.Domain.Repository;
 
 public interface IRecipientMonitorRepository
 {
-    Task<RecipientMonitor?> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
+    Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
     Task<RecipientMonitor?> GetRecipientMonitor(MacAddress macAddress);
 }
 
@@ -23,7 +23,7 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
         _clock = clock;
     }
 
-    public async Task<RecipientMonitor?> InsertRecipientMonitor(RecipientMonitor recipientMonitor)
+    public async Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor)
     {
         RecipientMonitor? linkedRecipientMonitor = null;
 

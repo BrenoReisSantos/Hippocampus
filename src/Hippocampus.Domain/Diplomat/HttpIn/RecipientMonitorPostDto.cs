@@ -11,5 +11,5 @@ public class RecipientMonitorPostDto
     public float MinHeight { get; init; }
     public float MaxHeight { get; init; }
     public RecipientType RecipientType { get; init; }
-    public MacAddress RecipientMonitorLinkedToMacAddress { get; init; } = new();
+    public MacAddress? RecipientMonitorLinkedToMacAddress { get; init; } = new();
 }

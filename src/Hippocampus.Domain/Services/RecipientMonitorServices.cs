@@ -36,9 +36,10 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         RecipientMonitor? monitorLinkedTo =
             await _monitorRepository.GetRecipientMonitor(monitor.RecipientMonitorLinkedToMacAddress);
 
-        if (monitorLinkedTo is null && monitor.RecipientMonitorLinkedToMacAddress is not null)
+        if (monitor.RecipientMonitorLinkedToMacAddress is not null && monitorLinkedTo is null)
             return ServiceResult<RecipientMonitorCreatedDto>.Error("Monitor Relacionado não encontrado");
-        if (monitor.RecipientType == monitorLinkedTo.RecipientType)
+
+        if (monitor.RecipientType == monitorLinkedTo?.RecipientType)
             return ServiceResult<RecipientMonitorCreatedDto>.Error(
                 "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
 
