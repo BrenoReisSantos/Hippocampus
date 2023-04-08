@@ -34,7 +34,12 @@ public class RecipientMonitorServices : IRecipientMonitorServices
                 "Altura máxima não pode ser menor que altura mínima");
 
         RecipientMonitor? monitorLinkedTo =
-            await _monitorRepository.GetRecipientMonitor(monitor.RecipientMonitorLinkedToMacAddress);
+            await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToByMacAddress(monitor
+                .RecipientMonitorLinkedToMacAddress);
+
+        if (monitorLinkedTo?.MonitorLinkedTo is not null)
+            return ServiceResult<RecipientMonitorCreatedDto>.Error(
+                $"O monitor a se conectar já está conectado com um outro. ({monitorLinkedTo.MonitorLinkedTo.Name} with Macaddress {monitorLinkedTo.MonitorLinkedTo.MacAddress})");
 
         if (monitor.RecipientMonitorLinkedToMacAddress is not null && monitorLinkedTo is null)
             return ServiceResult<RecipientMonitorCreatedDto>.Error("Monitor Relacionado não encontrado");
@@ -44,7 +49,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
                 "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
 
         var monitorToInsert = _mapper.Map<RecipientMonitor>(monitor);
-        monitorToInsert.MonitorLinkedTo = monitorLinkedTo;
+        if (monitorLinkedTo is not null) monitorToInsert.MonitorLinkedTo = monitorLinkedTo;
 
         var newMonitor = await _monitorRepository.InsertRecipientMonitor(monitorToInsert);
 

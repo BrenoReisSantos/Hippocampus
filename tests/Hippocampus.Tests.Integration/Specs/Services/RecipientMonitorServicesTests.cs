@@ -67,7 +67,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         InsertNewRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
     {
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
-            .WithRecipientMonitorLinkedToMacAddress(new MacAddress())
+            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(faker.Internet.Mac()))
             .Generate();
 
         var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
@@ -103,6 +103,43 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         subject
             .Should()
             .BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task
+        InsertNewRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
+    {
+        var otherMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(otherMonitor);
+        await Context.SaveChangesAsync();
+
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        linkedMonitor.MonitorLinkedTo = otherMonitor;
+        Context.Add(linkedMonitor);
+
+        otherMonitor.MonitorLinkedTo = linkedMonitor;
+
+        await Context.SaveChangesAsync();
+
+        var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
+            .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
+            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .Generate();
+
+        var subject =
+            await _recipientMonitorServices
+                .InsertNewRecipientMonitor(recipientMonitorPostDto);
+
+        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
+            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})");
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .Excluding(r => r.Result!.RecipientMonitorId));
     }
 
     [Test]

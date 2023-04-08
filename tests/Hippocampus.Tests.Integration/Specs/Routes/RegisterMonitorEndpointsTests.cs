@@ -35,7 +35,7 @@ public class RegisterMonitorEndpointsTests : ApiFixture
     }
 
     [Test]
-    public async Task CreateNewRecipientMonitor_Should_Return_400BadRequest_For_MinHeight_Bigger_Than_MaxHeight()
+    public async Task CreateNewRecipientMonitor_Should_Return_400BadRequest_With_Error_Message()
     {
         var recipientToCreate = new RecipientMonitorPostDtoBuilder().WithInvalidMaxAndMinHeight().Generate();
 

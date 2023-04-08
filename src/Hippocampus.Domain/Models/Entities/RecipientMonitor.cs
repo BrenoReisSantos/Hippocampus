@@ -1,4 +1,6 @@
-﻿using Hippocampus.Domain.Models.Values;
+﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using Hippocampus.Domain.Models.Values;
 using StronglyTypedIds;
 
 namespace Hippocampus.Domain.Models.Entities;
@@ -28,6 +30,7 @@ public class RecipientMonitor
     public IEnumerable<RecipientLog> RecipientLogs { get; init; } = Enumerable.Empty<RecipientLog>();
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum RecipientType : byte
 {
     Cisterna,

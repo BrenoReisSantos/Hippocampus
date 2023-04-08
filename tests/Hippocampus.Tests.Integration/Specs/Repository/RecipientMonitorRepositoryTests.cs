@@ -118,7 +118,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     }
 
     [Test]
-    public async Task InsertRecipientMonitor_Should_Save_Linked_Monitor_FK_And_Can_Use_Navigation()
+    public async Task InsertRecipientMonitor_Should_Be_Created_With_LinkedMonitor()
     {
         var linkedMonitor = new RecipientMonitorBuilder().Generate();
         Context.Add(linkedMonitor);
@@ -128,11 +128,43 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
+        Context.ChangeTracker.Clear();
         var expected =
-            await Context.RecipientMonitors.SingleOrDefaultAsync(
-                r => r.RecipientMonitorId == subject.RecipientMonitorId);
+            await Context.RecipientMonitors
+                .AsSplitQuery()
+                .Include(r => r.MonitorLinkedTo)
+                .SingleOrDefaultAsync(
+                    r => r.RecipientMonitorId == subject.RecipientMonitorId);
 
         subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .IgnoringCyclicReferences());
+    }
+
+    [Test]
+    public async Task InsertRecipientMonitor_Should_Link_LinkedMonitor_With_Base_Monitor()
+    {
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(linkedMonitor);
+        await Context.SaveChangesAsync();
+
+        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+
+        var expected = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
+
+        Context.ChangeTracker.Clear();
+        var subject =
+            await Context.RecipientMonitors
+                .AsSplitQuery()
+                .Include(r => r.MonitorLinkedTo)
+                .SingleOrDefaultAsync(
+                    r => r.RecipientMonitorId == linkedMonitor.RecipientMonitorId);
+
+        subject.MonitorLinkedTo
             .Should()
             .BeEquivalentTo(
                 expected,

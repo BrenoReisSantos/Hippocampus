@@ -12,7 +12,8 @@ public static class RecipientMonitorRoutes
     {
         var recipientMonitorsGroup = app.MapGroup("RecipientMonitors");
         recipientMonitorsGroup.MapPost("", CreateNewRecipientMonitor).WithSummary("Created a new Recipient Monitor")
-            .Produces<RecipientMonitorCreatedDto>();
+            .Produces<RecipientMonitorCreatedDto>()
+            .Produces<MessageResponse>(400);
     }
 
     private static async Task<IResult> CreateNewRecipientMonitor(
@@ -20,7 +21,7 @@ public static class RecipientMonitorRoutes
         RecipientMonitorPostDto monitor)
     {
         var serviceResult = await recipientMonitorServices.InsertNewRecipientMonitor(monitor);
-        if (serviceResult.IsFailure) return Results.BadRequest(serviceResult);
+        if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 }

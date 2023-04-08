@@ -33,7 +33,7 @@ public partial class MacAddress : IEquatable<MacAddress>
     static Exception MacAddressException(string macAddress) =>
         new FormatException($"Invalid Mac Address: {macAddress}");
 
-    public MacAddress Empty() => new();
+    public static MacAddress Empty => new();
 
     [GeneratedRegex(_pattern, RegexOptions.IgnoreCase, "pt-BR")]
     private static partial Regex MacAddressRegex();
