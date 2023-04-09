@@ -18,25 +18,26 @@ public class AutoMapperProfile : Profile
                         {
                             RecipientType = src.MonitorLinkedTo.RecipientType,
                             MacAddress = src.MonitorLinkedTo.MacAddress,
-                            RecipientBoundary = src.MonitorLinkedTo.RecipientBoundary,
+                            MaxHeight = src.MonitorLinkedTo.MaxHeight,
+                            MinHeight = src.MonitorLinkedTo.MinHeight,
                             RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
                             Name = src.MonitorLinkedTo.Name,
                         }
                         : null));
         CreateMap<RecipientMonitorPostDto, RecipientMonitor>()
-            .ForMember(
-                dst => dst.RecipientBoundary,
-                map =>
-                    map.MapFrom(
-                        src => new RecipientBoundary
-                        {
-                            MaxHeight = src.MaxHeight, MinHeight = src.MinHeight
-                        }))
             .ForMember(dst => dst.IsActive,
                 config =>
                     config.MapFrom(src => true))
             .ForMember(dst => dst.RecipientMonitorId,
                 config =>
                     config.MapFrom(src => RecipientMonitorId.New()));
+
+        CreateMap<RecipientMonitor, RecipientMonitorForMonitorsTableDto>()
+            .ForMember(
+                dst => dst.LinkedRecipientMonitorMacAddress,
+                map =>
+                    map.MapFrom(src => src.MonitorLinkedTo != null
+                        ? src.MonitorLinkedTo.MacAddress
+                        : null));
     }
 }

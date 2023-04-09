@@ -62,6 +62,12 @@ namespace Hippocampus.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("MaxHeight")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinHeight")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("MonitorLinkedToRecipientMonitorId")
                         .HasColumnType("uuid");
 
@@ -99,29 +105,7 @@ namespace Hippocampus.Domain.Migrations
                         .WithMany()
                         .HasForeignKey("MonitorLinkedToRecipientMonitorId");
 
-                    b.OwnsOne("Hippocampus.Domain.Models.Entities.RecipientBoundary", "RecipientBoundary", b1 =>
-                        {
-                            b1.Property<Guid>("RecipientMonitorId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<float>("MaxHeight")
-                                .HasColumnType("real");
-
-                            b1.Property<float>("MinHeight")
-                                .HasColumnType("real");
-
-                            b1.HasKey("RecipientMonitorId");
-
-                            b1.ToTable("RecipientMonitors");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RecipientMonitorId");
-                        });
-
                     b.Navigation("MonitorLinkedTo");
-
-                    b.Navigation("RecipientBoundary")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hippocampus.Domain.Models.Entities.RecipientMonitor", b =>

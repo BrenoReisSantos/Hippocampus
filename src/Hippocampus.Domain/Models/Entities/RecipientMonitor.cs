@@ -22,7 +22,8 @@ public class RecipientMonitor
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
     public RecipientType RecipientType { get; init; } = RecipientType.Caixa;
-    public RecipientBoundary RecipientBoundary { get; init; } = new();
+    public int MinHeight { get; init; }
+    public int MaxHeight { get; init; }
     public bool IsActive { get; init; } = true;
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; init; }

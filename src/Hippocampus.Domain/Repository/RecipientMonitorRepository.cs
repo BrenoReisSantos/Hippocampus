@@ -9,9 +9,8 @@ namespace Hippocampus.Domain.Repository;
 public interface IRecipientMonitorRepository
 {
     Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
-    Task<RecipientMonitor?> GetRecipientMonitorByMacAddress(MacAddress macAddress);
     Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress);
-    Task LinkRecipientMonitor(RecipientMonitor baseMonitor, RecipientMonitor monitorToLinkTo);
+    Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor();
 }
 
 public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
@@ -39,7 +38,8 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
             CreatedAt = _clock.Now.ToUniversalTime(),
             IsActive = true,
             MacAddress = recipientMonitor.MacAddress,
-            RecipientBoundary = recipientMonitor.RecipientBoundary,
+            MaxHeight = recipientMonitor.MaxHeight,
+            MinHeight = recipientMonitor.MinHeight,
             RecipientType = recipientMonitor.RecipientType,
             RecipientMonitorId = RecipientMonitorId.New(),
         };
@@ -55,24 +55,14 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
         return newRecipient;
     }
 
-    public async Task<RecipientMonitor?> GetRecipientMonitorByMacAddress(MacAddress macAddress) =>
-        await _context.RecipientMonitors.SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
-
     public Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress) =>
         _context.RecipientMonitors
             .AsSplitQuery()
             .Include(r => r.MonitorLinkedTo)
             .SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
 
-    public async Task LinkRecipientMonitor(RecipientMonitor baseMonitor,
-        RecipientMonitor monitorToLinkTo)
-    {
-        var monitor = await _context.RecipientMonitors.FindAsync(baseMonitor.RecipientMonitorId);
-        var monitorToLink = await _context.RecipientMonitors.FindAsync(monitorToLinkTo.RecipientMonitorId);
-
-        if (monitorToLink is not null)
-            monitorToLink.MonitorLinkedTo = monitor;
-
-        await _context.SaveChangesAsync();
-    }
+    public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor() =>
+        await _context.RecipientMonitors
+            .Include(r => r.MonitorLinkedTo)
+            .ToListAsync();
 }
