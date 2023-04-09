@@ -28,11 +28,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         {
             Name = recipientMonitorPostDto.Name,
             CreatedAt = Clock.Now.ToUniversalTime(),
-            RecipientBoundary = new()
-            {
-                MaxHeight = recipientMonitorPostDto.MaxHeight,
-                MinHeight = recipientMonitorPostDto.MinHeight
-            },
+            MaxHeight = recipientMonitorPostDto.MaxHeight,
+            MinHeight = recipientMonitorPostDto.MinHeight,
             RecipientType = recipientMonitorPostDto.RecipientType,
             MacAddress = recipientMonitorPostDto.MacAddress,
             RecipientMonitorLinkedTo = null,
@@ -163,22 +160,16 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         {
             Name = recipientMonitorPostDto.Name,
             CreatedAt = Clock.Now.ToUniversalTime(),
-            RecipientBoundary = new()
-            {
-                MaxHeight = recipientMonitorPostDto.MaxHeight,
-                MinHeight = recipientMonitorPostDto.MinHeight
-            },
+            MaxHeight = recipientMonitorPostDto.MaxHeight,
+            MinHeight = recipientMonitorPostDto.MinHeight,
             RecipientType = recipientMonitorPostDto.RecipientType,
             MacAddress = recipientMonitorPostDto.MacAddress,
             RecipientMonitorLinkedTo = new()
             {
                 RecipientType = linkedMonitor.RecipientType,
                 MacAddress = linkedMonitor.MacAddress,
-                RecipientBoundary = new()
-                {
-                    MaxHeight = linkedMonitor.RecipientBoundary.MaxHeight,
-                    MinHeight = linkedMonitor.RecipientBoundary.MinHeight,
-                },
+                MaxHeight = linkedMonitor.MaxHeight,
+                MinHeight = linkedMonitor.MinHeight,
                 RecipientMonitorId = linkedMonitor.RecipientMonitorId,
                 Name = linkedMonitor.Name,
             },
@@ -193,5 +184,39 @@ public class RecipientMonitorServicesTests : DatabaseFixture
                 config =>
                     config
                         .Excluding(r => r.Result!.RecipientMonitorId));
+    }
+
+    [Test]
+    public async Task GetRecipientMonitorsForMonitorsTable_Should_Return_List_Of_RecipientMonitorForMonitorsTableDto()
+    {
+        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        Context.AddRange(linkedMonitors);
+        await Context.SaveChangesAsync();
+
+        var monitors = new RecipientMonitorBuilder().Generate(5);
+
+        foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
+        {
+            monitor.MonitorLinkedTo = linked;
+            linked.MonitorLinkedTo = monitor;
+            Context.Add(monitor);
+        }
+
+        await Context.SaveChangesAsync();
+
+        var subject = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+
+        var expected = Enumerable.Concat(monitors, linkedMonitors).Select(m => new RecipientMonitorForMonitorsTableDto
+        {
+            RecipientType = m.RecipientType,
+            MacAddress = m.MacAddress,
+            MaxHeight = m.MaxHeight,
+            MinHeight = m.MinHeight,
+            RecipientMonitorId = m.RecipientMonitorId,
+            Name = m.Name,
+            LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
+        });
+
+        subject.Should().BeEquivalentTo(expected);
     }
 }

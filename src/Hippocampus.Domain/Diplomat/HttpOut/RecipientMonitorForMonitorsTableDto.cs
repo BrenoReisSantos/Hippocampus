@@ -3,7 +3,7 @@ using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Domain.Diplomat.HttpOut;
 
-public class RecipientMonitorGetDto
+public class RecipientMonitorForMonitorsTableDto
 {
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.Empty;
     public MacAddress MacAddress { get; init; } = new();
@@ -11,6 +11,5 @@ public class RecipientMonitorGetDto
     public RecipientType RecipientType { get; init; }
     public int MaxHeight { get; init; }
     public int MinHeight { get; init; }
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; init; }
+    public MacAddress? LinkedRecipientMonitorMacAddress { get; init; }
 }

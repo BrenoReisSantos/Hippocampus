@@ -23,11 +23,8 @@ public class RegisterMonitorEndpointsTests : ApiFixture
             Name = recipientToCreate.Name,
             CreatedAt = Clock.Now.ToUniversalTime(),
             MacAddress = recipientToCreate.MacAddress,
-            RecipientBoundary = new()
-            {
-                MaxHeight = recipientToCreate.MaxHeight,
-                MinHeight = recipientToCreate.MinHeight
-            },
+            MaxHeight = recipientToCreate.MaxHeight,
+            MinHeight = recipientToCreate.MinHeight,
             RecipientType = recipientToCreate.RecipientType,
         };
 
@@ -42,5 +39,39 @@ public class RegisterMonitorEndpointsTests : ApiFixture
         var subject = await Api.PostAsync(RouteUrl, JsonContent.Create(recipientToCreate));
 
         subject.Should().Be400BadRequest().And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
+    }
+
+    [Test]
+    public async Task GetListOfRecipientMonitors_Should_Return_List_Of_All_RecipientMonitors()
+    {
+        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        Context.AddRange(linkedMonitors);
+        await Context.SaveChangesAsync();
+
+        var monitors = new RecipientMonitorBuilder().Generate(5);
+
+        foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
+        {
+            monitor.MonitorLinkedTo = linked;
+            linked.MonitorLinkedTo = monitor;
+            Context.Add(monitor);
+        }
+
+        await Context.SaveChangesAsync();
+
+        var subject = await Api.GetAsync("api/RecipientMonitors/list");
+
+        var expected = Enumerable.Concat(monitors, linkedMonitors).Select(m => new RecipientMonitorForMonitorsTableDto
+        {
+            RecipientType = m.RecipientType,
+            MacAddress = m.MacAddress,
+            MaxHeight = m.MaxHeight,
+            MinHeight = m.MinHeight,
+            RecipientMonitorId = m.RecipientMonitorId,
+            Name = m.Name,
+            LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
+        }).ToList();
+
+        subject.Should().Be200Ok().And.BeAs(expected);
     }
 }

@@ -30,7 +30,8 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MacAddress = recipientInsert.MacAddress,
             IsActive = true,
             RecipientType = recipientInsert.RecipientType,
-            RecipientBoundary = recipientInsert.RecipientBoundary,
+            MaxHeight = recipientInsert.MaxHeight,
+            MinHeight = recipientInsert.MinHeight,
             UpdatedAt = null,
         };
 
@@ -45,9 +46,9 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Save_RecipientMonitor_In_Database()
     {
-        var recipientToinsert = new RecipientMonitorBuilder().Generate();
+        var recipientInsert = new RecipientMonitorBuilder().Generate();
 
-        var insertedRecipientMonitor = await _recipientMonitorRepository.InsertRecipientMonitor(recipientToinsert);
+        var insertedRecipientMonitor = await _recipientMonitorRepository.InsertRecipientMonitor(recipientInsert);
 
         var subject =
             await Context.RecipientMonitors.SingleOrDefaultAsync(
@@ -56,12 +57,13 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var expected = new RecipientMonitor()
         {
-            Name = recipientToinsert.Name,
+            Name = recipientInsert.Name,
             CreatedAt = Clock.Now.ToUniversalTime(),
-            MacAddress = recipientToinsert.MacAddress,
+            MacAddress = recipientInsert.MacAddress,
             IsActive = true,
-            RecipientType = recipientToinsert.RecipientType,
-            RecipientBoundary = insertedRecipientMonitor.RecipientBoundary,
+            RecipientType = recipientInsert.RecipientType,
+            MaxHeight = insertedRecipientMonitor.MaxHeight,
+            MinHeight = insertedRecipientMonitor.MinHeight,
             RecipientMonitorId = insertedRecipientMonitor.RecipientMonitorId,
             UpdatedAt = null
         };
@@ -90,7 +92,8 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MacAddress = monitor.MacAddress,
             IsActive = true,
             RecipientType = monitor.RecipientType,
-            RecipientBoundary = monitor.RecipientBoundary,
+            MaxHeight = monitor.MaxHeight,
+            MinHeight = monitor.MinHeight,
             RecipientMonitorId = monitor.RecipientMonitorId,
             UpdatedAt = null,
             MonitorLinkedTo = new()
@@ -100,7 +103,8 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
                 MacAddress = linkedMonitor.MacAddress,
                 IsActive = true,
                 RecipientType = linkedMonitor.RecipientType,
-                RecipientBoundary = linkedMonitor.RecipientBoundary,
+                MinHeight = linkedMonitor.MinHeight,
+                MaxHeight = linkedMonitor.MaxHeight,
                 RecipientMonitorId = linkedMonitor.RecipientMonitorId,
                 UpdatedAt = null,
             }
@@ -171,5 +175,31 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
                 config =>
                     config
                         .IgnoringCyclicReferences());
+    }
+
+    [Test]
+    public async Task
+        GetAllRecipientMonitorsWithLinkedMonitor_Should_Return_All_RecipientMonitors_From_Database_With_Each_One_Linked_Monitor()
+    {
+        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        Context.AddRange(linkedMonitors);
+        await Context.SaveChangesAsync();
+
+        var monitors = new RecipientMonitorBuilder().Generate(5);
+
+        foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
+        {
+            monitor.MonitorLinkedTo = linked;
+            linked.MonitorLinkedTo = monitor;
+            Context.Add(monitor);
+        }
+
+        await Context.SaveChangesAsync();
+
+        var subject = await _recipientMonitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+
+        var expected = Enumerable.Concat(monitors, linkedMonitors);
+
+        subject.Should().BeEquivalentTo(expected, config => config.IgnoringCyclicReferences());
     }
 }

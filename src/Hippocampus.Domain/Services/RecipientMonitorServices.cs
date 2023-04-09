@@ -11,6 +11,7 @@ namespace Hippocampus.Domain.Services;
 public interface IRecipientMonitorServices
 {
     Task<ServiceResult<RecipientMonitorCreatedDto>> InsertNewRecipientMonitor(RecipientMonitorPostDto monitor);
+    Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable();
 }
 
 public class RecipientMonitorServices : IRecipientMonitorServices
@@ -56,5 +57,11 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         var recipientMonitorCreatedDto = _mapper.Map<RecipientMonitorCreatedDto>(newMonitor);
 
         return ServiceResult<RecipientMonitorCreatedDto>.Success(recipientMonitorCreatedDto);
+    }
+
+    public async Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable()
+    {
+        var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+        return _mapper.Map<IEnumerable<RecipientMonitorForMonitorsTableDto>>(monitors);
     }
 }

@@ -14,7 +14,6 @@ public class RecipientConfiguration : IEntityTypeConfiguration<RecipientMonitor>
 
     public void Configure(EntityTypeBuilder<RecipientMonitor> builder)
     {
-        builder.OwnsOne(r => r.RecipientBoundary);
         builder.Property(r => r.RecipientMonitorId).HasConversion<RecipientMonitorId.EfCoreValueConverter>();
         builder.Property(r => r.MacAddress).HasConversion(RecipientLogMacAddressConverter);
         builder.Property(r => r.RecipientType).HasConversion<string>();
