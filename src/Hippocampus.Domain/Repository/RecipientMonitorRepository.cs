@@ -34,7 +34,7 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
 
         var newRecipient = new RecipientMonitor()
         {
-            Name = recipientMonitor.Name,
+            Name = recipientMonitor.Name.Trim(),
             CreatedAt = _clock.Now.ToUniversalTime(),
             IsActive = true,
             MacAddress = recipientMonitor.MacAddress,

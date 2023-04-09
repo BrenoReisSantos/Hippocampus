@@ -16,6 +16,7 @@ public class RecipientConfiguration : IEntityTypeConfiguration<RecipientMonitor>
     {
         builder.Property(r => r.RecipientMonitorId).HasConversion<RecipientMonitorId.EfCoreValueConverter>();
         builder.Property(r => r.MacAddress).HasConversion(RecipientLogMacAddressConverter);
+        builder.HasIndex(r => r.MacAddress).IsUnique();
         builder.Property(r => r.RecipientType).HasConversion<string>();
         builder.Property(r => r.Name).HasMaxLength(100);
     }
