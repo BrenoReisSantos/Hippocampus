@@ -4,34 +4,12 @@ namespace Hippocampus.Domain.Models.Entities;
 
 public class RecipientLog
 {
-    public int RecipientLogId { get; }
-    public LevelPercentage LevelPercentage { get; private set; } = new();
-    public State State { get; private set; } = State.Average;
-    public DateTime RegisterDate { get; private set; }
-    public RecipientMonitorId RecipientMonitorId { get; private set; } = RecipientMonitorId.Empty;
-
-    public RecipientLog()
-    {
-    }
-
-    public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
-        DateTime registerDate, RecipientMonitorId recipientMonitorId)
-    {
-        RecipientLogId = recipientLogId;
-        LevelPercentage = levelPercentage;
-        State = state;
-        RegisterDate = registerDate;
-        RecipientMonitorId = recipientMonitorId;
-    }
-
-    public RecipientLog(int recipientLogId, LevelPercentage levelPercentage, State state,
-        DateTime registerDate)
-    {
-        RecipientLogId = recipientLogId;
-        LevelPercentage = levelPercentage;
-        State = state;
-        RegisterDate = registerDate;
-    }
+    public int RecipientLogId { get; init; }
+    public LevelPercentage LevelPercentage { get; init; } = new();
+    public State State { get; init; } = State.Average;
+    public DateTime RegisterDate { get; init; }
+    public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.Empty;
+    public RecipientMonitor RecipientMonitor { get; init; } = new();
 }
 
 public enum State

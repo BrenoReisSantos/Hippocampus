@@ -28,7 +28,7 @@ public class RecipientMonitor
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; init; }
     public RecipientMonitor? MonitorLinkedTo { get; set; }
-    public IEnumerable<RecipientLog> RecipientLogs { get; init; } = Enumerable.Empty<RecipientLog>();
+    public ICollection<RecipientLog> RecipientLogs { get; init; } = new List<RecipientLog>();
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

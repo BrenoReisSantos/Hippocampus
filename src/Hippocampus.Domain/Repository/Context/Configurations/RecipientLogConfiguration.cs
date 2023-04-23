@@ -12,5 +12,6 @@ public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
         builder.Property(rlog => rlog.RecipientLogId).ValueGeneratedOnAdd();
         builder.Property(rlog => rlog.State).HasConversion<string>();
         builder.HasAlternateKey(rlog => new { RecipientId = rlog.RecipientMonitorId, rlog.RegisterDate });
+        builder.HasIndex(rlog => rlog.RegisterDate).IsDescending();
     }
 }

@@ -42,6 +42,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorMonitorRepository>();
+builder.Services.AddTransient<IRecipientLogRepository, RecipientLogRepository>();
 builder.Services.AddTransient<IRecipientMonitorServices, RecipientMonitorServices>();
 
 var app = builder.Build();

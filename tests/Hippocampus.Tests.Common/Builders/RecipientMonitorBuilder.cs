@@ -16,7 +16,7 @@ public sealed class RecipientMonitorBuilder : AutoFaker<RecipientMonitor>
         RuleFor(r => r.MaxHeight, faker => faker.Random.Int(51, 100));
         RuleFor(r => r.MinHeight, faker => faker.Random.Int(0, 50));
         RuleFor(r => r.IsActive, true);
-        RuleFor(r => r.RecipientLogs, Enumerable.Empty<RecipientLog>());
+        RuleFor(r => r.RecipientLogs, new List<RecipientLog>());
         RuleFor(r => r.MonitorLinkedTo, _ => null);
     }
 

@@ -1,5 +1,49 @@
-﻿namespace Hippocampus.Domain.Repository;
+﻿using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
+using Hippocampus.Domain.Repository.Context;
+using Hippocampus.Domain.Services.ApplicationValues;
+using Microsoft.EntityFrameworkCore;
 
-public class RecipientLogRepository
+namespace Hippocampus.Domain.Repository;
+
+public interface IRecipientLogRepository
 {
+    Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId);
+    Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog);
+}
+
+public class RecipientLogRepository : IRecipientLogRepository
+{
+    private readonly HippocampusContext _context;
+    private readonly IClock _clock;
+
+    public RecipientLogRepository(HippocampusContext context, IClock clock)
+    {
+        _context = context;
+        _clock = clock;
+    }
+
+    public async Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId) =>
+        await _context.RecipientLogs.OrderByDescending(r => r.RegisterDate)
+            .FirstOrDefaultAsync(r => r.RecipientMonitorId == recipientMonitorId);
+
+    public async Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog)
+    {
+        var recipientToLogFor = await
+            _context.RecipientMonitors.SingleOrDefaultAsync(
+                r => r.RecipientMonitorId == recipientLog.RecipientMonitor.RecipientMonitorId);
+        var recipientLogToInsert = new RecipientLog
+        {
+            RecipientMonitor = recipientToLogFor,
+            RegisterDate = _clock.Now.ToUniversalTime(),
+            State = recipientLog.State,
+            LevelPercentage = recipientLog.LevelPercentage,
+        };
+
+        _context.RecipientLogs.Add(recipientLogToInsert);
+
+        await _context.SaveChangesAsync();
+
+        return recipientLogToInsert;
+    }
 }
