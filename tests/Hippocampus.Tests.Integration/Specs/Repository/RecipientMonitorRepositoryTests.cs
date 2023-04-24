@@ -202,4 +202,74 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         subject.Should().BeEquivalentTo(expected, config => config.IgnoringCyclicReferences());
     }
+
+    [Test]
+    public async Task UpdateRecipientMonitor_Should_Update_Existing_RecipientMonitor()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
+
+        monitor.Name = faker.Random.Words(3);
+        monitor.MinHeight = faker.Random.Int(0, 50);
+        monitor.MaxHeight = faker.Random.Int(51, 100);
+
+        var subject = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
+
+        var expected = new RecipientMonitor
+        {
+            Name = monitorUpdated.Name,
+            CreatedAt = monitor.CreatedAt,
+            MacAddress = monitor.MacAddress,
+            IsActive = monitor.IsActive,
+            MaxHeight = monitorUpdated.MaxHeight,
+            MinHeight = monitorUpdated.MinHeight,
+            UpdatedAt = Clock.Now.ToUniversalTime(),
+            RecipientType = monitor.RecipientType,
+            MonitorLinkedTo = null,
+            RecipientMonitorId = monitor.RecipientMonitorId,
+        };
+
+        subject.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task UpdateRecipientMonitor_Should_Update_Existing_RecipientMonitor_On_Database()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
+
+        monitor.Name = faker.Random.Words(3);
+        monitor.MinHeight = faker.Random.Int(0, 50);
+        monitor.MaxHeight = faker.Random.Int(51, 100);
+
+        var result = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
+
+        var subject = await Context.RecipientMonitors.FindAsync(monitor.RecipientMonitorId);
+
+        var expected = new RecipientMonitor
+        {
+            Name = monitorUpdated.Name,
+            CreatedAt = monitor.CreatedAt,
+            MacAddress = monitor.MacAddress,
+            IsActive = monitor.IsActive,
+            MaxHeight = monitorUpdated.MaxHeight,
+            MinHeight = monitorUpdated.MinHeight,
+            UpdatedAt = Clock.Now.ToUniversalTime(),
+            RecipientType = monitor.RecipientType,
+            MonitorLinkedTo = null,
+            RecipientMonitorId = monitor.RecipientMonitorId,
+        };
+
+        subject.Should().BeEquivalentTo(expected);
+    }
 }
