@@ -12,6 +12,7 @@ public interface IRecipientMonitorRepository
     Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress);
     Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor();
     Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor);
+    Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId);
 }
 
 public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
@@ -69,7 +70,7 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
 
     public async Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor)
     {
-        var recipientToChange = await _context.RecipientMonitors.Include(r => r.MonitorLinkedTo).SingleOrDefaultAsync(
+        var recipientToChange = await _context.RecipientMonitors.Include(r => r.MonitorLinkedTo).FirstOrDefaultAsync(
             r =>
                 r.RecipientMonitorId == changedRecipientMonitor.RecipientMonitorId);
 
@@ -78,6 +79,7 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
         recipientToChange.Name = changedRecipientMonitor.Name;
         recipientToChange.MaxHeight = changedRecipientMonitor.MaxHeight;
         recipientToChange.MinHeight = changedRecipientMonitor.MinHeight;
+        recipientToChange.RecipientType = changedRecipientMonitor.RecipientType;
         recipientToChange.UpdatedAt = _clock.Now.ToUniversalTime();
 
         if (changedRecipientMonitor.MonitorLinkedTo is not null)
@@ -91,5 +93,10 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
         await _context.SaveChangesAsync();
 
         return recipientToChange;
+    }
+
+    public async Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId)
+    {
+        return await _context.RecipientMonitors.AnyAsync(r => r.RecipientMonitorId == recipientMonitorId);
     }
 }

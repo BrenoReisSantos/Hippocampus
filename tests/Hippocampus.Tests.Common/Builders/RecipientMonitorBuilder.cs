@@ -31,4 +31,10 @@ public sealed class RecipientMonitorBuilder : AutoFaker<RecipientMonitor>
         RuleFor(r => r.RecipientMonitorId, recipientMonitorId);
         return this;
     }
+
+    public RecipientMonitorBuilder WithRecipientType(RecipientType recipientType)
+    {
+        RuleFor(r => r.RecipientType, recipientType);
+        return this;
+    }
 }

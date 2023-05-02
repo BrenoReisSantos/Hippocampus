@@ -21,7 +21,7 @@ public class RecipientMonitor
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.New();
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; set; } = string.Empty;
-    public RecipientType RecipientType { get; init; } = RecipientType.Caixa;
+    public RecipientType RecipientType { get; set; } = RecipientType.Caixa;
     public int MinHeight { get; set; }
     public int MaxHeight { get; set; }
     public bool IsActive { get; init; } = true;

@@ -24,6 +24,20 @@ public class AutoMapperProfile : Profile
                             Name = src.MonitorLinkedTo.Name,
                         }
                         : null));
+        CreateMap<RecipientMonitor, RecipientMonitorUpdatedDto>()
+            .ForMember(dst => dst.RecipientMonitorLinkedTo,
+                map =>
+                    map.MapFrom(src => src.MonitorLinkedTo != null
+                        ? new RecipientMonitorLinkedToUpdatedDto()
+                        {
+                            RecipientType = src.MonitorLinkedTo.RecipientType,
+                            MacAddress = src.MonitorLinkedTo.MacAddress,
+                            MaxHeight = src.MonitorLinkedTo.MaxHeight,
+                            MinHeight = src.MonitorLinkedTo.MinHeight,
+                            RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
+                            Name = src.MonitorLinkedTo.Name,
+                        }
+                        : null));
         CreateMap<RecipientMonitorPostDto, RecipientMonitor>()
             .ForMember(dst => dst.IsActive,
                 config =>
@@ -31,6 +45,16 @@ public class AutoMapperProfile : Profile
             .ForMember(dst => dst.RecipientMonitorId,
                 config =>
                     config.MapFrom(src => RecipientMonitorId.New()));
+        CreateMap<RecipientMonitorPutDto, RecipientMonitor>()
+            .ForMember(dst => dst.IsActive,
+                config =>
+                    config.MapFrom(src => true))
+            .ForMember(dst => dst.RecipientMonitorId,
+                config =>
+                    config.MapFrom(src => RecipientMonitorId.New()))
+            .ForMember(dst => dst.RecipientMonitorId,
+                config => config.MapFrom(
+                    src => src.RecipientMonitorId));
 
         CreateMap<RecipientMonitor, RecipientMonitorForMonitorsTableDto>()
             .ForMember(

@@ -2,7 +2,6 @@
 using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
-using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services.ApplicationValues;
 
@@ -12,6 +11,7 @@ public interface IRecipientMonitorServices
 {
     Task<ServiceResult<RecipientMonitorCreatedDto>> InsertNewRecipientMonitor(RecipientMonitorPostDto monitor);
     Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable();
+    Task<ServiceResult<RecipientMonitorUpdatedDto>> UpdateRecipientMonitor(RecipientMonitorPutDto monitor);
 }
 
 public class RecipientMonitorServices : IRecipientMonitorServices
@@ -63,5 +63,42 @@ public class RecipientMonitorServices : IRecipientMonitorServices
     {
         var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
         return _mapper.Map<IEnumerable<RecipientMonitorForMonitorsTableDto>>(monitors);
+    }
+
+    public async Task<ServiceResult<RecipientMonitorUpdatedDto>> UpdateRecipientMonitor(RecipientMonitorPutDto monitor)
+    {
+        var existsMonitor = await _monitorRepository.ExistsMonitor(monitor.RecipientMonitorId);
+
+        if (!existsMonitor)
+            return ServiceResult<RecipientMonitorUpdatedDto>.Error(
+                $"Monitor de ID {monitor.RecipientMonitorId} não encontrado");
+
+        if (monitor.MaxHeight < monitor.MinHeight)
+            return ServiceResult<RecipientMonitorUpdatedDto>.Error(
+                "Altura máxima não pode ser menor que altura mínima");
+
+        RecipientMonitor? monitorLinkedTo =
+            await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToByMacAddress(monitor
+                .RecipientMonitorLinkedToMacAddress);
+
+        if (monitorLinkedTo?.MonitorLinkedTo is not null)
+            return ServiceResult<RecipientMonitorUpdatedDto>.Error(
+                $"O monitor a se conectar já está conectado com um outro. ({monitorLinkedTo.MonitorLinkedTo.Name} with Macaddress {monitorLinkedTo.MonitorLinkedTo.MacAddress})");
+
+        if (monitor.RecipientMonitorLinkedToMacAddress is not null && monitorLinkedTo is null)
+            return ServiceResult<RecipientMonitorUpdatedDto>.Error("Monitor Relacionado não encontrado");
+
+        if (monitor.RecipientType == monitorLinkedTo?.RecipientType)
+            return ServiceResult<RecipientMonitorUpdatedDto>.Error(
+                "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
+
+        var monitorToUpdate = _mapper.Map<RecipientMonitor>(monitor);
+        if (monitorLinkedTo is not null) monitorToUpdate.MonitorLinkedTo = monitorLinkedTo;
+
+        var updatedMonitor = await _monitorRepository.UpdateRecipientMonitor(monitorToUpdate);
+
+        var recipientMonitorCreatedDto = _mapper.Map<RecipientMonitorUpdatedDto>(updatedMonitor);
+
+        return ServiceResult<RecipientMonitorUpdatedDto>.Success(recipientMonitorCreatedDto);
     }
 }

@@ -1,9 +1,11 @@
-﻿using Hippocampus.Domain.Diplomat.HttpOut;
+﻿using Hippocampus.Domain.Diplomat.HttpIn;
+using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Services;
 using Hippocampus.Domain.Services.ApplicationValues;
 using Hippocampus.Tests.Common.Builders;
 using Hippocampus.Tests.Integration.TestUtils.Fixtures;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Tests.Integration.Specs.Services;
 
@@ -218,5 +220,173 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         });
 
         subject.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task UpdateRecipientMonitor_Should_Return_RecipientMonitorCreatedDto()
+    {
+        var monitorLinkedTo = new RecipientMonitorBuilder().Generate();
+        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(monitorLinkedTo).Generate();
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var otherRecipientMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(otherRecipientMonitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorToUpdate = new RecipientMonitorPutDtoBuilder()
+            .WithRecipientType(faker.PickRandomWithout(otherRecipientMonitor.RecipientType))
+            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+            .WithRecipientMonitorLinkedToMacAddress(otherRecipientMonitor.MacAddress).Generate();
+
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(monitorToUpdate);
+
+        var expectedResult = new RecipientMonitorUpdatedDto
+        {
+            Name = monitorToUpdate.Name,
+            MaxHeight = monitorToUpdate.MaxHeight,
+            MinHeight = monitorToUpdate.MinHeight,
+            RecipientType = monitorToUpdate.RecipientType,
+            MacAddress = monitor.MacAddress,
+            RecipientMonitorLinkedTo = new RecipientMonitorLinkedToUpdatedDto
+            {
+                RecipientMonitorId = otherRecipientMonitor.RecipientMonitorId,
+                Name = otherRecipientMonitor.Name,
+                MacAddress = otherRecipientMonitor.MacAddress,
+                MaxHeight = otherRecipientMonitor.MaxHeight,
+                MinHeight = otherRecipientMonitor.MinHeight,
+                RecipientType = otherRecipientMonitor.RecipientType
+            },
+        };
+
+        var expected = ServiceResult<RecipientMonitorUpdatedDto>.Success(expectedResult);
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .Excluding(r => r.Result!.RecipientMonitorId));
+    }
+
+    [Test]
+    public async Task UpdateRecipientMonitor_Should_Return_Error_For_MinHeight_Bigger_Than_MaxHeight()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
+            .WithRecipientMonitorId(monitor.RecipientMonitorId).WithInvalidMaxAndMinHeight().Generate();
+
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
+
+        var expected = ServiceResult<RecipientMonitorUpdatedDto>.Error(
+            "Altura máxima não pode ser menor que altura mínima");
+
+        subject.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task
+        UpdateRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
+            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(faker.Internet.Mac()))
+            .Generate();
+
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
+
+        var expected = ServiceResult<RecipientMonitorUpdatedDto>.Error("Monitor Relacionado não encontrado");
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected);
+    }
+
+    [Test]
+    public async Task
+        UpdateRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
+    {
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(linkedMonitor);
+        await Context.SaveChangesAsync();
+
+        var monitor = new RecipientMonitorBuilder()
+            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorToUpdate = new RecipientMonitorPutDtoBuilder()
+            .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
+            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+            .WithRecipientType(linkedMonitor.RecipientType)
+            .Generate();
+
+        var subject =
+            await _recipientMonitorServices
+                .UpdateRecipientMonitor(monitorToUpdate);
+
+        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
+            "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
+
+        subject
+            .Should()
+            .BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task
+        UpdateRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
+    {
+        var otherMonitor = new RecipientMonitorBuilder().Generate();
+        Context.Add(otherMonitor);
+        await Context.SaveChangesAsync();
+
+        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        linkedMonitor.MonitorLinkedTo = otherMonitor;
+        Context.Add(linkedMonitor);
+
+        otherMonitor.MonitorLinkedTo = linkedMonitor;
+
+        await Context.SaveChangesAsync();
+
+        var monitorToBeUpdated = new RecipientMonitorBuilder().Generate();
+        Context.Add(monitorToBeUpdated);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
+            .WithRecipientMonitorId(monitorToBeUpdated.RecipientMonitorId)
+            .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
+            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .Generate();
+
+        var subject =
+            await _recipientMonitorServices
+                .UpdateRecipientMonitor(recipientMonitorPutDto);
+
+        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
+            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})");
+
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config =>
+                    config
+                        .Excluding(r => r.Result!.RecipientMonitorId));
     }
 }
