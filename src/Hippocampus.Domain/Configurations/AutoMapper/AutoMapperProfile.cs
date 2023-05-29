@@ -62,6 +62,19 @@ public class AutoMapperProfile : Profile
                 map =>
                     map.MapFrom(src => src.MonitorLinkedTo != null
                         ? src.MonitorLinkedTo.MacAddress
-                        : null));
+                        : null))
+            .ForMember(
+                dst => dst.RecipientLevelPercentage,
+                map => map.MapFrom(
+                    src => src.RecipientLogs.Any()
+                        ? src.RecipientLogs[0].LevelPercentage.Value
+                        : (int?)null))
+            .ForMember(
+                dst => dst.RecipientState,
+                map => map.MapFrom(
+                    src => 
+                        src.RecipientLogs.Any() 
+                        ? src.RecipientLogs[0].RecipientState
+                        : (RecipientState?)null));
     }
 }

@@ -9,8 +9,8 @@ public class RecipientMonitorForMonitorsTableDto
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
     public RecipientType RecipientType { get; init; }
-    public byte RecipientLevelPercentage { get; init; }
-    public RecipientState RecipientState { get; init; }
+    public int? RecipientLevelPercentage { get; init; }
+    public RecipientState? RecipientState { get; init; }
     public int MaxHeight { get; init; }
     public int MinHeight { get; init; }
     public MacAddress? LinkedRecipientMonitorMacAddress { get; init; }

@@ -64,7 +64,6 @@ public class RecipientMonitorServices : IRecipientMonitorServices
     public async Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable()
     {
         var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
-
         return _mapper.Map<IEnumerable<RecipientMonitorForMonitorsTableDto>>(monitors);
     }
 
