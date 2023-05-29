@@ -54,7 +54,7 @@ public class RecipientLevelTests
     {
         var recipientLevel = _fake.Random.Byte(0, 100);
         var recipientLevelToTest = new LevelPercentage(recipientLevel);
-        byte sut = recipientLevelToTest;
+        int sut = recipientLevelToTest;
         sut.Should().Be(recipientLevel);
     }
 

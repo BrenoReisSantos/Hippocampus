@@ -6,25 +6,25 @@ namespace Hippocampus.Domain.Models.Values;
 [JsonConverter(typeof(RecipientLevelJsonConverter))]
 public class LevelPercentage
 {
-    public static readonly byte MaximumLevel = 100;
-    public static readonly byte MinimumLevel = 0;
-    public byte Value { get; }
+    public static readonly int MaximumLevel = 100;
+    public static readonly int MinimumLevel = 0;
+    public int Value { get; }
 
     public LevelPercentage() => Value = 50;
 
-    public LevelPercentage(byte value)
+    public LevelPercentage(int value)
     {
         if (!InBounds(value)) throw RecipientLevelOutOfBounds(value);
         Value = value;
     }
 
-    bool InBounds(byte value) => value >= MinimumLevel && value <= MaximumLevel;
+    bool InBounds(int value) => value >= MinimumLevel && value <= MaximumLevel;
 
     static Exception RecipientLevelOutOfBounds(int value) =>
         new ArgumentException($"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}");
 
-    public static implicit operator byte(LevelPercentage levelPercentage) => levelPercentage.Value;
-    public static implicit operator LevelPercentage(byte value) => new(value);
+    public static implicit operator int(LevelPercentage levelPercentage) => levelPercentage.Value;
+    public static implicit operator LevelPercentage(int value) => new(value);
 }
 
 public class RecipientLevelJsonConverter : JsonConverter<LevelPercentage>

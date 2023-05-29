@@ -1,11 +1,9 @@
 ﻿using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Services;
-using Hippocampus.Domain.Services.ApplicationValues;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hippocampus.Api;
-
 public static class RecipientMonitorRoutes
 {
     public static void MapLogRoutes(this IEndpointRouteBuilder app)
@@ -16,6 +14,7 @@ public static class RecipientMonitorRoutes
             .Produces<MessageResponse>(400);
         recipientMonitorsGroup.MapGet("list", GetListOfRecipientMonitors).WithSummary("Get the list of all Monitors")
             .Produces<IEnumerable<RecipientMonitorForMonitorsTableDto>>();
+        recipientMonitorsGroup.MapPut("", PutRecipientMonitor);
     }
 
     private static async Task<IResult> CreateNewRecipientMonitor(
@@ -30,4 +29,13 @@ public static class RecipientMonitorRoutes
     private static async Task<IResult> GetListOfRecipientMonitors(
         [FromServices] IRecipientMonitorServices recipientMonitorServices) =>
         Results.Ok(await recipientMonitorServices.GetRecipientMonitorsForMonitorsTable());
+
+    private static async Task<IResult> PutRecipientMonitor(
+        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+        [FromBody] RecipientMonitorPutDto putMonitor)
+    {
+        var serviceResult = await recipientMonitorServices.UpdateRecipientMonitor(putMonitor);
+        if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
+        return Results.Ok(serviceResult.Result);
+    }
 }

@@ -183,14 +183,15 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     {
         var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
         Context.AddRange(linkedMonitors);
+
         await Context.SaveChangesAsync();
 
         var monitors = new RecipientMonitorBuilder().Generate(5);
 
-        foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
+        foreach (var (linkedMonitor, monitor) in linkedMonitors.Zip(monitors))
         {
-            monitor.MonitorLinkedTo = linked;
-            linked.MonitorLinkedTo = monitor;
+            monitor.MonitorLinkedTo = linkedMonitor;
+            linkedMonitor.MonitorLinkedTo = monitor;
             Context.Add(monitor);
         }
 
@@ -198,9 +199,36 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var subject = await _recipientMonitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
 
-        var expected = Enumerable.Concat(monitors, linkedMonitors);
+        var expected = monitors.Concat(linkedMonitors);
 
         subject.Should().BeEquivalentTo(expected, config => config.IgnoringCyclicReferences());
+    }
+
+    [Test]
+    public async Task
+        GetAllRecipientMonitorsWithLinkedMonitor_Should_Have_Most_Recent_RecipientLog()
+    {
+        var monitors = new RecipientMonitorBuilder().Generate(1);
+        Context.AddRange(monitors);
+
+        var mostRecentDate = Faker.Date.Recent().ToUniversalTime();
+
+        var monitorMostRecentLog = new RecipientLogBuilder().WithLogDate(mostRecentDate)
+            .WithRecipientMonitor(monitors[0]).Generate();
+        Context.Add(monitorMostRecentLog);
+
+        var othersLogs = new RecipientLogBuilder().WithRegisterDateBefore(mostRecentDate)
+            .WithRecipientMonitor(monitors[0]).Generate(10);
+        Context.AddRange(othersLogs);
+
+        await Context.SaveChangesAsync();
+
+        var returnedValue = await _recipientMonitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+
+        var subject = returnedValue.ToArray()[0].RecipientLogs[0];
+
+        subject.Should().BeEquivalentTo(monitorMostRecentLog,
+            config => config.Excluding(logSubject => logSubject.RecipientMonitor).IgnoringCyclicReferences());
     }
 
     [Test]
@@ -214,9 +242,9 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
 
-        monitor.Name = faker.Random.Words(3);
-        monitor.MinHeight = faker.Random.Int(0, 50);
-        monitor.MaxHeight = faker.Random.Int(51, 100);
+        monitor.Name = Faker.Random.Words(3);
+        monitor.MinHeight = Faker.Random.Int(0, 50);
+        monitor.MaxHeight = Faker.Random.Int(51, 100);
 
         var subject = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
 
@@ -229,7 +257,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MaxHeight = monitorUpdated.MaxHeight,
             MinHeight = monitorUpdated.MinHeight,
             UpdatedAt = Clock.Now.ToUniversalTime(),
-            RecipientType = monitor.RecipientType,
+            RecipientType = monitorUpdated.RecipientType,
             MonitorLinkedTo = null,
             RecipientMonitorId = monitor.RecipientMonitorId,
         };
@@ -248,9 +276,9 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
 
-        monitor.Name = faker.Random.Words(3);
-        monitor.MinHeight = faker.Random.Int(0, 50);
-        monitor.MaxHeight = faker.Random.Int(51, 100);
+        monitor.Name = Faker.Random.Words(3);
+        monitor.MinHeight = Faker.Random.Int(0, 50);
+        monitor.MaxHeight = Faker.Random.Int(51, 100);
 
         var result = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
 
@@ -265,6 +293,36 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MaxHeight = monitorUpdated.MaxHeight,
             MinHeight = monitorUpdated.MinHeight,
             UpdatedAt = Clock.Now.ToUniversalTime(),
+            RecipientType = monitorUpdated.RecipientType,
+            MonitorLinkedTo = null,
+            RecipientMonitorId = monitor.RecipientMonitorId,
+        };
+
+        subject.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task DeleteRecipientMonitor_Should_Set_IsActive_Collumn_To_False()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        await _recipientMonitorRepository.DeleteRecipientMonitor(monitor.RecipientMonitorId);
+
+        var subject = await Context.RecipientMonitors.FindAsync(monitor.RecipientMonitorId);
+
+        var expected = new RecipientMonitor
+        {
+            Name = monitor.Name,
+            CreatedAt = monitor.CreatedAt,
+            MacAddress = monitor.MacAddress,
+            IsActive = false,
+            MaxHeight = monitor.MaxHeight,
+            MinHeight = monitor.MinHeight,
+            UpdatedAt = monitor.UpdatedAt,
             RecipientType = monitor.RecipientType,
             MonitorLinkedTo = null,
             RecipientMonitorId = monitor.RecipientMonitorId,

@@ -3,6 +3,7 @@ using System;
 using Hippocampus.Domain.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hippocampus.Domain.Migrations
 {
     [DbContext(typeof(HippocampusContext))]
-    partial class HippocampusContextModelSnapshot : ModelSnapshot
+    [Migration("20230528213101_LevelPercentageOwnedEntityUsingInt")]
+    partial class LevelPercentageOwnedEntityUsingInt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,26 +105,6 @@ namespace Hippocampus.Domain.Migrations
                         .WithMany("RecipientLogs")
                         .HasForeignKey("RecipientMonitorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.OwnsOne("Hippocampus.Domain.Models.Values.LevelPercentage", "LevelPercentage", b1 =>
-                        {
-                            b1.Property<int>("RecipientLogId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Value")
-                                .HasColumnType("integer")
-                                .HasColumnName("LevelPercentage");
-
-                            b1.HasKey("RecipientLogId");
-
-                            b1.ToTable("RecipientLogs");
-
-                            b1.WithOwner()
-                                .HasForeignKey("RecipientLogId");
-                        });
-
-                    b.Navigation("LevelPercentage")
                         .IsRequired();
 
                     b.Navigation("RecipientMonitor");

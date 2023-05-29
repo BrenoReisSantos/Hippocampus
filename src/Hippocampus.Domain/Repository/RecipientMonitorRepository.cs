@@ -13,6 +13,7 @@ public interface IRecipientMonitorRepository
     Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor();
     Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor);
     Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId);
+    Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId);
 }
 
 public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
@@ -66,6 +67,10 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
     public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor() =>
         await _context.RecipientMonitors
             .Include(r => r.MonitorLinkedTo)
+            .Include(recipient => 
+                recipient.RecipientLogs.OrderByDescending(
+                        recipientLog => recipientLog.RegisterDate)
+                .Take(1))
             .ToListAsync();
 
     public async Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor)
@@ -98,5 +103,13 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
     public async Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId)
     {
         return await _context.RecipientMonitors.AnyAsync(r => r.RecipientMonitorId == recipientMonitorId);
+    }
+
+    public async Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId)
+    {
+        var monitor = await _context.RecipientMonitors.FindAsync(recipientMonitorId);
+        if (monitor is null) return;
+        monitor.IsActive = false;
+        await _context.SaveChangesAsync();
     }
 }

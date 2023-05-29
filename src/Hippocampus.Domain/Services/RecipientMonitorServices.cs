@@ -17,12 +17,14 @@ public interface IRecipientMonitorServices
 public class RecipientMonitorServices : IRecipientMonitorServices
 {
     private readonly IRecipientMonitorRepository _monitorRepository;
+    private readonly IRecipientLogRepository _recipientLogMonitor;
     private readonly IClock _clock;
     private readonly IMapper _mapper;
 
-    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository, IClock clock, IMapper mapper)
+    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository, IRecipientLogRepository recipientLogMonitor, IClock clock, IMapper mapper)
     {
         _monitorRepository = monitorRepository;
+        _recipientLogMonitor = recipientLogMonitor;
         _clock = clock;
         _mapper = mapper;
     }
@@ -58,10 +60,11 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 
         return ServiceResult<RecipientMonitorCreatedDto>.Success(recipientMonitorCreatedDto);
     }
-
+    
     public async Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable()
     {
         var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+
         return _mapper.Map<IEnumerable<RecipientMonitorForMonitorsTableDto>>(monitors);
     }
 

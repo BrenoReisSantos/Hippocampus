@@ -66,7 +66,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         InsertNewRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
     {
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
-            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(faker.Internet.Mac()))
+            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(Faker.Internet.Mac()))
             .Generate();
 
         var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
@@ -122,7 +122,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
             .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
-            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
         var subject =
@@ -151,7 +151,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
             .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
-            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
         var subject =
@@ -237,7 +237,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         Context.ChangeTracker.Clear();
 
         var monitorToUpdate = new RecipientMonitorPutDtoBuilder()
-            .WithRecipientType(faker.PickRandomWithout(otherRecipientMonitor.RecipientType))
+            .WithRecipientType(Faker.PickRandomWithout(otherRecipientMonitor.RecipientType))
             .WithRecipientMonitorId(monitor.RecipientMonitorId)
             .WithRecipientMonitorLinkedToMacAddress(otherRecipientMonitor.MacAddress).Generate();
 
@@ -302,7 +302,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
             .WithRecipientMonitorId(monitor.RecipientMonitorId)
-            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(faker.Internet.Mac()))
+            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(Faker.Internet.Mac()))
             .Generate();
 
         var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
@@ -324,7 +324,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         await Context.SaveChangesAsync();
 
         var monitor = new RecipientMonitorBuilder()
-            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
+            .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
@@ -371,7 +371,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
             .WithRecipientMonitorId(monitorToBeUpdated.RecipientMonitorId)
             .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
-            .WithRecipientType(faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
         var subject =

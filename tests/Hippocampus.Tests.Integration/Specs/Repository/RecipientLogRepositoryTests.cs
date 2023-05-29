@@ -22,8 +22,8 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         Context.RecipientMonitors.Add(recipientMonitor);
         await Context.SaveChangesAsync();
 
-        var mostRecentLogRegisterDate = faker.Date.Recent().ToUniversalTime();
-        var mostRecentLog = new RecipientLogBuilder().WithRegisterDate(mostRecentLogRegisterDate)
+        var mostRecentLogRegisterDate = Faker.Date.Recent().ToUniversalTime();
+        var mostRecentLog = new RecipientLogBuilder().WithLogDate(mostRecentLogRegisterDate)
             .WithRecipientMonitor(recipientMonitor).Generate();
         Context.RecipientLogs.Add(mostRecentLog);
 
@@ -36,7 +36,8 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         var subject = await _recipientLogRepository.GetMostRecentRecipientLogAsync(recipientMonitor.RecipientMonitorId);
 
         subject.Should().BeEquivalentTo(mostRecentLog,
-            config => config.Excluding(rlog => rlog.RecipientMonitor));
+            config => config.Excluding(recipientLog => recipientLog.RecipientMonitor)
+                .Excluding(recipientLog => recipientLog.RecipientLogId));
     }
 
     [Test]
@@ -46,7 +47,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         Context.Add(recipient);
         await Context.SaveChangesAsync();
 
-        var recipientLog = new RecipientLogBuilder().WithRegisterDate(Clock.Now.ToUniversalTime())
+        var recipientLog = new RecipientLogBuilder().WithLogDate(Clock.Now.ToUniversalTime())
             .WithRecipientMonitor(recipient)
             .Generate();
 
@@ -57,7 +58,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             RecipientMonitor = recipient,
             RecipientLogId = 1,
             RecipientMonitorId = recipient.RecipientMonitorId,
-            State = recipientLog.State,
+            RecipientState = recipientLog.RecipientState,
             LevelPercentage = recipientLog.LevelPercentage,
             RegisterDate = recipientLog.RegisterDate,
         };

@@ -74,4 +74,57 @@ public class RegisterMonitorEndpointsTests : ApiFixture
 
         subject.Should().Be200Ok().And.BeAs(expected);
     }
+
+    [Test]
+    public async Task PutRecipientMonitor_Should_Return_200_Ok_With_ServiceResult_With_Success_And_Updated_Monitor()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorUpdated = new RecipientMonitorPutDtoBuilder().WithRecipientMonitorId(monitor.RecipientMonitorId)
+            .Generate();
+
+        monitor.Name = Faker.Random.Words(3);
+        monitor.MinHeight = Faker.Random.Int(0, 50);
+        monitor.MaxHeight = Faker.Random.Int(51, 100);
+
+        var subject = await Api.PutAsync($"{RouteUrl}/", JsonContent.Create(monitorUpdated));
+
+        var expected = new RecipientMonitorUpdatedDto
+        {
+            Name = monitorUpdated.Name,
+            MacAddress = monitor.MacAddress,
+            MaxHeight = monitorUpdated.MaxHeight,
+            MinHeight = monitorUpdated.MinHeight,
+            RecipientType = monitorUpdated.RecipientType,
+            RecipientMonitorId = monitor.RecipientMonitorId,
+        };
+
+        subject.Should().Be200Ok().And.BeAs(expected);
+    }
+
+    [Test]
+    public async Task PutRecipientMonitor_Should_Return_400_BadRequest_With_ServiceResult_With_Failure()
+    {
+        var monitor = new RecipientMonitorBuilder().Generate();
+
+        Context.Add(monitor);
+        await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var monitorUpdated = new RecipientMonitorPutDtoBuilder().WithInvalidMaxAndMinHeight()
+            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+            .Generate();
+
+        monitor.Name = Faker.Random.Words(3);
+        monitor.MinHeight = Faker.Random.Int(0, 50);
+        monitor.MaxHeight = Faker.Random.Int(51, 100);
+
+        var subject = await Api.PutAsync($"{RouteUrl}/", JsonContent.Create(monitorUpdated));
+
+        subject.Should().Be400BadRequest().And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
+    }
 }

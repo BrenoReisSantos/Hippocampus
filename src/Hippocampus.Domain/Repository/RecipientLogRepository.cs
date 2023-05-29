@@ -36,7 +36,7 @@ public class RecipientLogRepository : IRecipientLogRepository
         {
             RecipientMonitor = recipientToLogFor,
             RegisterDate = _clock.Now.ToUniversalTime(),
-            State = recipientLog.State,
+            RecipientState = recipientLog.RecipientState,
             LevelPercentage = recipientLog.LevelPercentage,
         };
 

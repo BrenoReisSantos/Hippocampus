@@ -27,7 +27,7 @@ class ProgramFactory : WebApplicationFactory<Program>
 
 public class ServiceFixture
 {
-    protected readonly Faker faker = new("pt_BR");
+    protected readonly Faker Faker = new("pt_BR");
     protected AsyncServiceScope TestScope { get; private set; }
     private protected ProgramFactory ApplicationFactory { get; set; } = null!;
     protected IClock Clock { get; private set; }
