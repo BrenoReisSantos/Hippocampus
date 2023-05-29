@@ -1,5 +1,6 @@
 ﻿using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
+using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Services;
 using Hippocampus.Domain.Services.ApplicationValues;
@@ -217,9 +218,49 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             RecipientMonitorId = m.RecipientMonitorId,
             Name = m.Name,
             LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
+            RecipientLevelPercentage = null,
+            RecipientState = null,
         });
 
         subject.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public async Task
+        GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientSate()
+    {
+        var monitors = new RecipientMonitorBuilder().Generate(1);
+        Context.AddRange(monitors);
+
+        var log = new RecipientLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
+        Context.Add(log);
+
+        await Context.SaveChangesAsync();
+
+        var monitorsForTable = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+
+        var subject = monitorsForTable.ToList()[0].RecipientState;
+
+        subject.Should().Be(log.RecipientState);
+    }
+
+    [Test]
+    public async Task
+        GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientLevel()
+    {
+        var monitors = new RecipientMonitorBuilder().Generate(1);
+        Context.AddRange(monitors);
+
+        var log = new RecipientLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
+        Context.Add(log);
+
+        await Context.SaveChangesAsync();
+
+        var monitorsForTable = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+
+        var subject = monitorsForTable.ToList()[0].RecipientLevelPercentage;
+
+        subject.Should().Be(log.LevelPercentage);
     }
 
     [Test]
