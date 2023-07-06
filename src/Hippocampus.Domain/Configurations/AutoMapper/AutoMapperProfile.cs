@@ -2,7 +2,6 @@
 using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
-using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Domain.Configurations.AutoMapper;
 
@@ -72,9 +71,17 @@ public class AutoMapperProfile : Profile
             .ForMember(
                 dst => dst.RecipientState,
                 map => map.MapFrom(
-                    src => 
-                        src.RecipientLogs.Any() 
-                        ? src.RecipientLogs[0].RecipientState
-                        : (RecipientState?)null));
+                    src =>
+                        src.RecipientLogs.Any()
+                            ? src.RecipientLogs[0].RecipientState
+                            : (RecipientState?)null));
+
+        CreateMap<RecipientMonitor, RecipientMonitorDto>()
+            .ForMember(
+                dst => dst.MonitorLinkedToMacAddress,
+                map =>
+                    map.MapFrom(src => src.MonitorLinkedTo != null
+                        ? src.MonitorLinkedTo.MacAddress
+                        : null));
     }
 }

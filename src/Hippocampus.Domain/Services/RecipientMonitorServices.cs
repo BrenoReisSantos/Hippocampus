@@ -12,6 +12,7 @@ public interface IRecipientMonitorServices
     Task<ServiceResult<RecipientMonitorCreatedDto>> InsertNewRecipientMonitor(RecipientMonitorPostDto monitor);
     Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable();
     Task<ServiceResult<RecipientMonitorUpdatedDto>> UpdateRecipientMonitor(RecipientMonitorPutDto monitor);
+    Task<ServiceResult<RecipientMonitorDto>> GetRecipientMonitorById(RecipientMonitorId monitorId);
 }
 
 public class RecipientMonitorServices : IRecipientMonitorServices
@@ -21,7 +22,8 @@ public class RecipientMonitorServices : IRecipientMonitorServices
     private readonly IClock _clock;
     private readonly IMapper _mapper;
 
-    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository, IRecipientLogRepository recipientLogMonitor, IClock clock, IMapper mapper)
+    public RecipientMonitorServices(IRecipientMonitorRepository monitorRepository,
+        IRecipientLogRepository recipientLogMonitor, IClock clock, IMapper mapper)
     {
         _monitorRepository = monitorRepository;
         _recipientLogMonitor = recipientLogMonitor;
@@ -60,7 +62,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 
         return ServiceResult<RecipientMonitorCreatedDto>.Success(recipientMonitorCreatedDto);
     }
-    
+
     public async Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable()
     {
         var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
@@ -102,5 +104,12 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         var recipientMonitorCreatedDto = _mapper.Map<RecipientMonitorUpdatedDto>(updatedMonitor);
 
         return ServiceResult<RecipientMonitorUpdatedDto>.Success(recipientMonitorCreatedDto);
+    }
+
+    public async Task<ServiceResult<RecipientMonitorDto>> GetRecipientMonitorById(RecipientMonitorId recipientMonitorId)
+    {
+        var monitor = await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToById(recipientMonitorId);
+        var mappedMonitor = _mapper.Map<RecipientMonitorDto>(monitor);
+        return ServiceResult<RecipientMonitorDto>.Success(mappedMonitor);
     }
 }

@@ -10,6 +10,7 @@ public interface IRecipientMonitorRepository
 {
     Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
     Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress);
+    Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToById(RecipientMonitorId recipientMonitorId);
     Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor();
     Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor);
     Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId);
@@ -64,13 +65,20 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
             .Include(r => r.MonitorLinkedTo)
             .SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
 
+    public async Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToById(
+        RecipientMonitorId recipientMonitorId)
+    {
+        return await _context.RecipientMonitors.Include(recipientMonitor => recipientMonitor.MonitorLinkedTo)
+            .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.RecipientMonitorId == recipientMonitorId);
+    }
+
     public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor() =>
         await _context.RecipientMonitors
             .Include(r => r.MonitorLinkedTo)
-            .Include(recipient => 
+            .Include(recipient =>
                 recipient.RecipientLogs.OrderByDescending(
                         recipientLog => recipientLog.RegisterDate)
-                .Take(1))
+                    .Take(1))
             .ToListAsync();
 
     public async Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor)

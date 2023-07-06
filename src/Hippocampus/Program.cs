@@ -56,7 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader());
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader().AllowAnyMethod());
 
 var api = app.MapGroup("api");
 api.MapLogRoutes();

@@ -4,10 +4,11 @@ using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Tests.Common.Builders;
 using Hippocampus.Tests.Integration.TestUtils.Fixtures;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Tests.Integration.Specs.Routes;
 
-public class RegisterMonitorEndpointsTests : ApiFixture
+public class RecipientMonitorEndpointTests : ApiFixture
 {
     private const string RouteUrl = "api/RecipientMonitors";
 
@@ -58,18 +59,35 @@ public class RegisterMonitorEndpointsTests : ApiFixture
         }
 
         await Context.SaveChangesAsync();
+        Context.ChangeTracker.Clear();
+
+        var allRecipientMonitors = monitors.Concat(linkedMonitors).ToArray();
+        foreach (var monitor in allRecipientMonitors)
+        {
+            var log = new RecipientLogBuilder().Generate();
+            var monitorFromDatabase =
+                await Context.RecipientMonitors.Include(databaseMonitor => databaseMonitor.RecipientLogs)
+                    .SingleAsync(databaseMonitor => databaseMonitor.RecipientMonitorId == monitor.RecipientMonitorId);
+
+            monitorFromDatabase!.RecipientLogs.Add(log);
+            await Context.SaveChangesAsync();
+            Context.ChangeTracker.Clear();
+        }
 
         var subject = await Api.GetAsync("api/RecipientMonitors/list");
 
-        var expected = Enumerable.Concat(monitors, linkedMonitors).Select(m => new RecipientMonitorForMonitorsTableDto
+        var expected = Context.RecipientMonitors.Include(monitor => monitor.MonitorLinkedTo)
+            .Include(monitor => monitor.RecipientLogs).Select(fakeMonitor => new RecipientMonitorForMonitorsTableDto
         {
-            RecipientType = m.RecipientType,
-            MacAddress = m.MacAddress,
-            MaxHeight = m.MaxHeight,
-            MinHeight = m.MinHeight,
-            RecipientMonitorId = m.RecipientMonitorId,
-            Name = m.Name,
-            LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
+            RecipientType = fakeMonitor.RecipientType,
+            MacAddress = fakeMonitor.MacAddress,
+            MaxHeight = fakeMonitor.MaxHeight,
+            MinHeight = fakeMonitor.MinHeight,
+            RecipientMonitorId = fakeMonitor.RecipientMonitorId,
+            Name = fakeMonitor.Name,
+            LinkedRecipientMonitorMacAddress = fakeMonitor.MonitorLinkedTo.MacAddress,
+            RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelPercentage,
+            RecipientState = fakeMonitor.RecipientLogs[0].RecipientState,
         }).ToList();
 
         subject.Should().Be200Ok().And.BeAs(expected);
