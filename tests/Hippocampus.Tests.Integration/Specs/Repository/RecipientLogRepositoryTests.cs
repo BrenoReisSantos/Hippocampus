@@ -65,4 +65,34 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         subject.Should()
             .BeEquivalentTo(expected, config => config.Excluding(rlog => rlog.RecipientMonitor.RecipientLogs));
     }
+
+    [Test]
+    public async Task GetLogsForMonitorInAGivenDateRangeAsync_Should_Return_Logs_In_The_Given_Date_Range()
+    {
+        var recipient = new RecipientMonitorBuilder().Generate();
+        Context.Add(recipient);
+        await Context.SaveChangesAsync();
+
+        const int minutesDistance = 30;
+        const int logsQuantity = 5;
+        var baseDate = Faker.Date.Past().ToUniversalTime();
+
+        var expectedRecipientLogs = new List<RecipientLog>();
+        for (var i = 0; i < logsQuantity; i++)
+        {
+            var logDate = baseDate.AddMinutes(minutesDistance * i);
+            var recipientLog = new RecipientLogBuilder().WithLogDate(logDate)
+                .WithRecipientMonitor(recipient)
+                .Generate();
+            expectedRecipientLogs.Add(recipientLog);
+            Context.Add(recipientLog);
+            await Context.SaveChangesAsync();
+        }
+
+        var recoveredLogs =
+            await _recipientLogRepository.GetLogsForMonitorInAGivenDateRangeAsync(recipient.RecipientMonitorId,
+                baseDate, baseDate.AddMinutes(minutesDistance * (logsQuantity - 1)));
+
+        recoveredLogs.Should().BeEquivalentTo(expectedRecipientLogs, config => config.Excluding(r => r.RecipientMonitor));
+    }
 }

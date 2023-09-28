@@ -10,6 +10,9 @@ public interface IRecipientLogRepository
 {
     Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId);
     Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog);
+
+    Task<IEnumerable<RecipientLog>> GetLogsForMonitorInAGivenDateRangeAsync(RecipientMonitorId monitorId,
+        DateTime startDate, DateTime endDate);
 }
 
 public class RecipientLogRepository : IRecipientLogRepository
@@ -45,5 +48,15 @@ public class RecipientLogRepository : IRecipientLogRepository
         await _context.SaveChangesAsync();
 
         return recipientLogToInsert;
+    }
+
+    public async Task<IEnumerable<RecipientLog>> GetLogsForMonitorInAGivenDateRangeAsync(RecipientMonitorId monitorId,
+        DateTime startDate, DateTime endDate)
+    {
+        var startDateUtc = startDate.ToUniversalTime();
+        var endDateUtc = endDate.ToUniversalTime();
+        return await _context.RecipientLogs.Where(log =>
+                log.RecipientMonitorId == monitorId && log.RegisterDate >= startDateUtc && log.RegisterDate <= endDateUtc)
+            .ToListAsync();
     }
 }

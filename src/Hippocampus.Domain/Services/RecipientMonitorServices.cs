@@ -13,6 +13,8 @@ public interface IRecipientMonitorServices
     Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable();
     Task<ServiceResult<RecipientMonitorUpdatedDto>> UpdateRecipientMonitor(RecipientMonitorPutDto monitor);
     Task<ServiceResult<RecipientMonitorDto>> GetRecipientMonitorById(RecipientMonitorId monitorId);
+    Task<ServiceResult<IEnumerable<RecipientLog>>> GetMonitorLogsInAGivenDateRange(RecipientMonitorId monitorId,
+        DateTime? startDate, DateTime? endDate);
 }
 
 public class RecipientMonitorServices : IRecipientMonitorServices
@@ -111,5 +113,21 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         var monitor = await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToById(recipientMonitorId);
         var mappedMonitor = _mapper.Map<RecipientMonitorDto>(monitor);
         return ServiceResult<RecipientMonitorDto>.Success(mappedMonitor);
+    }
+
+    public async Task<ServiceResult<IEnumerable<RecipientLog>>> GetMonitorLogsInAGivenDateRange(
+        RecipientMonitorId monitorId, DateTime? startDate, DateTime? endDate)
+    {
+        var startDateTreated = startDate ?? DateTime.UtcNow.AddDays(-30);
+        var endDateTreated = endDate ?? DateTime.UtcNow;
+
+        var monitorExists = await _monitorRepository.ExistsMonitor(monitorId);
+
+        if (!monitorExists)
+            return ServiceResult<IEnumerable<RecipientLog>>.Error("Monitor não existe");
+
+        var logs = await _recipientLogMonitor.GetLogsForMonitorInAGivenDateRangeAsync(monitorId, startDateTreated,
+            endDateTreated);
+        return ServiceResult<IEnumerable<RecipientLog>>.Success(logs);
     }
 }

@@ -8,7 +8,7 @@ namespace Hippocampus.Api;
 
 public static class RecipientMonitorRoutes
 {
-    public static void MapLogRoutes(this IEndpointRouteBuilder app)
+    public static void MapMonitorRoutes(this IEndpointRouteBuilder app)
     {
         var recipientMonitorsGroup = app.MapGroup("RecipientMonitors");
         recipientMonitorsGroup.MapPost("", CreateNewRecipientMonitor).WithSummary("Created a new Recipient Monitor")

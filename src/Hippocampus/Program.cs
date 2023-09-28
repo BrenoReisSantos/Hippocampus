@@ -59,6 +59,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader().AllowAnyMethod());
 
 var api = app.MapGroup("api");
+api.MapMonitorRoutes();
 api.MapLogRoutes();
 
 app.Run();
