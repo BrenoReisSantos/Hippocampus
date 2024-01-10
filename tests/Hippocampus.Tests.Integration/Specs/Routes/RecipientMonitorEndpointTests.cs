@@ -26,7 +26,7 @@ public class RecipientMonitorEndpointTests : ApiFixture
             MacAddress = recipientToCreate.MacAddress,
             MaxHeight = recipientToCreate.MaxHeight,
             MinHeight = recipientToCreate.MinHeight,
-            RecipientType = recipientToCreate.RecipientType,
+            RecipientType = recipientToCreate.RecipientType
         };
 
         subject.Should().Be200Ok().And.BeAs(expected, config => config.Excluding(r => r.RecipientMonitorId));
@@ -78,17 +78,17 @@ public class RecipientMonitorEndpointTests : ApiFixture
 
         var expected = Context.RecipientMonitors.Include(monitor => monitor.MonitorLinkedTo)
             .Include(monitor => monitor.RecipientLogs).Select(fakeMonitor => new RecipientMonitorForMonitorsTableDto
-        {
-            RecipientType = fakeMonitor.RecipientType,
-            MacAddress = fakeMonitor.MacAddress,
-            MaxHeight = fakeMonitor.MaxHeight,
-            MinHeight = fakeMonitor.MinHeight,
-            RecipientMonitorId = fakeMonitor.RecipientMonitorId,
-            Name = fakeMonitor.Name,
-            LinkedRecipientMonitorMacAddress = fakeMonitor.MonitorLinkedTo.MacAddress,
-            RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelPercentage,
-            RecipientState = fakeMonitor.RecipientLogs[0].RecipientState,
-        }).ToList();
+            {
+                RecipientType = fakeMonitor.RecipientType,
+                MacAddress = fakeMonitor.MacAddress,
+                MaxHeight = fakeMonitor.MaxHeight,
+                MinHeight = fakeMonitor.MinHeight,
+                RecipientMonitorId = fakeMonitor.RecipientMonitorId,
+                Name = fakeMonitor.Name,
+                LinkedRecipientMonitorMacAddress = fakeMonitor.MonitorLinkedTo.MacAddress,
+                RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelPercentage,
+                RecipientState = fakeMonitor.RecipientLogs[0].RecipientState
+            }).ToList();
 
         subject.Should().Be200Ok().And.BeAs(expected);
     }
@@ -118,7 +118,7 @@ public class RecipientMonitorEndpointTests : ApiFixture
             MaxHeight = monitorUpdated.MaxHeight,
             MinHeight = monitorUpdated.MinHeight,
             RecipientType = monitorUpdated.RecipientType,
-            RecipientMonitorId = monitor.RecipientMonitorId,
+            RecipientMonitorId = monitor.RecipientMonitorId
         };
 
         subject.Should().Be200Ok().And.BeAs(expected);

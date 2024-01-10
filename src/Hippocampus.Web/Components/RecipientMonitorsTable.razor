@@ -1,0 +1,76 @@
+@using HippocampusWeb.Values
+@using MudBlazor
+@using Hippocampus.Domain.Services
+@using Hippocampus.Domain.Diplomat.HttpOut
+@using Hippocampus.Domain.Models.Entities
+@inject IRecipientMonitorServices RecipientMonitorServices
+@inject IDialogService DialogService
+
+<MudTable OnRowClick="OpenUpdateMonitorDialog" T="RecipientMonitorForMonitorsTableDto" Loading="_tableDataLoading" Height="500px" Elevation="0" Outlined="false" Items="_testTableData" Hover="true">
+    <HeaderContent>
+        <MudTh>Nome</MudTh>
+        <MudTh Style="text-align:left">Tipo</MudTh>
+        <MudTh Style="text-align:center">Nível</MudTh>
+        <MudTh Style="text-align:center">Endereço MAC</MudTh>
+        <MudTh Style="text-align:center">Altura Mínima (cm)</MudTh>
+        <MudTh Style="text-align:center">Altura Máxima (cm)</MudTh>
+        <MudTh Style="text-align:center">Estado</MudTh>
+        <MudTh Style="text-align:center">Endereço MAC do Monitor Conectado</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nome">@context.Name</MudTd>
+        <MudTd Style="text-align:left" DataLabel="Tipo">@context.RecipientType</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Nível">@context.RecipientLevelPercentage%</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Endereço MAC">@context.MacAddress</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MinHeight</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MaxHeight</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Estado">
+            @switch (context.RecipientState)
+            {
+                case RecipientState.Full:
+                    <FullRecipientBar/>
+                    break;
+                case RecipientState.Average:
+                    <AverageRecipientBar/>
+                    break;
+                case RecipientState.Empty:
+                    <EmptyRecipientBar/>
+                    break;
+            }
+        </MudTd>
+        <MudTd Style="text-align:center" DataLabel="Endereço MAC do Monitor Conectado">@context.LinkedRecipientMonitorMacAddress</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    bool _tableDataLoading = false;
+    IEnumerable<RecipientMonitorForMonitorsTableDto> _testTableData = Enumerable.Empty<RecipientMonitorForMonitorsTableDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await UpdateTable();
+    }
+
+    public async Task UpdateTable()
+    {
+        _tableDataLoading = true;
+        _testTableData = await RecipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+        _tableDataLoading = false;
+        StateHasChanged();
+    }
+
+    async Task OpenUpdateMonitorDialog(TableRowClickEventArgs<RecipientMonitorForMonitorsTableDto> rowClickEventArgs)
+    {
+        var clickedRow = rowClickEventArgs.Item;
+        var dialogArguments = new DialogParameters { { "MonitorId", clickedRow.RecipientMonitorId } };
+
+        var dialog = DialogService.Show<MonitorUpdateDialog>("", dialogArguments);
+
+        var dialogResult = await dialog.Result;
+
+        if (!dialogResult.Canceled)
+            await UpdateTable();
+    }
+
+}

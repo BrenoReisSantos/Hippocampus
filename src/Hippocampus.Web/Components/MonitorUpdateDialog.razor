@@ -1,0 +1,122 @@
+@* @using HippocampusWeb.Values.Forms *@
+@* @using HippocampusWeb.Values *@
+@* @using MudBlazor *@
+@* @inject IHippocampusApiClient ApiClient *@
+@* *@
+@* <MudDialog> *@
+@*     <TitleContent> *@
+@*         <MudText Typo="Typo.h4"> *@
+@*             Atualização de um Monitor *@
+@*         </MudText> *@
+@*     </TitleContent> *@
+@*     <DialogContent> *@
+@*         <MudText Typo="Typo.h6"> *@
+@*             Características do Monitor *@
+@*         </MudText> *@
+@*         <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/> *@
+@*         <MudSelect T="RecipientType" @bind-Value="_form.RecipientType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined"> *@
+@*             @foreach (var recipientType in Enum.GetValues<RecipientType>()) *@
+@*             { *@
+@*                 <MudSelectItem Value="recipientType"/> *@
+@*             } *@
+@*         </MudSelect> *@
+@*         <MudTextField *@
+@*             @bind-Value="_form.MinHeight" *@
+@*             Required *@
+@*             InputType="InputType.Number" *@
+@*             Variant="Variant.Outlined" *@
+@*             Label="Altura Mínima (cm)"/> *@
+@*         <MudTextField *@
+@*             @bind-Value="_form.MaxHeight" *@
+@*             Required *@
+@*             InputType="InputType.Number" *@
+@*             Variant="Variant.Outlined" *@
+@*             Label="Altura Máxima (cm)"/> *@
+@*         <MudSelect T="MonitorsSelectOption" *@
+@*                    @bind-Value="_connectedMonitorSelected" *@
+@*                    Label="Selecione o Monitor Conectado" *@
+@*                    Variant="Variant.Outlined"> *@
+@*             @foreach (var monitor in _monitorsSelectOptions) *@
+@*             { *@
+@*                 <MudSelectItem T="MonitorsSelectOption" Value="monitor"/> *@
+@*             } *@
+@*         </MudSelect> *@
+@*     </DialogContent> *@
+@*     <DialogActions> *@
+@*         <MudButton *@
+@*             Disabled="_processingForm" *@
+@*             EndIcon="@Icons.Material.Filled.Check" *@
+@*             Color="Color.Success" *@
+@*             Variant="Variant.Filled" *@
+@*             @onclick="UpdateMonitor"> *@
+@*             @if (_processingForm) *@
+@*             { *@
+@*                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/> *@
+@*                 <MudText Class="ms-2">Enviando...</MudText> *@
+@*             } *@
+@*             else *@
+@*             { *@
+@*                 <MudText>Atualizar</MudText> *@
+@*             } *@
+@*         </MudButton> *@
+@*     </DialogActions> *@
+@* </MudDialog> *@
+@* *@
+@* @code { *@
+@* *@
+@*     [CascadingParameter] *@
+@*     MudDialogInstance? MudDialog { get; set; } *@
+@* *@
+@*     [Parameter] *@
+@*     public Guid MonitorId { get; set; } *@
+@* *@
+@*     readonly RecipientMonitorUpdateForm _form = new(); *@
+@*     bool _processingForm; *@
+@* *@
+@*     MonitorGet? _updatingMonitor; *@
+@* *@
+@*     IEnumerable<MonitorsSelectOption> _monitorsSelectOptions = Enumerable.Empty<MonitorsSelectOption>(); *@
+@* *@
+@*     MonitorsSelectOption? _connectedMonitorSelected; *@
+@* *@
+@*     private async Task GetMonitorsSelectOptions() *@
+@*     { *@
+@*         var allMonitors = await ApiClient.GetMonitorsForMonitorsSelectOption() ?? Enumerable.Empty<MonitorsSelectOption>(); *@
+@*         _monitorsSelectOptions = allMonitors.Where(monitor => monitor.MacAddress != _updatingMonitor?.MacAddress).Select(monitor => new MonitorsSelectOption *@
+@*         { *@
+@*             MacAddress = monitor.MacAddress, *@
+@*             Name = monitor.Name *@
+@*         }); *@
+@*     } *@
+@* *@
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*         await base.OnInitializedAsync(); *@
+@*         _updatingMonitor = await ApiClient.GetMonitorByIdAsync(MonitorId); *@
+@*         await GetMonitorsSelectOptions(); *@
+@*         FillFormWithExistingMonitor(); *@
+@*     } *@
+@* *@
+@*     async Task UpdateMonitor() *@
+@*     { *@
+@*         _processingForm = true; *@
+@*         _form.RecipientMonitorLinkedToMacAddress = _connectedMonitorSelected?.MacAddress; *@
+@*         var response = await ApiClient.UpdateRecipientMonitorAsync(_form); *@
+@*         var isSuccess = response is not null; *@
+@*         _processingForm = false; *@
+@*         MudDialog?.Close(DialogResult.Ok(isSuccess)); *@
+@*     } *@
+@* *@
+@*     void FillFormWithExistingMonitor() *@
+@*     { *@
+@*         _form.RecipientMonitorId = _updatingMonitor.RecipientMonitorId; *@
+@*         _form.Name = _updatingMonitor.Name; *@
+@*         _form.RecipientType = _updatingMonitor.RecipientType; *@
+@*         _connectedMonitorSelected = _monitorsSelectOptions.SingleOrDefault( *@
+@*             monitorOption => monitorOption.MacAddress == _updatingMonitor.monitorLinkedToMacAddress); *@
+@*         _form.RecipientMonitorLinkedToMacAddress = _updatingMonitor.monitorLinkedToMacAddress; *@
+@*         _form.MaxHeight = _updatingMonitor.MaxHeight; *@
+@*         _form.MinHeight = _updatingMonitor.MinHeight; *@
+@*     } *@
+@* *@
+@* } *@

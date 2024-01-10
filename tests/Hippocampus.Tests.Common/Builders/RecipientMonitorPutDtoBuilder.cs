@@ -12,8 +12,8 @@ public sealed class RecipientMonitorPutDtoBuilder : AutoFaker<RecipientMonitorPu
     {
         RuleFor(r => r.RecipientMonitorId, RecipientMonitorId.New());
         RuleFor(r => r.Name, faker => faker.Random.Word());
-        RuleFor(r => r.MinHeight, faker => faker.Random.Int(min: 0, max: 50));
-        RuleFor(r => r.MaxHeight, faker => faker.Random.Int(min: 51, max: 100));
+        RuleFor(r => r.MinHeight, faker => faker.Random.Int(0, 50));
+        RuleFor(r => r.MaxHeight, faker => faker.Random.Int(51, 100));
         RuleFor(r => r.RecipientType, faker => faker.PickRandom<RecipientType>());
         RuleFor(r => r.RecipientMonitorLinkedToMacAddress, faker => null);
     }
@@ -23,7 +23,7 @@ public sealed class RecipientMonitorPutDtoBuilder : AutoFaker<RecipientMonitorPu
         RuleFor(r => r.RecipientMonitorId, recipientMonitorId);
         return this;
     }
-    
+
     public RecipientMonitorPutDtoBuilder WithRecipientMonitorLinkedToMacAddress(
         MacAddress monitorLinkedToMacAddress)
     {

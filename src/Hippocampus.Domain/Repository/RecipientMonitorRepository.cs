@@ -17,12 +17,12 @@ public interface IRecipientMonitorRepository
     Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId);
 }
 
-public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
+public class RecipientMonitorRepository : IRecipientMonitorRepository
 {
     private readonly HippocampusContext _context;
     private readonly IClock _clock;
 
-    public RecipientMonitorMonitorRepository(HippocampusContext context, IClock clock)
+    public RecipientMonitorRepository(HippocampusContext context, IClock clock)
     {
         _context = context;
         _clock = clock;
@@ -45,7 +45,7 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
             MaxHeight = recipientMonitor.MaxHeight,
             MinHeight = recipientMonitor.MinHeight,
             RecipientType = recipientMonitor.RecipientType,
-            RecipientMonitorId = RecipientMonitorId.New(),
+            RecipientMonitorId = RecipientMonitorId.New()
         };
         newRecipient.MonitorLinkedTo = linkedRecipientMonitor;
 
@@ -59,11 +59,13 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
         return newRecipient;
     }
 
-    public Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress) =>
-        _context.RecipientMonitors
+    public Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress)
+    {
+        return _context.RecipientMonitors
             .AsSplitQuery()
             .Include(r => r.MonitorLinkedTo)
             .SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
+    }
 
     public async Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToById(
         RecipientMonitorId recipientMonitorId)
@@ -72,14 +74,16 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
             .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.RecipientMonitorId == recipientMonitorId);
     }
 
-    public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor() =>
-        await _context.RecipientMonitors
+    public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor()
+    {
+        return await _context.RecipientMonitors
             .Include(r => r.MonitorLinkedTo)
             .Include(recipient =>
                 recipient.RecipientLogs.OrderByDescending(
                         recipientLog => recipientLog.RegisterDate)
                     .Take(1))
             .ToListAsync();
+    }
 
     public async Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor)
     {
@@ -101,7 +105,10 @@ public class RecipientMonitorMonitorRepository : IRecipientMonitorRepository
                 await _context.RecipientMonitors.FindAsync(changedRecipientMonitor.MonitorLinkedTo.RecipientMonitorId);
             if (linkedMonitor is not null) recipientToChange.MonitorLinkedTo = linkedMonitor;
         }
-        else recipientToChange.MonitorLinkedTo = null;
+        else
+        {
+            recipientToChange.MonitorLinkedTo = null;
+        }
 
         await _context.SaveChangesAsync();
 

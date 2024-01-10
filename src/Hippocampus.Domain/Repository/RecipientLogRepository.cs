@@ -26,9 +26,11 @@ public class RecipientLogRepository : IRecipientLogRepository
         _clock = clock;
     }
 
-    public async Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId) =>
-        await _context.RecipientLogs.OrderByDescending(r => r.RegisterDate)
+    public async Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId)
+    {
+        return await _context.RecipientLogs.OrderByDescending(r => r.RegisterDate)
             .FirstOrDefaultAsync(r => r.RecipientMonitorId == recipientMonitorId);
+    }
 
     public async Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog)
     {
@@ -40,7 +42,7 @@ public class RecipientLogRepository : IRecipientLogRepository
             RecipientMonitor = recipientToLogFor,
             RegisterDate = _clock.Now.ToUniversalTime(),
             RecipientState = recipientLog.RecipientState,
-            LevelPercentage = recipientLog.LevelPercentage,
+            LevelPercentage = recipientLog.LevelPercentage
         };
 
         _context.RecipientLogs.Add(recipientLogToInsert);
@@ -56,7 +58,8 @@ public class RecipientLogRepository : IRecipientLogRepository
         var startDateUtc = startDate.ToUniversalTime();
         var endDateUtc = endDate.ToUniversalTime();
         return await _context.RecipientLogs.Where(log =>
-                log.RecipientMonitorId == monitorId && log.RegisterDate >= startDateUtc && log.RegisterDate <= endDateUtc)
+                log.RecipientMonitorId == monitorId && log.RegisterDate >= startDateUtc &&
+                log.RegisterDate <= endDateUtc)
             .ToListAsync();
     }
 }

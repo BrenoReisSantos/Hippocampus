@@ -41,7 +41,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
 });
 
-builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorMonitorRepository>();
+builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorRepository>();
 builder.Services.AddTransient<IRecipientLogRepository, RecipientLogRepository>();
 builder.Services.AddTransient<IRecipientMonitorServices, RecipientMonitorServices>();
 

@@ -20,6 +20,13 @@ public class ServiceResult<TResponse>
         Message = message;
     }
 
-    public static ServiceResult<TResponse> Success(TResponse result) => new(result);
-    public static ServiceResult<TResponse> Error(string message) => new(message);
+    public static ServiceResult<TResponse> Success(TResponse result)
+    {
+        return new ServiceResult<TResponse>(result);
+    }
+
+    public static ServiceResult<TResponse> Error(string message)
+    {
+        return new ServiceResult<TResponse>(message);
+    }
 }

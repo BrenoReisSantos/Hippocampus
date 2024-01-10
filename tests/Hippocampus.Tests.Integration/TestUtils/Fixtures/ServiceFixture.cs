@@ -10,12 +10,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Hippocampus.Tests.Integration.TestUtils.Fixtures;
 
-class ProgramFactory : WebApplicationFactory<Program>
+internal class ProgramFactory : WebApplicationFactory<Program>
 {
-    readonly Action<IWebHostBuilder> _configure;
+    private readonly Action<IWebHostBuilder> _configure;
 
-    public ProgramFactory(Action<IWebHostBuilder> configure) =>
+    public ProgramFactory(Action<IWebHostBuilder> configure)
+    {
         _configure = configure;
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -53,21 +55,24 @@ public class ServiceFixture
         ApplicationFactory.Dispose();
     }
 
-    ProgramFactory InitializeProgramFactory() => new(builder => builder.ConfigureAppConfiguration(config =>
-        {
-            config.AddInMemoryCollection(
-                new Dictionary<string, string>
-                {
-                    ["TokenSettings:Key"] = Guid.NewGuid().ToString("N"),
-                }
-            );
-            ConfigureAppConfiguration(config);
-        })
-        .ConfigureTestServices(services =>
-        {
-            services.Replace(ServiceDescriptor.Singleton(ClockMocker.Mock()));
-            ConfigureTestServices(services);
-        }));
+    private ProgramFactory InitializeProgramFactory()
+    {
+        return new ProgramFactory(builder => builder.ConfigureAppConfiguration(config =>
+            {
+                config.AddInMemoryCollection(
+                    new Dictionary<string, string>
+                    {
+                        ["TokenSettings:Key"] = Guid.NewGuid().ToString("N")
+                    }
+                );
+                ConfigureAppConfiguration(config);
+            })
+            .ConfigureTestServices(services =>
+            {
+                services.Replace(ServiceDescriptor.Singleton(ClockMocker.Mock()));
+                ConfigureTestServices(services);
+            }));
+    }
 
     protected virtual void ConfigureTestServices(IServiceCollection services)
     {
@@ -77,6 +82,13 @@ public class ServiceFixture
     {
     }
 
-    protected T GetService<T>() where T : notnull => TestScope.ServiceProvider.GetRequiredService<T>();
-    protected AsyncServiceScope CreateScope() => ApplicationFactory.Services.CreateAsyncScope();
+    protected T GetService<T>() where T : notnull
+    {
+        return TestScope.ServiceProvider.GetRequiredService<T>();
+    }
+
+    protected AsyncServiceScope CreateScope()
+    {
+        return ApplicationFactory.Services.CreateAsyncScope();
+    }
 }

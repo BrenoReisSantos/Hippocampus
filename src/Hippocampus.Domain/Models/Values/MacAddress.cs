@@ -10,7 +10,7 @@ public partial class MacAddress : IEquatable<MacAddress>
     public const int DefaultLength = 12;
     public string Value { get; }
 
-    const string _pattern =
+    private const string _pattern =
         @"^(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})(?:(?:\1|\.)(?:[0-9A-Fa-f]{2}([:-]?)[0-9A-Fa-f]{2})){2}$";
 
     public enum Mask
@@ -21,7 +21,10 @@ public partial class MacAddress : IEquatable<MacAddress>
         None
     }
 
-    public MacAddress() => Value = new string('0', DefaultLength);
+    public MacAddress()
+    {
+        Value = new string('0', DefaultLength);
+    }
 
     public MacAddress(string macAddress)
     {
@@ -30,23 +33,39 @@ public partial class MacAddress : IEquatable<MacAddress>
         Value = macAddress.CleanMask();
     }
 
-    static Exception MacAddressException(string macAddress) =>
-        new FormatException($"Invalid Mac Address: {macAddress}");
+    private static Exception MacAddressException(string macAddress)
+    {
+        return new FormatException($"Invalid Mac Address: {macAddress}");
+    }
 
     public static MacAddress Empty => new();
 
     [GeneratedRegex(_pattern, RegexOptions.IgnoreCase, "pt-BR")]
     private static partial Regex MacAddressRegex();
 
-    public static bool Validate(string macAddress) => MacAddressRegex().Match(macAddress).Success;
+    public static bool Validate(string macAddress)
+    {
+        return MacAddressRegex().Match(macAddress).Success;
+    }
 
-    public static implicit operator string(MacAddress macAddress) => macAddress.ToString();
+    public static implicit operator string?(MacAddress? macAddress)
+    {
+        return macAddress?.ToString();
+    }
 
-    public string ToString(Mask mask = Mask.None) => Format(mask);
-    public override string ToString() => Format(Mask.Colon);
+    public string ToString(Mask mask = Mask.None)
+    {
+        return Format(mask);
+    }
 
-    private string Format(Mask mask) =>
-        mask switch
+    public override string ToString()
+    {
+        return Format(Mask.Colon);
+    }
+
+    private string Format(Mask mask)
+    {
+        return mask switch
         {
             Mask.Colon =>
                 Value.FormatMask("##:##:##:##:##:##"),
@@ -57,8 +76,9 @@ public partial class MacAddress : IEquatable<MacAddress>
             Mask.None =>
                 Value.FormatMask("############"),
             _ =>
-                Value,
+                Value
         };
+    }
 
     public bool Equals(MacAddress? other)
     {
@@ -71,7 +91,7 @@ public partial class MacAddress : IEquatable<MacAddress>
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj.GetType() != GetType()) return false;
         return Equals((MacAddress)obj);
     }
 

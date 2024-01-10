@@ -20,7 +20,7 @@ public class AutoMapperProfile : Profile
                             MaxHeight = src.MonitorLinkedTo.MaxHeight,
                             MinHeight = src.MonitorLinkedTo.MinHeight,
                             RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
-                            Name = src.MonitorLinkedTo.Name,
+                            Name = src.MonitorLinkedTo.Name
                         }
                         : null));
         CreateMap<RecipientMonitor, RecipientMonitorUpdatedDto>()
@@ -34,7 +34,7 @@ public class AutoMapperProfile : Profile
                             MaxHeight = src.MonitorLinkedTo.MaxHeight,
                             MinHeight = src.MonitorLinkedTo.MinHeight,
                             RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
-                            Name = src.MonitorLinkedTo.Name,
+                            Name = src.MonitorLinkedTo.Name
                         }
                         : null));
         CreateMap<RecipientMonitorPostDto, RecipientMonitor>()

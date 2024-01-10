@@ -20,7 +20,7 @@ public static class RecipientMonitorRoutes
         recipientMonitorsGroup.MapGet("{monitorId}", GetMonitor);
     }
 
-    static async Task<IResult> CreateNewRecipientMonitor(
+    private static async Task<IResult> CreateNewRecipientMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
         RecipientMonitorPostDto monitor)
     {
@@ -30,11 +30,13 @@ public static class RecipientMonitorRoutes
     }
 
     // TODO: Gerar os testes automatizados para checar o RecipientState e o RecipientLevelPercentage do DTO
-    static async Task<IResult> GetListOfRecipientMonitors(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices) =>
-        Results.Ok(await recipientMonitorServices.GetRecipientMonitorsForMonitorsTable());
+    private static async Task<IResult> GetListOfRecipientMonitors(
+        [FromServices] IRecipientMonitorServices recipientMonitorServices)
+    {
+        return Results.Ok(await recipientMonitorServices.GetRecipientMonitorsForMonitorsTable());
+    }
 
-    static async Task<IResult> PutRecipientMonitor(
+    private static async Task<IResult> PutRecipientMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
         [FromBody] RecipientMonitorPutDto putMonitor)
     {
@@ -43,7 +45,7 @@ public static class RecipientMonitorRoutes
         return Results.Ok(serviceResult.Result);
     }
 
-    static async Task<IResult> GetMonitor(
+    private static async Task<IResult> GetMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
         RecipientMonitorId monitorId)
     {

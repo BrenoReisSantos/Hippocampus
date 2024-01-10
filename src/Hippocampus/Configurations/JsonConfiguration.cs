@@ -11,6 +11,6 @@ public class JsonConfiguration
         Converters = { new MacAddressJsonConverter(), new RecipientLevelJsonConverter() },
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        ReferenceHandler = ReferenceHandler.IgnoreCycles
     };
 }

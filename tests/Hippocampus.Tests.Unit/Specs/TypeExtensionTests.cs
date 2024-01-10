@@ -17,21 +17,21 @@ public class TypeExtensionTests : BaseTest
     [TestCase("ABCDEFGHIJK", "###.###.###-##", "ABC.DEF.GHI-JK")]
     public void FormatMask_Should_Return_With_Correct_Format(string value, string format, string expected)
     {
-        string maskedString = value.FormatMask(format);
+        var maskedString = value.FormatMask(format);
         maskedString.Should().Be(expected);
     }
 
     [Test]
     public void FormatMask_Shoul_Return_Same_String_As_Passed_When_Passed_String_Is_Empty()
     {
-        string maskedString = "".FormatMask("###.###");
+        var maskedString = "".FormatMask("###.###");
         maskedString.Should().Be("");
     }
 
     [Test]
     public void FormatMask_Should_Return_Empty_String_When_Passed_Format_Is_Empty_String()
     {
-        string maskedString = "123456789".FormatMask("");
+        var maskedString = "123456789".FormatMask("");
         maskedString.Should().Be("");
     }
 
@@ -44,7 +44,7 @@ public class TypeExtensionTests : BaseTest
         FormatMask_Should_Return_Format_String_Without_Substitute_Char_When_Passed_Format_Doesnt_Contain_SubstituteChar(
             string format)
     {
-        string maskedString = "123456789".FormatMask(format);
+        var maskedString = "123456789".FormatMask(format);
         maskedString.Should().Be(format);
     }
 }

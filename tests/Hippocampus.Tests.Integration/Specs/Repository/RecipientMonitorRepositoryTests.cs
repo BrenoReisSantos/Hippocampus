@@ -32,7 +32,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             RecipientType = recipientInsert.RecipientType,
             MaxHeight = recipientInsert.MaxHeight,
             MinHeight = recipientInsert.MinHeight,
-            UpdatedAt = null,
+            UpdatedAt = null
         };
 
         subject
@@ -96,7 +96,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             MinHeight = monitor.MinHeight,
             RecipientMonitorId = monitor.RecipientMonitorId,
             UpdatedAt = null,
-            MonitorLinkedTo = new()
+            MonitorLinkedTo = new RecipientMonitor
             {
                 Name = linkedMonitor.Name,
                 CreatedAt = linkedMonitor.CreatedAt,
@@ -106,7 +106,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
                 MinHeight = linkedMonitor.MinHeight,
                 MaxHeight = linkedMonitor.MaxHeight,
                 RecipientMonitorId = linkedMonitor.RecipientMonitorId,
-                UpdatedAt = null,
+                UpdatedAt = null
             }
         };
 
@@ -259,7 +259,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             UpdatedAt = Clock.Now.ToUniversalTime(),
             RecipientType = monitorUpdated.RecipientType,
             MonitorLinkedTo = null,
-            RecipientMonitorId = monitor.RecipientMonitorId,
+            RecipientMonitorId = monitor.RecipientMonitorId
         };
 
         subject.Should().BeEquivalentTo(expected);
@@ -295,7 +295,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             UpdatedAt = Clock.Now.ToUniversalTime(),
             RecipientType = monitorUpdated.RecipientType,
             MonitorLinkedTo = null,
-            RecipientMonitorId = monitor.RecipientMonitorId,
+            RecipientMonitorId = monitor.RecipientMonitorId
         };
 
         subject.Should().BeEquivalentTo(expected);
@@ -325,7 +325,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             UpdatedAt = monitor.UpdatedAt,
             RecipientType = monitor.RecipientType,
             MonitorLinkedTo = null,
-            RecipientMonitorId = monitor.RecipientMonitorId,
+            RecipientMonitorId = monitor.RecipientMonitorId
         };
 
         subject.Should().BeEquivalentTo(expected);

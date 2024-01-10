@@ -13,6 +13,7 @@ public interface IRecipientMonitorServices
     Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable();
     Task<ServiceResult<RecipientMonitorUpdatedDto>> UpdateRecipientMonitor(RecipientMonitorPutDto monitor);
     Task<ServiceResult<RecipientMonitorDto>> GetRecipientMonitorById(RecipientMonitorId monitorId);
+
     Task<ServiceResult<IEnumerable<RecipientLog>>> GetMonitorLogsInAGivenDateRange(RecipientMonitorId monitorId,
         DateTime? startDate, DateTime? endDate);
 }
@@ -40,7 +41,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
             return ServiceResult<RecipientMonitorCreatedDto>.Error(
                 "Altura máxima não pode ser menor que altura mínima");
 
-        RecipientMonitor? monitorLinkedTo =
+        var monitorLinkedTo =
             await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToByMacAddress(monitor
                 .RecipientMonitorLinkedToMacAddress);
 
@@ -83,7 +84,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
             return ServiceResult<RecipientMonitorUpdatedDto>.Error(
                 "Altura máxima não pode ser menor que altura mínima");
 
-        RecipientMonitor? monitorLinkedTo =
+        var monitorLinkedTo =
             await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToByMacAddress(monitor
                 .RecipientMonitorLinkedToMacAddress);
 

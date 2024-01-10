@@ -10,7 +10,10 @@ public class LevelPercentage
     public static readonly int MinimumLevel = 0;
     public int Value { get; }
 
-    public LevelPercentage() => Value = 50;
+    public LevelPercentage()
+    {
+        Value = 50;
+    }
 
     public LevelPercentage(int value)
     {
@@ -18,13 +21,25 @@ public class LevelPercentage
         Value = value;
     }
 
-    bool InBounds(int value) => value >= MinimumLevel && value <= MaximumLevel;
+    private bool InBounds(int value)
+    {
+        return value >= MinimumLevel && value <= MaximumLevel;
+    }
 
-    static Exception RecipientLevelOutOfBounds(int value) =>
-        new ArgumentException($"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}");
+    private static Exception RecipientLevelOutOfBounds(int value)
+    {
+        return new ArgumentException($"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}");
+    }
 
-    public static implicit operator int(LevelPercentage levelPercentage) => levelPercentage.Value;
-    public static implicit operator LevelPercentage(int value) => new(value);
+    public static implicit operator int(LevelPercentage levelPercentage)
+    {
+        return levelPercentage.Value;
+    }
+
+    public static implicit operator LevelPercentage(int value)
+    {
+        return new LevelPercentage(value);
+    }
 }
 
 public class RecipientLevelJsonConverter : JsonConverter<LevelPercentage>

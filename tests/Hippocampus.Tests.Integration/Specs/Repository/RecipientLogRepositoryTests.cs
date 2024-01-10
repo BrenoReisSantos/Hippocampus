@@ -60,7 +60,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             RecipientMonitorId = recipient.RecipientMonitorId,
             RecipientState = recipientLog.RecipientState,
             LevelPercentage = recipientLog.LevelPercentage,
-            RegisterDate = recipientLog.RegisterDate,
+            RegisterDate = recipientLog.RegisterDate
         };
         subject.Should()
             .BeEquivalentTo(expected, config => config.Excluding(rlog => rlog.RecipientMonitor.RecipientLogs));
@@ -93,6 +93,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             await _recipientLogRepository.GetLogsForMonitorInAGivenDateRangeAsync(recipient.RecipientMonitorId,
                 baseDate, baseDate.AddMinutes(minutesDistance * (logsQuantity - 1)));
 
-        recoveredLogs.Should().BeEquivalentTo(expectedRecipientLogs, config => config.Excluding(r => r.RecipientMonitor));
+        recoveredLogs.Should()
+            .BeEquivalentTo(expectedRecipientLogs, config => config.Excluding(r => r.RecipientMonitor));
     }
 }

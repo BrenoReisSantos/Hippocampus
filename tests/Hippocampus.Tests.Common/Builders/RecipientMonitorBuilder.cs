@@ -1,5 +1,6 @@
 ﻿using AutoBogus;
 using Hippocampus.Domain.Models.Entities;
+using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Tests.Common.Builders;
 
@@ -10,7 +11,7 @@ public sealed class RecipientMonitorBuilder : AutoFaker<RecipientMonitor>
         RuleFor(r => r.RecipientMonitorId, faker => new RecipientMonitorId(faker.Random.Guid()));
         RuleFor(r => r.Name, faker => faker.Random.Words(5));
         RuleFor(r => r.RecipientType, faker => faker.PickRandom<RecipientType>());
-        RuleFor(r => r.MacAddress, faker => new(faker.Internet.Mac()));
+        RuleFor(r => r.MacAddress, faker => new MacAddress(faker.Internet.Mac()));
         RuleFor(r => r.CreatedAt, faker => faker.Date.Past().ToUniversalTime());
         RuleFor(r => r.UpdatedAt, _ => null);
         RuleFor(r => r.MaxHeight, faker => faker.Random.Int(51, 100));

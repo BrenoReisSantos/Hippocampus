@@ -22,7 +22,7 @@ public sealed class RecipientLogBuilder : AutoFaker<RecipientLog>
         RuleFor(recipientLog => recipientLog.RegisterDate, registerDate);
         return this;
     }
-    
+
     public RecipientLogBuilder WithRegisterDateBefore(DateTime referenceDate)
     {
         RuleFor(recipientLog => recipientLog.RegisterDate, faker => faker.Date.Past(refDate: referenceDate));

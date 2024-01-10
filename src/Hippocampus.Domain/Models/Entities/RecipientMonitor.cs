@@ -35,5 +35,5 @@ public class RecipientMonitor
 public enum RecipientType : byte
 {
     Cisterna,
-    Caixa,
+    Caixa
 }

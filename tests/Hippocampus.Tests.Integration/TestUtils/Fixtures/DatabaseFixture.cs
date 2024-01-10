@@ -10,7 +10,7 @@ public class DatabaseFixture : ServiceFixture
     protected static string TestDatabaseConnectionString =>
         $"Server=localhost;Port=5432;Database=HippocampusTest;User Id=postgres;Password=postgres;";
 
-    AsyncServiceScope _dbScope;
+    private AsyncServiceScope _dbScope;
     protected HippocampusContext Context { get; private set; }
 
     protected override void ConfigureAppConfiguration(IConfigurationBuilder configuration)

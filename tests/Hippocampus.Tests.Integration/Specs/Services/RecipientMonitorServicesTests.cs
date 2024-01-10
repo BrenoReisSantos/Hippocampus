@@ -35,7 +35,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             MinHeight = recipientMonitorPostDto.MinHeight,
             RecipientType = recipientMonitorPostDto.RecipientType,
             MacAddress = recipientMonitorPostDto.MacAddress,
-            RecipientMonitorLinkedTo = null,
+            RecipientMonitorLinkedTo = null
         };
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Success(expectedResult);
@@ -167,15 +167,15 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             MinHeight = recipientMonitorPostDto.MinHeight,
             RecipientType = recipientMonitorPostDto.RecipientType,
             MacAddress = recipientMonitorPostDto.MacAddress,
-            RecipientMonitorLinkedTo = new()
+            RecipientMonitorLinkedTo = new RecipientMonitorLinkedToCreatedDto
             {
                 RecipientType = linkedMonitor.RecipientType,
                 MacAddress = linkedMonitor.MacAddress,
                 MaxHeight = linkedMonitor.MaxHeight,
                 MinHeight = linkedMonitor.MinHeight,
                 RecipientMonitorId = linkedMonitor.RecipientMonitorId,
-                Name = linkedMonitor.Name,
-            },
+                Name = linkedMonitor.Name
+            }
         };
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Success(expectedResult);
@@ -219,7 +219,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             Name = m.Name,
             LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
             RecipientLevelPercentage = null,
-            RecipientState = null,
+            RecipientState = null
         });
 
         subject.Should().BeEquivalentTo(expected);
@@ -299,7 +299,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
                 MaxHeight = otherRecipientMonitor.MaxHeight,
                 MinHeight = otherRecipientMonitor.MinHeight,
                 RecipientType = otherRecipientMonitor.RecipientType
-            },
+            }
         };
 
         var expected = ServiceResult<RecipientMonitorUpdatedDto>.Success(expectedResult);

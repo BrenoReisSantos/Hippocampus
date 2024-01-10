@@ -1,0 +1,33 @@
+﻿@using MudBlazor
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<MudThemeProvider/>
+<MudDialogProvider MaxWidth="MaxWidth.ExtraLarge"/>
+<MudSnackbarProvider/>
+
+<MudLayout>
+    <MudAppBar Elevation="0" Class="pa-0" Dense="true" Color="Color.Info">
+        <MudLink Color="Color.Inherit" Class="mr-4 shades-text text-white" Underline="Underline.None" Typo="Typo.h6" Href="/">Hippocampus</MudLink>
+        <MudIconButton Style="@($"color: white;")" Icon="@Icons.Material.Filled.RemoveRedEye" @onclick="NavigateToMonitorsPage">Monitores</MudIconButton>
+        <MudIconButton Style="@($"color: white;")" Icon="@Icons.Material.Filled.History" @onclick="NavigateToHitoryLogPage">Histórico</MudIconButton>
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code
+{
+    private void NavigateToMonitorsPage()
+    {
+        NavigationManager.NavigateTo("MonitorsTable");
+    }
+
+    private void NavigateToHitoryLogPage()
+    {
+        NavigationManager.NavigateTo("MonitorLogHistory");
+    }
+}

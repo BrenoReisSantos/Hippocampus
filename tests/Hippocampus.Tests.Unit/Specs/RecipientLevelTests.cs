@@ -8,7 +8,7 @@ public record Sut<T>(T Value);
 
 public class RecipientLevelTests
 {
-    Faker _fake = new("pt_BR");
+    private Faker _fake = new("pt_BR");
 
     [Test]
     [Repeat(10)]

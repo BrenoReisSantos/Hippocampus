@@ -13,7 +13,7 @@ public static class MonitorLogRoutes
         monitorLogGroup.MapGet("{monitorId}", GetMonitorLogs);
     }
 
-    static async Task<IResult> GetMonitorLogs(
+    private static async Task<IResult> GetMonitorLogs(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
         RecipientMonitorId monitorId,
         [FromQuery] DateTime? startDate,
