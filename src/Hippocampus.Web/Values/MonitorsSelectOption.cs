@@ -1,8 +1,10 @@
-namespace HippocampusWeb.Values;
+using Hippocampus.Domain.Models.Entities;
+
+namespace Hippocampus.Web.Values;
 
 public record MonitorsSelectOption
 {
-    public Guid RecipientMonitorId { get; init; }
+    public RecipientMonitorId RecipientMonitorId { get; init; }
     public string Name { get; init; } = "";
     public string MacAddress { get; init; } = "";
 
