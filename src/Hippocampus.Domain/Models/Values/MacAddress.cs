@@ -53,6 +53,12 @@ public partial class MacAddress : IEquatable<MacAddress>
         return macAddress?.ToString();
     }
 
+    public static implicit operator MacAddress?(string? macAddress)
+    {
+        if (macAddress is null) return null;
+        return new MacAddress(macAddress);
+    }
+
     public string ToString(Mask mask = Mask.None)
     {
         return Format(mask);

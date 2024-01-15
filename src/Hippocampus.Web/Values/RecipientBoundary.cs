@@ -1,7 +1,7 @@
-﻿namespace HippocampusWeb.Values;
+﻿namespace Hippocampus.Web.Values;
 
 public class RecipientBoundary
 {
-    public float MinHeight { get; init; }
-    public float MaxHeight { get; init; }
+    public int MinHeight { get; init; }
+    public int MaxHeight { get; init; }
 }

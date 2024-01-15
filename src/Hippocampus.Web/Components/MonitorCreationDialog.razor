@@ -1,99 +1,116 @@
-@* @using HippocampusWeb.Values.Forms *@
-@* @using HippocampusWeb.Values *@
-@* @using MudBlazor *@
-@* @inject IHippocampusApiClient ApiClient *@
-@* *@
-@* <MudDialog> *@
-@*     <TitleContent> *@
-@*         <MudText Typo="Typo.h4"> *@
-@*             Criação de um Monitor *@
-@*         </MudText> *@
-@*     </TitleContent> *@
-@*     <DialogContent> *@
-@*         <MudText Typo="Typo.h6"> *@
-@*             Características do Monitor *@
-@*         </MudText> *@
-@*         <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/> *@
-@*         <MudTextField @bind-Value="_form.MacAddress" Required Variant="Variant.Outlined" Label="Endereço MAC"/> *@
-@*         <MudSelect T="RecipientType" @bind-Value="_form.RecipientType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined"> *@
-@*             @foreach (var recipientType in Enum.GetValues<RecipientType>()) *@
-@*             { *@
-@*                 <MudSelectItem Value="recipientType"/> *@
-@*             } *@
-@*         </MudSelect> *@
-@*         <MudTextField *@
-@*             @bind-Value="_form.MinHeight" *@
-@*             Required *@
-@*             InputType="InputType.Number" *@
-@*             Variant="Variant.Outlined" *@
-@*             Label="Altura Mínima (cm)"/> *@
-@*         <MudTextField *@
-@*             @bind-Value="_form.MaxHeight" *@
-@*             Required *@
-@*             InputType="InputType.Number" *@
-@*             Variant="Variant.Outlined" *@
-@*             Label="Altura Máxima (cm)"/> *@
-@*         <MudSelect T="MonitorsSelectOption" *@
-@*                    @bind-Value="_connectedMonitorSelected" *@
-@*                    Label="Selecione o Monitor Conectado" *@
-@*                    Variant="Variant.Outlined"> *@
-@*             @foreach (var monitor in _monitorsSelectOptions) *@
-@*             { *@
-@*                 <MudSelectItem T="MonitorsSelectOption" Value="monitor"/> *@
-@*             } *@
-@*         </MudSelect> *@
-@*     </DialogContent> *@
-@*     <DialogActions> *@
-@*         <MudButton *@
-@*             Disabled="_processingForm" *@
-@*             EndIcon="@Icons.Material.Filled.Check" *@
-@*             Color="Color.Success" *@
-@*             Variant="Variant.Filled" *@
-@*             @onclick="CreateMonitor"> *@
-@*             @if (_processingForm) *@
-@*             { *@
-@*                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/> *@
-@*                 <MudText Class="ms-2">Enviando...</MudText> *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 <MudText>Criar</MudText> *@
-@*             } *@
-@*         </MudButton> *@
-@*     </DialogActions> *@
-@* </MudDialog> *@
-@* *@
-@* @code { *@
-@* *@
-@*     [CascadingParameter] *@
-@*     MudDialogInstance? MudDialog { get; set; } *@
-@* *@
-@*     readonly RecipientMonitorCreationForm _form = new(); *@
-@*     bool _processingForm = false; *@
-@* *@
-@*     IEnumerable<MonitorsSelectOption> _monitorsSelectOptions = Enumerable.Empty<MonitorsSelectOption>(); *@
-@* *@
-@*     MonitorsSelectOption? _connectedMonitorSelected; *@
-@* *@
-@*     private async Task GetMonitorsSelectOptions() *@
-@*     { *@
-@*         _monitorsSelectOptions = await ApiClient.GetMonitorsForMonitorsSelectOption() ?? Enumerable.Empty<MonitorsSelectOption>(); *@
-@*     } *@
-@* *@
-@*     protected override async Task OnInitializedAsync() *@
-@*     { *@
-@*         await base.OnInitializedAsync(); *@
-@*         await GetMonitorsSelectOptions(); *@
-@*     } *@
-@* *@
-@*     async Task CreateMonitor() *@
-@*     { *@
-@*         _processingForm = true; *@
-@*         _form.RecipientMonitorLinkedToMacAddress = _connectedMonitorSelected?.MacAddress; *@
-@*         var response = await ApiClient.PostRecipientMonitorAsync(_form); *@
-@*         var isSuccess = response is not null; *@
-@*         _processingForm = false; *@
-@*         MudDialog?.Close(DialogResult.Ok(isSuccess)); *@
-@*     } *@
-@* *@
-@* } *@
+@using Hippocampus.Web.Values.Forms
+@using Hippocampus.Domain.Services
+@using Hippocampus.Domain.Diplomat.HttpIn
+@using Hippocampus.Domain.Models.Entities
+@using Hippocampus.Domain.Models.Values
+@using Hippocampus.Web.Values
+@inject IRecipientMonitorServices RecipientMonitorServices
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h4">
+            Criação de um Monitor
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.h6">
+            Características do Monitor
+        </MudText>
+        <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/>
+        <MudTextField @bind-Value="_form.MacAddress" Required Variant="Variant.Outlined" Label="Endereço MAC"/>
+        <MudSelect T="RecipientType" @bind-Value="_form.RecipientType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined">
+            @foreach (var recipientType in Enum.GetValues<RecipientType>())
+            {
+                <MudSelectItem Value="recipientType"/>
+            }
+        </MudSelect>
+        <MudTextField
+            @bind-Value="_form.MinHeight"
+            Required
+            InputType="InputType.Number"
+            Variant="Variant.Outlined"
+            Label="Altura Mínima (cm)"/>
+        <MudTextField
+            @bind-Value="_form.MaxHeight"
+            Required
+            InputType="InputType.Number"
+            Variant="Variant.Outlined"
+            Label="Altura Máxima (cm)"/>
+        <MudSelect T="MonitorsSelectOption"
+                   @bind-Value="_connectedMonitorSelected"
+                   Label="Selecione o Monitor Conectado"
+                   Variant="Variant.Outlined">
+            @foreach (var monitor in _monitorsSelectOptions)
+            {
+                <MudSelectItem T="MonitorsSelectOption" Value="monitor"/>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton
+            Disabled="_processingForm"
+            EndIcon="@Icons.Material.Filled.Check"
+            Color="Color.Success"
+            Variant="Variant.Filled"
+            @onclick="CreateMonitor">
+            @if (_processingForm)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">Enviando...</MudText>
+            }
+            else
+            {
+                <MudText>Criar</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+
+    readonly RecipientMonitorCreationForm _form = new();
+    bool _processingForm;
+
+    IEnumerable<MonitorsSelectOption> _monitorsSelectOptions = Enumerable.Empty<MonitorsSelectOption>();
+
+    MonitorsSelectOption? _connectedMonitorSelected;
+
+    private async Task GetMonitorsSelectOptions()
+    {
+        var monitors = await RecipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+        _monitorsSelectOptions = monitors.Select(m => new MonitorsSelectOption
+        {
+            MacAddress = m.MacAddress,
+            Name = m.Name,
+            RecipientMonitorId = m.RecipientMonitorId
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await GetMonitorsSelectOptions();
+    }
+
+    async Task CreateMonitor()
+    {
+        _processingForm = true;
+        _form.RecipientMonitorLinkedToMacAddress = _connectedMonitorSelected?.MacAddress;
+        var newRecipientMonitor = new RecipientMonitorPostDto
+        {
+            MacAddress = _form.MacAddress,
+            Name = _form.Name,
+            RecipientType = _form.RecipientType,
+            RecipientMonitorLinkedToMacAddress = _form.RecipientMonitorLinkedToMacAddress,
+            MinHeight = _form.MinHeight,
+            MaxHeight = _form.MaxHeight
+        };
+        var response = await RecipientMonitorServices.InsertNewRecipientMonitor(newRecipientMonitor);
+        var isSuccess = response.IsSuccess;
+        _processingForm = false;
+        MudDialog?.Close(DialogResult.Ok(isSuccess));
+    }
+
+}
