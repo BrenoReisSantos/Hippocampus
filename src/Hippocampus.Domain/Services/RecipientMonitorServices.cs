@@ -90,7 +90,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 
         if (monitorLinkedTo?.MonitorLinkedTo is not null)
             return ServiceResult<RecipientMonitorUpdatedDto>.Error(
-                $"O monitor a se conectar já está conectado com um outro. ({monitorLinkedTo.MonitorLinkedTo.Name} with Macaddress {monitorLinkedTo.MonitorLinkedTo.MacAddress})");
+                $"O monitor a se conectar já está conectado com um outro. (Nome: {monitorLinkedTo.MonitorLinkedTo.Name} | Macaddress: {monitorLinkedTo.MonitorLinkedTo.MacAddress})");
 
         if (monitor.RecipientMonitorLinkedToMacAddress is not null && monitorLinkedTo is null)
             return ServiceResult<RecipientMonitorUpdatedDto>.Error("Monitor Relacionado não encontrado");
