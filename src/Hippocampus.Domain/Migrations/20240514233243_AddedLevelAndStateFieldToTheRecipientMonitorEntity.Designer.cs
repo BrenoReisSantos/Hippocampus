@@ -3,6 +3,7 @@ using System;
 using Hippocampus.Domain.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hippocampus.Domain.Migrations
 {
     [DbContext(typeof(HippocampusContext))]
-    partial class HippocampusContextModelSnapshot : ModelSnapshot
+    [Migration("20240514233243_AddedLevelAndStateFieldToTheRecipientMonitorEntity")]
+    partial class AddedLevelAndStateFieldToTheRecipientMonitorEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,9 +60,6 @@ namespace Hippocampus.Domain.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CurrentLevelHeight")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -138,6 +138,26 @@ namespace Hippocampus.Domain.Migrations
                     b.HasOne("Hippocampus.Domain.Models.Entities.RecipientMonitor", "MonitorLinkedTo")
                         .WithMany()
                         .HasForeignKey("MonitorLinkedToRecipientMonitorId");
+
+                    b.OwnsOne("Hippocampus.Domain.Models.Values.LevelPercentage", "LevelPercentage", b1 =>
+                        {
+                            b1.Property<Guid>("RecipientMonitorId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Value")
+                                .HasColumnType("integer")
+                                .HasColumnName("LevelPercentage");
+
+                            b1.HasKey("RecipientMonitorId");
+
+                            b1.ToTable("RecipientMonitors");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RecipientMonitorId");
+                        });
+
+                    b.Navigation("LevelPercentage")
+                        .IsRequired();
 
                     b.Navigation("MonitorLinkedTo");
                 });

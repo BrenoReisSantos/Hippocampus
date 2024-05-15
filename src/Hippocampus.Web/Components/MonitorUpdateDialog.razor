@@ -5,6 +5,7 @@
 @using Hippocampus.Web.Values
 @using Hippocampus.Domain.Diplomat.HttpIn
 @inject IRecipientMonitorServices RecipientMonitorServices
+@inject ISnackbar Snackbar
 
 <MudDialog>
     <TitleContent>
@@ -104,6 +105,7 @@
     {
         _processingForm = true;
         _form.RecipientMonitorLinkedToMacAddress = _connectedMonitorSelected?.MacAddress;
+
         var recipientMonitor = new RecipientMonitorPutDto
         {
             RecipientMonitorId = MonitorId,
@@ -113,9 +115,20 @@
             RecipientType = _form.RecipientType,
             MinHeight = _form.MinHeight
         };
+
         var response = await RecipientMonitorServices.UpdateRecipientMonitor(recipientMonitor);
         _processingForm = false;
-        MudDialog?.Close(DialogResult.Ok(response.IsSuccess));
+
+        if (response.IsSuccess)
+            MudDialog?.Close(DialogResult.Ok(response.IsSuccess));
+        if (response.IsFailure)
+        {
+            Snackbar.Add(response.Message, Severity.Warning, config =>
+            {
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
+                config.ShowCloseIcon = true;
+            });
+        }
     }
 
     void FillFormWithExistingMonitor()

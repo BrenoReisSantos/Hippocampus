@@ -27,7 +27,12 @@ builder.Services.AddMudServices();
 builder.Services.AddTransient<IRecipientMonitorServices, RecipientMonitorServices>();
 builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorRepository>();
 builder.Services.AddTransient<IRecipientLogRepository, RecipientLogRepository>();
+
 var app = builder.Build();
+
+var context = app.Services.GetRequiredService<HippocampusContext>();
+var migrations = context.Database.GetPendingMigrations();
+if (migrations.Any()) await context.Database.MigrateAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -36,6 +41,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 
