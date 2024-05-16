@@ -53,4 +53,14 @@ public static class RecipientMonitorRoutes
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
+
+    private static async Task<IResult> UpdateRecipientLevel(
+        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+        [FromQuery] RecipientMonitorId recipientMonitorId,
+        [FromQuery] int levelheight)
+    {
+        var serviceResult = await recipientMonitorServices.UpdateLevel(recipientMonitorId, levelheight);
+        if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
+        return Results.NoContent();
+    }
 }

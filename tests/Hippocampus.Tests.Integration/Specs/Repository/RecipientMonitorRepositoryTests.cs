@@ -197,7 +197,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         await Context.SaveChangesAsync();
 
-        var subject = await _recipientMonitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+        var subject = await _recipientMonitorRepository.GetAllLinkedMonitor();
 
         var expected = monitors.Concat(linkedMonitors);
 
@@ -223,7 +223,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         await Context.SaveChangesAsync();
 
-        var returnedValue = await _recipientMonitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+        var returnedValue = await _recipientMonitorRepository.GetAllLinkedMonitor();
 
         var subject = returnedValue.ToArray()[0].RecipientLogs[0];
 
@@ -246,7 +246,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
         monitor.MinHeight = Faker.Random.Int(0, 50);
         monitor.MaxHeight = Faker.Random.Int(51, 100);
 
-        var subject = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
+        var subject = await _recipientMonitorRepository.Update(monitorUpdated);
 
         var expected = new RecipientMonitor
         {
@@ -280,7 +280,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
         monitor.MinHeight = Faker.Random.Int(0, 50);
         monitor.MaxHeight = Faker.Random.Int(51, 100);
 
-        var result = await _recipientMonitorRepository.UpdateRecipientMonitor(monitorUpdated);
+        var result = await _recipientMonitorRepository.Update(monitorUpdated);
 
         var subject = await Context.RecipientMonitors.FindAsync(monitor.RecipientMonitorId);
 

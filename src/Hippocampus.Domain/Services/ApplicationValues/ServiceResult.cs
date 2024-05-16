@@ -1,32 +1,52 @@
 ﻿namespace Hippocampus.Domain.Services.ApplicationValues;
 
-public class ServiceResult<TResponse>
+public class ServiceResult
 {
-    public TResponse? Result { get; }
-    public string Message { get; } = string.Empty;
-    public bool IsSuccess { get; }
+    public string? Message { get; protected set; }
+
+    public bool IsSuccess { get; protected set; }
+
     public bool IsFailure => !IsSuccess;
 
-
-    private ServiceResult(TResponse result)
+    protected ServiceResult(bool isSuccess)
     {
-        IsSuccess = true;
+        IsSuccess = isSuccess;
+    }
+
+    protected ServiceResult(string message, bool isSuccess)
+    {
+        Message = message;
+        IsSuccess = isSuccess;
+    }
+
+    public static ServiceResult Success()
+    {
+        return new ServiceResult(true);
+    }
+
+    public static ServiceResult Error(string message)
+    {
+        return new ServiceResult(message, false);
+    }
+}
+
+public class ServiceResult<TResult> : ServiceResult
+{
+    public TResult? Result { get; private set; }
+
+    private ServiceResult(TResult result) : base(true)
+    {
         Result = result;
     }
 
-    private ServiceResult(string message)
+    private ServiceResult(string message, bool isSuccess) : base(message, isSuccess)
     {
-        IsSuccess = false;
-        Message = message;
     }
 
-    public static ServiceResult<TResponse> Success(TResponse result)
-    {
-        return new ServiceResult<TResponse>(result);
-    }
+    public static ServiceResult<TResult> Success(TResult result) => new ServiceResult<TResult>(result);
 
-    public static ServiceResult<TResponse> Error(string message)
+    public new static ServiceResult<TResult> Error(string message)
     {
-        return new ServiceResult<TResponse>(message);
+        return new ServiceResult<TResult>(message, false);
     }
 }

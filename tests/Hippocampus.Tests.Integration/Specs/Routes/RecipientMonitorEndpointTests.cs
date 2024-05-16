@@ -86,7 +86,7 @@ public class RecipientMonitorEndpointTests : ApiFixture
                 RecipientMonitorId = fakeMonitor.RecipientMonitorId,
                 Name = fakeMonitor.Name,
                 LinkedRecipientMonitorMacAddress = fakeMonitor.MonitorLinkedTo.MacAddress,
-                RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelPercentage,
+                RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelHeight,
                 RecipientState = fakeMonitor.RecipientLogs[0].RecipientState
             }).ToList();
 

@@ -16,7 +16,7 @@ public partial struct RecipientMonitorId
     }
 }
 
-public class RecipientMonitor
+public record RecipientMonitor
 {
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.New();
     public MacAddress MacAddress { get; init; } = new();

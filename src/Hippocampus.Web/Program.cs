@@ -30,9 +30,9 @@ builder.Services.AddTransient<IRecipientLogRepository, RecipientLogRepository>()
 
 var app = builder.Build();
 
-var context = app.Services.GetRequiredService<HippocampusContext>();
-var migrations = context.Database.GetPendingMigrations();
-if (migrations.Any()) await context.Database.MigrateAsync();
+// var context = app.Services.GetRequiredService<HippocampusContext>();
+// var migrations = context.Database.GetPendingMigrations();
+// if (migrations.Any()) await context.Database.MigrateAsync();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -66,7 +66,7 @@ public class AutoMapperProfile : Profile
                 dst => dst.RecipientLevelPercentage,
                 map => map.MapFrom(
                     src => src.RecipientLogs.Any()
-                        ? src.RecipientLogs[0].LevelPercentage.Value
+                        ? src.RecipientLogs[0].LevelHeight
                         : (int?)null))
             .ForMember(
                 dst => dst.RecipientState,

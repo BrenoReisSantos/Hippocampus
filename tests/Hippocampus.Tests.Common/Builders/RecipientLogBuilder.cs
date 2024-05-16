@@ -12,7 +12,7 @@ public sealed class RecipientLogBuilder : AutoFaker<RecipientLog>
         Ignore(recipientLog => recipientLog.RecipientLogId);
         RuleFor(recipientLog => recipientLog.RecipientState, faker => faker.PickRandom<RecipientState>());
         RuleFor(recipientLog => recipientLog.RegisterDate, faker => faker.Date.Recent().ToUniversalTime());
-        RuleFor(recipientLog => recipientLog.LevelPercentage, faker => new LevelPercentage(faker.Random.Byte(0, 100)));
+        RuleFor(recipientLog => recipientLog.LevelHeight, faker => faker.Random.Int(0, 1000 ));
         Ignore(recipientLog => recipientLog.RecipientMonitor);
         Ignore(recipientLog => recipientLog.RecipientMonitorId);
     }

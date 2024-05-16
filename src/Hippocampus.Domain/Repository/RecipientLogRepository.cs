@@ -42,7 +42,7 @@ public class RecipientLogRepository : IRecipientLogRepository
             RecipientMonitor = recipientToLogFor,
             RegisterDate = _clock.Now.ToUniversalTime(),
             RecipientState = recipientLog.RecipientState,
-            LevelPercentage = recipientLog.LevelPercentage
+            LevelHeight = recipientLog.LevelHeight
         };
 
         _context.RecipientLogs.Add(recipientLogToInsert);

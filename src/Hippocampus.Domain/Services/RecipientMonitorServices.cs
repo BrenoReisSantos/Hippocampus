@@ -16,6 +16,8 @@ public interface IRecipientMonitorServices
 
     Task<ServiceResult<IEnumerable<RecipientLog>>> GetMonitorLogsInAGivenDateRange(RecipientMonitorId monitorId,
         DateTime? startDate, DateTime? endDate);
+
+    Task<ServiceResult> UpdateLevel(RecipientMonitorId recipientMonitorId, int levelheight);
 }
 
 public class RecipientMonitorServices : IRecipientMonitorServices
@@ -68,7 +70,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 
     public async Task<IEnumerable<RecipientMonitorForMonitorsTableDto>> GetRecipientMonitorsForMonitorsTable()
     {
-        var monitors = await _monitorRepository.GetAllRecipientMonitorsWithLinkedMonitor();
+        var monitors = await _monitorRepository.GetAllLinkedMonitor();
         return _mapper.Map<IEnumerable<RecipientMonitorForMonitorsTableDto>>(monitors);
     }
 
@@ -102,7 +104,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         var monitorToUpdate = _mapper.Map<RecipientMonitor>(monitor);
         if (monitorLinkedTo is not null) monitorToUpdate.MonitorLinkedTo = monitorLinkedTo;
 
-        var updatedMonitor = await _monitorRepository.UpdateRecipientMonitor(monitorToUpdate);
+        var updatedMonitor = await _monitorRepository.Update(monitorToUpdate);
 
         var recipientMonitorCreatedDto = _mapper.Map<RecipientMonitorUpdatedDto>(updatedMonitor);
 
@@ -111,7 +113,7 @@ public class RecipientMonitorServices : IRecipientMonitorServices
 
     public async Task<ServiceResult<RecipientMonitorDto>> GetRecipientMonitorById(RecipientMonitorId recipientMonitorId)
     {
-        var monitor = await _monitorRepository.GetRecipientMonitorWithMonitorLinkedToById(recipientMonitorId);
+        var monitor = await _monitorRepository.Get(recipientMonitorId);
         var mappedMonitor = _mapper.Map<RecipientMonitorDto>(monitor);
         return ServiceResult<RecipientMonitorDto>.Success(mappedMonitor);
     }
@@ -130,5 +132,21 @@ public class RecipientMonitorServices : IRecipientMonitorServices
         var logs = await _recipientLogMonitor.GetLogsForMonitorInAGivenDateRangeAsync(monitorId, startDateTreated,
             endDateTreated);
         return ServiceResult<IEnumerable<RecipientLog>>.Success(logs);
+    }
+
+    public async Task<ServiceResult> UpdateLevel(RecipientMonitorId recipientMonitorId, int levelheight)
+    {
+        var monitor = await _monitorRepository.Get(recipientMonitorId);
+
+        if (monitor is null) return ServiceResult.Error("Recipient Monitor not found");
+
+        var monitorWithChanges = monitor with
+        {
+            CurrentLevelHeight = levelheight,
+        };
+
+        await _monitorRepository.Update(monitorWithChanges);
+
+        return ServiceResult.Success();
     }
 }

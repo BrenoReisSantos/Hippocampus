@@ -92,7 +92,7 @@
     void AssemblyLineGraphData()
     {
         _xAxis = _logs.Select(l => l.RegisterDate.ToString("dd/MM HH:mm")).ToArray();
-        _recipientLevelRegisters = _logs.Select(l => (double)(l.LevelPercentage ?? 0)).ToArray();
+        _recipientLevelRegisters = _logs.Select(l => (double)l.LevelHeight).ToArray();
         _monitorSeries = new ChartSeries { Name = $"{_monitorSelected?.Name} History", Data = _recipientLevelRegisters };
     }
 

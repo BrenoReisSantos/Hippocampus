@@ -3,14 +3,14 @@ using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Domain.Models.Entities;
 
-public class RecipientLog
+public record RecipientLog
 {
     public int RecipientLogId { get; init; }
-    public LevelPercentage LevelPercentage { get; init; } = new();
+    public int LevelHeight { get; init; } = new();
     public RecipientState RecipientState { get; init; } = RecipientState.Average;
     public DateTime RegisterDate { get; init; }
     public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.Empty;
-    public RecipientMonitor RecipientMonitor { get; init; } = new();
+    public RecipientMonitor? RecipientMonitor { get; init; } = new();
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

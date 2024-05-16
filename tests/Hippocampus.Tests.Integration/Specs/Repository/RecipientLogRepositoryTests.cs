@@ -59,7 +59,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             RecipientLogId = 1,
             RecipientMonitorId = recipient.RecipientMonitorId,
             RecipientState = recipientLog.RecipientState,
-            LevelPercentage = recipientLog.LevelPercentage,
+            LevelHeight = recipientLog.LevelHeight,
             RegisterDate = recipientLog.RegisterDate
         };
         subject.Should()

@@ -260,7 +260,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         var subject = monitorsForTable.ToList()[0].RecipientLevelPercentage;
 
-        subject.Should().Be(log.LevelPercentage);
+        subject.Should().Be(log.LevelHeight);
     }
 
     [Test]

@@ -10,9 +10,9 @@ public interface IRecipientMonitorRepository
 {
     Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
     Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress);
-    Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToById(RecipientMonitorId recipientMonitorId);
-    Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor();
-    Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor);
+    Task<RecipientMonitor?> Get(RecipientMonitorId recipientMonitorId);
+    Task<IEnumerable<RecipientMonitor>> GetAllLinkedMonitor();
+    Task<RecipientMonitor?> Update(RecipientMonitor changedRecipientMonitor);
     Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId);
     Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId);
 }
@@ -67,14 +67,14 @@ public class RecipientMonitorRepository : IRecipientMonitorRepository
             .SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
     }
 
-    public async Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToById(
+    public async Task<RecipientMonitor?> Get(
         RecipientMonitorId recipientMonitorId)
     {
         return await _context.RecipientMonitors.Include(recipientMonitor => recipientMonitor.MonitorLinkedTo)
             .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.RecipientMonitorId == recipientMonitorId);
     }
 
-    public async Task<IEnumerable<RecipientMonitor>> GetAllRecipientMonitorsWithLinkedMonitor()
+    public async Task<IEnumerable<RecipientMonitor>> GetAllLinkedMonitor()
     {
         return await _context.RecipientMonitors
             .Include(r => r.MonitorLinkedTo)
@@ -85,7 +85,7 @@ public class RecipientMonitorRepository : IRecipientMonitorRepository
             .ToListAsync();
     }
 
-    public async Task<RecipientMonitor?> UpdateRecipientMonitor(RecipientMonitor changedRecipientMonitor)
+    public async Task<RecipientMonitor?> Update(RecipientMonitor changedRecipientMonitor)
     {
         var recipientToChange = await _context.RecipientMonitors.Include(r => r.MonitorLinkedTo).FirstOrDefaultAsync(
             r =>
