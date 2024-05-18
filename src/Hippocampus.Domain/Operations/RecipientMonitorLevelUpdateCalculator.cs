@@ -8,8 +8,8 @@ public class RecipientMonitorLevelUpdateCalculator(WaterTank waterTank)
     {
         return waterTank with
         {
-            CurrentLevelHeight = newLevel,
-            WaterTankState = CalculateRecipientState(newLevel)
+            CurrentLevel = newLevel,
+            State = CalculateRecipientState(newLevel)
         };
     }
 

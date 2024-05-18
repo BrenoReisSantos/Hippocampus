@@ -5,9 +5,10 @@ namespace Hippocampus.Domain.Models.Entities;
 
 public record WaterTankLog
 {
-    public int WaterTankLogId { get; init; }
+    public long WaterTankLogId { get; init; }
     public int Level { get; init; }
-    public WaterTankState WaterTankState { get; init; } = WaterTankState.Empty;
+    public WaterTankState State { get; init; } = WaterTankState.Empty;
+    public bool? PumpingWater { get; init; }
     public DateTime LogDate { get; init; }
     public WaterTankId WaterTankId { get; init; } = WaterTankId.Empty;
     public WaterTank? WaterTank { get; init; }

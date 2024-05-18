@@ -9,7 +9,7 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
     {
         RuleFor(r => r.WaterTankId, faker => new WaterTankId(faker.Random.Guid()));
         RuleFor(r => r.Name, faker => faker.Random.Words(5));
-        RuleFor(r => r.WaterTankType, faker => faker.PickRandom<WaterTankType>());
+        RuleFor(r => r.Type, faker => faker.PickRandom<WaterTankType>());
         RuleFor(r => r.CreatedAt, faker => faker.Date.Past().ToUniversalTime());
         RuleFor(r => r.UpdatedAt, faker => faker.Date.Recent());
         RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(51, 100));
@@ -33,7 +33,7 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
 
     public WaterTankBuilder WithWaterTankType(WaterTankType waterTankType)
     {
-        RuleFor(r => r.WaterTankType, waterTankType);
+        RuleFor(r => r.Type, waterTankType);
         return this;
     }
 

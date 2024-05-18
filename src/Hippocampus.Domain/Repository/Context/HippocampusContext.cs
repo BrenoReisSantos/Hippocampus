@@ -6,8 +6,8 @@ namespace Hippocampus.Domain.Repository.Context;
 
 public class HippocampusContext : DbContext
 {
-    public DbSet<WaterTankLog> RecipientLogs => Set<WaterTankLog>();
-    public DbSet<WaterTank> RecipientMonitors => Set<WaterTank>();
+    public DbSet<WaterTankLog> WaterTankLog => Set<WaterTankLog>();
+    public DbSet<WaterTank> WaterTank => Set<WaterTank>();
 
     public HippocampusContext(DbContextOptions options) : base(options)
     {
@@ -15,8 +15,6 @@ public class HippocampusContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Ignore<MacAddress>();
-        modelBuilder.Ignore<LevelPercentage>();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HippocampusContext).Assembly);
     }
 }

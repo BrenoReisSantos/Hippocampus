@@ -10,7 +10,7 @@ public sealed class WaterTankLogBuilder : AutoFaker<WaterTankLog>
     public WaterTankLogBuilder()
     {
         Ignore(recipientLog => recipientLog.WaterTankLogId);
-        RuleFor(recipientLog => recipientLog.WaterTankState, faker => faker.PickRandom<WaterTankState>());
+        RuleFor(recipientLog => recipientLog.State, faker => faker.PickRandom<WaterTankState>());
         RuleFor(recipientLog => recipientLog.LogDate, faker => faker.Date.Recent().ToUniversalTime());
         RuleFor(recipientLog => recipientLog.Level, faker => faker.Random.Int(0, 1000));
         Ignore(recipientLog => recipientLog.WaterTank);

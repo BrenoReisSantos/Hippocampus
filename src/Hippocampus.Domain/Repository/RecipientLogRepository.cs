@@ -28,24 +28,24 @@ public class WaterTankLogRepository : IWaterTankLogRepository
 
     public async Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId)
     {
-        return await _context.RecipientLogs.OrderByDescending(r => r.LogDate)
+        return await _context.WaterTankLog.OrderByDescending(r => r.LogDate)
             .FirstOrDefaultAsync(r => r.WaterTankId == waterTankId);
     }
 
     public async Task<WaterTankLog> InsertRecipientLog(WaterTankLog waterTankLog)
     {
         var recipientToLogFor = await
-            _context.RecipientMonitors.SingleOrDefaultAsync(
+            _context.WaterTank.SingleOrDefaultAsync(
                 r => r.WaterTankId == waterTankLog.WaterTank.WaterTankId);
         var recipientLogToInsert = new WaterTankLog
         {
             WaterTank = recipientToLogFor,
             LogDate = _clock.Now.ToUniversalTime(),
-            WaterTankState = waterTankLog.WaterTankState,
+            State = waterTankLog.State,
             Level = waterTankLog.Level
         };
 
-        _context.RecipientLogs.Add(recipientLogToInsert);
+        _context.WaterTankLog.Add(recipientLogToInsert);
 
         await _context.SaveChangesAsync();
 
@@ -57,7 +57,7 @@ public class WaterTankLogRepository : IWaterTankLogRepository
     {
         var startDateUtc = startDate.ToUniversalTime();
         var endDateUtc = endDate.ToUniversalTime();
-        return await _context.RecipientLogs.Where(log =>
+        return await _context.WaterTankLog.Where(log =>
                 log.WaterTankId == monitorId && log.LogDate >= startDateUtc &&
                 log.LogDate <= endDateUtc)
             .ToListAsync();
