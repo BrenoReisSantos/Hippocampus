@@ -6,108 +6,98 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Domain.Repository;
 
-public interface IRecipientMonitorRepository
+public interface IWaterTankRepository
 {
-    Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor);
-    Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress);
-    Task<RecipientMonitor?> Get(RecipientMonitorId recipientMonitorId);
-    Task<IEnumerable<RecipientMonitor>> GetAllLinkedMonitor();
-    Task<RecipientMonitor?> Update(RecipientMonitor changedRecipientMonitor);
-    Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId);
-    Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId);
+    Task<WaterTank> InsertWaterTank(WaterTank waterTank);
+    Task<WaterTank?> Get(WaterTankId waterTankId);
+    Task<IEnumerable<WaterTank>> GetAllLinkedMonitor();
+    Task<WaterTank?> Update(WaterTank changedWaterTank);
+    Task<bool> ExistsMonitor(WaterTankId waterTankId);
+    Task DeleteRecipientMonitor(WaterTankId waterTankId);
 }
 
-public class RecipientMonitorRepository : IRecipientMonitorRepository
+public class WaterTankRepository : IWaterTankRepository
 {
     private readonly HippocampusContext _context;
     private readonly IClock _clock;
 
-    public RecipientMonitorRepository(HippocampusContext context, IClock clock)
+    public WaterTankRepository(HippocampusContext context, IClock clock)
     {
         _context = context;
         _clock = clock;
     }
 
-    public async Task<RecipientMonitor> InsertRecipientMonitor(RecipientMonitor recipientMonitor)
+    public async Task<WaterTank> InsertWaterTank(WaterTank waterTank)
     {
-        RecipientMonitor? linkedRecipientMonitor = null;
+        WaterTank? linkedRecipientMonitor = null;
 
-        if (recipientMonitor.MonitorLinkedTo is not null)
+        if (waterTank.PumpsTo is not null)
             linkedRecipientMonitor =
-                await _context.RecipientMonitors.FindAsync(recipientMonitor.MonitorLinkedTo?.RecipientMonitorId);
+                await _context.RecipientMonitors.FindAsync(waterTank.PumpsTo?.WaterTankId);
 
-        var newRecipient = new RecipientMonitor()
+        var newRecipient = new WaterTank()
         {
-            Name = recipientMonitor.Name.Trim(),
+            Name = waterTank.Name.Trim(),
             CreatedAt = _clock.Now.ToUniversalTime(),
             IsActive = true,
-            MacAddress = recipientMonitor.MacAddress,
-            MaxHeight = recipientMonitor.MaxHeight,
-            MinHeight = recipientMonitor.MinHeight,
-            RecipientType = recipientMonitor.RecipientType,
-            RecipientMonitorId = RecipientMonitorId.New()
+            LevelWhenFull = waterTank.LevelWhenFull,
+            LevelWhenEmpty = waterTank.LevelWhenEmpty,
+            WaterTankType = waterTank.WaterTankType,
+            WaterTankId = WaterTankId.New()
         };
-        newRecipient.MonitorLinkedTo = linkedRecipientMonitor;
+        newRecipient.PumpsTo = linkedRecipientMonitor;
 
         _context.Add(newRecipient);
 
         if (linkedRecipientMonitor is not null)
-            linkedRecipientMonitor.MonitorLinkedTo = newRecipient;
+            linkedRecipientMonitor.PumpsTo = newRecipient;
 
         await _context.SaveChangesAsync();
 
         return newRecipient;
     }
 
-    public Task<RecipientMonitor?> GetRecipientMonitorWithMonitorLinkedToByMacAddress(MacAddress macAddress)
+    public async Task<WaterTank?> Get(
+        WaterTankId waterTankId)
     {
-        return _context.RecipientMonitors
-            .AsSplitQuery()
-            .Include(r => r.MonitorLinkedTo)
-            .SingleOrDefaultAsync(r => r.MacAddress.Equals(macAddress));
+        return await _context.RecipientMonitors.Include(recipientMonitor => recipientMonitor.PumpsTo)
+            .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.WaterTankId == waterTankId);
     }
 
-    public async Task<RecipientMonitor?> Get(
-        RecipientMonitorId recipientMonitorId)
-    {
-        return await _context.RecipientMonitors.Include(recipientMonitor => recipientMonitor.MonitorLinkedTo)
-            .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.RecipientMonitorId == recipientMonitorId);
-    }
-
-    public async Task<IEnumerable<RecipientMonitor>> GetAllLinkedMonitor()
+    public async Task<IEnumerable<WaterTank>> GetAllLinkedMonitor()
     {
         return await _context.RecipientMonitors
-            .Include(r => r.MonitorLinkedTo)
+            .Include(r => r.PumpsTo)
             .Include(recipient =>
-                recipient.RecipientLogs.OrderByDescending(
-                        recipientLog => recipientLog.RegisterDate)
+                recipient.WaterTankLogs.OrderByDescending(
+                        recipientLog => recipientLog.LogDate)
                     .Take(1))
             .ToListAsync();
     }
 
-    public async Task<RecipientMonitor?> Update(RecipientMonitor changedRecipientMonitor)
+    public async Task<WaterTank?> Update(WaterTank changedWaterTank)
     {
-        var recipientToChange = await _context.RecipientMonitors.Include(r => r.MonitorLinkedTo).FirstOrDefaultAsync(
+        var recipientToChange = await _context.RecipientMonitors.Include(r => r.PumpsTo).FirstOrDefaultAsync(
             r =>
-                r.RecipientMonitorId == changedRecipientMonitor.RecipientMonitorId);
+                r.WaterTankId == changedWaterTank.WaterTankId);
 
         if (recipientToChange is null) return null;
 
-        recipientToChange.Name = changedRecipientMonitor.Name;
-        recipientToChange.MaxHeight = changedRecipientMonitor.MaxHeight;
-        recipientToChange.MinHeight = changedRecipientMonitor.MinHeight;
-        recipientToChange.RecipientType = changedRecipientMonitor.RecipientType;
+        recipientToChange.Name = changedWaterTank.Name;
+        recipientToChange.LevelWhenFull = changedWaterTank.LevelWhenFull;
+        recipientToChange.LevelWhenEmpty = changedWaterTank.LevelWhenEmpty;
+        recipientToChange.WaterTankType = changedWaterTank.WaterTankType;
         recipientToChange.UpdatedAt = _clock.Now.ToUniversalTime();
 
-        if (changedRecipientMonitor.MonitorLinkedTo is not null)
+        if (changedWaterTank.PumpsTo is not null)
         {
             var linkedMonitor =
-                await _context.RecipientMonitors.FindAsync(changedRecipientMonitor.MonitorLinkedTo.RecipientMonitorId);
-            if (linkedMonitor is not null) recipientToChange.MonitorLinkedTo = linkedMonitor;
+                await _context.RecipientMonitors.FindAsync(changedWaterTank.PumpsTo.WaterTankId);
+            if (linkedMonitor is not null) recipientToChange.PumpsTo = linkedMonitor;
         }
         else
         {
-            recipientToChange.MonitorLinkedTo = null;
+            recipientToChange.PumpsTo = null;
         }
 
         await _context.SaveChangesAsync();
@@ -115,14 +105,14 @@ public class RecipientMonitorRepository : IRecipientMonitorRepository
         return recipientToChange;
     }
 
-    public async Task<bool> ExistsMonitor(RecipientMonitorId recipientMonitorId)
+    public async Task<bool> ExistsMonitor(WaterTankId waterTankId)
     {
-        return await _context.RecipientMonitors.AnyAsync(r => r.RecipientMonitorId == recipientMonitorId);
+        return await _context.RecipientMonitors.AnyAsync(r => r.WaterTankId == waterTankId);
     }
 
-    public async Task DeleteRecipientMonitor(RecipientMonitorId recipientMonitorId)
+    public async Task DeleteRecipientMonitor(WaterTankId waterTankId)
     {
-        var monitor = await _context.RecipientMonitors.FindAsync(recipientMonitorId);
+        var monitor = await _context.RecipientMonitors.FindAsync(waterTankId);
         if (monitor is null) return;
         monitor.IsActive = false;
         await _context.SaveChangesAsync();

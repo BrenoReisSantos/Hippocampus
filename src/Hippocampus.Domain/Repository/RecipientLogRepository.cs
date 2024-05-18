@@ -6,43 +6,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hippocampus.Domain.Repository;
 
-public interface IRecipientLogRepository
+public interface IWaterTankLogRepository
 {
-    Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId);
-    Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog);
+    Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId);
+    Task<WaterTankLog> InsertRecipientLog(WaterTankLog waterTankLog);
 
-    Task<IEnumerable<RecipientLog>> GetLogsForMonitorInAGivenDateRangeAsync(RecipientMonitorId monitorId,
+    Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(WaterTankId monitorId,
         DateTime startDate, DateTime endDate);
 }
 
-public class RecipientLogRepository : IRecipientLogRepository
+public class WaterTankLogRepository : IWaterTankLogRepository
 {
     private readonly HippocampusContext _context;
     private readonly IClock _clock;
 
-    public RecipientLogRepository(HippocampusContext context, IClock clock)
+    public WaterTankLogRepository(HippocampusContext context, IClock clock)
     {
         _context = context;
         _clock = clock;
     }
 
-    public async Task<RecipientLog?> GetMostRecentRecipientLogAsync(RecipientMonitorId recipientMonitorId)
+    public async Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId)
     {
-        return await _context.RecipientLogs.OrderByDescending(r => r.RegisterDate)
-            .FirstOrDefaultAsync(r => r.RecipientMonitorId == recipientMonitorId);
+        return await _context.RecipientLogs.OrderByDescending(r => r.LogDate)
+            .FirstOrDefaultAsync(r => r.WaterTankId == waterTankId);
     }
 
-    public async Task<RecipientLog> InsertRecipientLog(RecipientLog recipientLog)
+    public async Task<WaterTankLog> InsertRecipientLog(WaterTankLog waterTankLog)
     {
         var recipientToLogFor = await
             _context.RecipientMonitors.SingleOrDefaultAsync(
-                r => r.RecipientMonitorId == recipientLog.RecipientMonitor.RecipientMonitorId);
-        var recipientLogToInsert = new RecipientLog
+                r => r.WaterTankId == waterTankLog.WaterTank.WaterTankId);
+        var recipientLogToInsert = new WaterTankLog
         {
-            RecipientMonitor = recipientToLogFor,
-            RegisterDate = _clock.Now.ToUniversalTime(),
-            RecipientState = recipientLog.RecipientState,
-            LevelHeight = recipientLog.LevelHeight
+            WaterTank = recipientToLogFor,
+            LogDate = _clock.Now.ToUniversalTime(),
+            WaterTankState = waterTankLog.WaterTankState,
+            Level = waterTankLog.Level
         };
 
         _context.RecipientLogs.Add(recipientLogToInsert);
@@ -52,14 +52,14 @@ public class RecipientLogRepository : IRecipientLogRepository
         return recipientLogToInsert;
     }
 
-    public async Task<IEnumerable<RecipientLog>> GetLogsForMonitorInAGivenDateRangeAsync(RecipientMonitorId monitorId,
+    public async Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(WaterTankId monitorId,
         DateTime startDate, DateTime endDate)
     {
         var startDateUtc = startDate.ToUniversalTime();
         var endDateUtc = endDate.ToUniversalTime();
         return await _context.RecipientLogs.Where(log =>
-                log.RecipientMonitorId == monitorId && log.RegisterDate >= startDateUtc &&
-                log.RegisterDate <= endDateUtc)
+                log.WaterTankId == monitorId && log.LogDate >= startDateUtc &&
+                log.LogDate <= endDateUtc)
             .ToListAsync();
     }
 }

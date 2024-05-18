@@ -5,34 +5,27 @@ using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Tests.Common.Builders;
 
-public sealed class RecipientMonitorPostDtoBuilder : AutoFaker<RecipientMonitorPostDto>
+public sealed class RecipientMonitorPostDtoBuilder : AutoFaker<WaterTankCreateDto>
 {
     public RecipientMonitorPostDtoBuilder()
     {
         RuleFor(r => r.Name, faker => faker.Random.Words(5));
-        RuleFor(r => r.MacAddress, faker => new MacAddress(faker.Internet.Mac()));
-        RuleFor(r => r.MinHeight, faker => faker.Random.Int(0, 50));
-        RuleFor(r => r.MaxHeight, faker => faker.Random.Int(51, 100));
-        RuleFor(r => r.RecipientType, faker => faker.PickRandom<RecipientType>());
-        RuleFor(r => r.RecipientMonitorLinkedToMacAddress, faker => null);
+        RuleFor(r => r.LevelWhenEmpty, faker => faker.Random.Int(0, 50));
+        RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(51, 100));
+        RuleFor(r => r.WaterTankType, faker => faker.PickRandom<WaterTankType>());
+        Ignore(r => r.PumpsToId);
     }
 
     public RecipientMonitorPostDtoBuilder WithInvalidMaxAndMinHeight()
     {
-        RuleFor(r => r.MaxHeight, faker => faker.Random.Int(0, 50));
-        RuleFor(r => r.MinHeight, faker => faker.Random.Int(51, 100));
+        RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(0, 50));
+        RuleFor(r => r.LevelWhenEmpty, faker => faker.Random.Int(51, 100));
         return this;
     }
 
-    public RecipientMonitorPostDtoBuilder WithRecipientMonitorLinkedToMacAddress(MacAddress monitorLinkedToMacAddress)
+    public RecipientMonitorPostDtoBuilder WithRecipientType(WaterTankType waterTankType)
     {
-        RuleFor(r => r.RecipientMonitorLinkedToMacAddress, monitorLinkedToMacAddress);
-        return this;
-    }
-
-    public RecipientMonitorPostDtoBuilder WithRecipientType(RecipientType recipientType)
-    {
-        RuleFor(r => r.RecipientType, recipientType);
+        RuleFor(r => r.WaterTankType, waterTankType);
         return this;
     }
 }

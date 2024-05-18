@@ -24,9 +24,9 @@ builder.Services.AddAutoMapper(config =>
     config.AddProfile(typeof(AutoMapperProfile)));
 
 builder.Services.AddMudServices();
-builder.Services.AddTransient<IRecipientMonitorServices, RecipientMonitorServices>();
-builder.Services.AddTransient<IRecipientMonitorRepository, RecipientMonitorRepository>();
-builder.Services.AddTransient<IRecipientLogRepository, RecipientLogRepository>();
+builder.Services.AddTransient<IRecipientMonitorServices, WaterTankService>();
+builder.Services.AddTransient<IWaterTankRepository, WaterTankRepository>();
+builder.Services.AddTransient<IWaterTankLogRepository, WaterTankLogRepository>();
 
 var app = builder.Build();
 

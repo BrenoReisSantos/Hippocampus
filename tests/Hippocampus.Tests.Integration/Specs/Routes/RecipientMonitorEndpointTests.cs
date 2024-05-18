@@ -45,11 +45,11 @@ public class RecipientMonitorEndpointTests : ApiFixture
     [Test]
     public async Task GetListOfRecipientMonitors_Should_Return_List_Of_All_RecipientMonitors()
     {
-        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        var linkedMonitors = new WaterTankBuilder().Generate(5);
         Context.AddRange(linkedMonitors);
         await Context.SaveChangesAsync();
 
-        var monitors = new RecipientMonitorBuilder().Generate(5);
+        var monitors = new WaterTankBuilder().Generate(5);
 
         foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
         {
@@ -64,7 +64,7 @@ public class RecipientMonitorEndpointTests : ApiFixture
         var allRecipientMonitors = monitors.Concat(linkedMonitors).ToArray();
         foreach (var monitor in allRecipientMonitors)
         {
-            var log = new RecipientLogBuilder().Generate();
+            var log = new WaterTankLogBuilder().Generate();
             var monitorFromDatabase =
                 await Context.RecipientMonitors.Include(databaseMonitor => databaseMonitor.RecipientLogs)
                     .SingleAsync(databaseMonitor => databaseMonitor.RecipientMonitorId == monitor.RecipientMonitorId);
@@ -96,13 +96,13 @@ public class RecipientMonitorEndpointTests : ApiFixture
     [Test]
     public async Task PutRecipientMonitor_Should_Return_200_Ok_With_ServiceResult_With_Success_And_Updated_Monitor()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
 
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new RecipientMonitorPutDtoBuilder().WithRecipientMonitorId(monitor.RecipientMonitorId)
+        var monitorUpdated = new WaterTankUpdateDtoBuilder().WithWaterTankId(monitor.RecipientMonitorId)
             .Generate();
 
         monitor.Name = Faker.Random.Words(3);
@@ -115,8 +115,8 @@ public class RecipientMonitorEndpointTests : ApiFixture
         {
             Name = monitorUpdated.Name,
             MacAddress = monitor.MacAddress,
-            MaxHeight = monitorUpdated.MaxHeight,
-            MinHeight = monitorUpdated.MinHeight,
+            MaxHeight = monitorUpdated.LevelWhenFull,
+            MinHeight = monitorUpdated.LevelWhenEmpty,
             RecipientType = monitorUpdated.RecipientType,
             RecipientMonitorId = monitor.RecipientMonitorId
         };
@@ -127,14 +127,14 @@ public class RecipientMonitorEndpointTests : ApiFixture
     [Test]
     public async Task PutRecipientMonitor_Should_Return_400_BadRequest_With_ServiceResult_With_Failure()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
 
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new RecipientMonitorPutDtoBuilder().WithInvalidMaxAndMinHeight()
-            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+        var monitorUpdated = new WaterTankUpdateDtoBuilder().WithInvalidFullAndEmptyValue()
+            .WithWaterTankId(monitor.RecipientMonitorId)
             .Generate();
 
         monitor.Name = Faker.Random.Words(3);

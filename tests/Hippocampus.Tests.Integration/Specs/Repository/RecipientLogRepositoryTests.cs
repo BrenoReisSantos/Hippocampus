@@ -18,16 +18,16 @@ public class RecipientLogRepositoryTests : DatabaseFixture
     [Test]
     public async Task GetMostRecentRecipientLogAsync_Should_Return_Most_Recent_Log_Of_A_RecipientMonitor()
     {
-        var recipientMonitor = new RecipientMonitorBuilder().Generate();
+        var recipientMonitor = new WaterTankBuilder().Generate();
         Context.RecipientMonitors.Add(recipientMonitor);
         await Context.SaveChangesAsync();
 
         var mostRecentLogRegisterDate = Faker.Date.Recent().ToUniversalTime();
-        var mostRecentLog = new RecipientLogBuilder().WithLogDate(mostRecentLogRegisterDate)
+        var mostRecentLog = new WaterTankLogBuilder().WithLogDate(mostRecentLogRegisterDate)
             .WithRecipientMonitor(recipientMonitor).Generate();
         Context.RecipientLogs.Add(mostRecentLog);
 
-        var otherLogs = new RecipientLogBuilder().WithRegisterDateBefore(mostRecentLogRegisterDate)
+        var otherLogs = new WaterTankLogBuilder().WithRegisterDateBefore(mostRecentLogRegisterDate)
             .WithRecipientMonitor(recipientMonitor).Generate(10);
         Context.AddRange(otherLogs);
 
@@ -43,11 +43,11 @@ public class RecipientLogRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientLog_Should_Return_Inserted_RecipientLog()
     {
-        var recipient = new RecipientMonitorBuilder().Generate();
+        var recipient = new WaterTankBuilder().Generate();
         Context.Add(recipient);
         await Context.SaveChangesAsync();
 
-        var recipientLog = new RecipientLogBuilder().WithLogDate(Clock.Now.ToUniversalTime())
+        var recipientLog = new WaterTankLogBuilder().WithLogDate(Clock.Now.ToUniversalTime())
             .WithRecipientMonitor(recipient)
             .Generate();
 
@@ -69,7 +69,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
     [Test]
     public async Task GetLogsForMonitorInAGivenDateRangeAsync_Should_Return_Logs_In_The_Given_Date_Range()
     {
-        var recipient = new RecipientMonitorBuilder().Generate();
+        var recipient = new WaterTankBuilder().Generate();
         Context.Add(recipient);
         await Context.SaveChangesAsync();
 
@@ -81,7 +81,7 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         for (var i = 0; i < logsQuantity; i++)
         {
             var logDate = baseDate.AddMinutes(minutesDistance * i);
-            var recipientLog = new RecipientLogBuilder().WithLogDate(logDate)
+            var recipientLog = new WaterTankLogBuilder().WithLogDate(logDate)
                 .WithRecipientMonitor(recipient)
                 .Generate();
             expectedRecipientLogs.Add(recipientLog);

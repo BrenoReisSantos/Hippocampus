@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hippocampus.Domain.Repository.Context.Configurations;
 
-public class RecipientLogConfiguration : IEntityTypeConfiguration<RecipientLog>
+public class RecipientLogConfiguration : IEntityTypeConfiguration<WaterTankLog>
 {
-    public void Configure(EntityTypeBuilder<RecipientLog> builder)
+    public void Configure(EntityTypeBuilder<WaterTankLog> builder)
     {
-        builder.Property(rlog => rlog.RecipientLogId).ValueGeneratedOnAdd();
-        builder.Property(rlog => rlog.RecipientState).HasConversion<string>();
-        builder.HasAlternateKey(rlog => new { rlog.RecipientMonitorId, rlog.RegisterDate });
-        builder.HasIndex(rlog => rlog.RegisterDate).IsDescending();
+        builder.Property(rlog => rlog.WaterTankLogId).ValueGeneratedOnAdd();
+        builder.Property(rlog => rlog.WaterTankState).HasConversion<string>();
+        builder.HasAlternateKey(rlog => new { RecipientMonitorId = rlog.WaterTankId, RegisterDate = rlog.LogDate });
+        builder.HasIndex(rlog => rlog.LogDate).IsDescending();
     }
 }

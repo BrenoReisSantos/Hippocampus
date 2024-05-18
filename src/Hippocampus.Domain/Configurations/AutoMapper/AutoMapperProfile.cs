@@ -9,79 +9,65 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        CreateMap<RecipientMonitor, RecipientMonitorCreatedDto>()
+        CreateMap<WaterTank, WaterTankCreatedDto>()
             .ForMember(dst => dst.RecipientMonitorLinkedTo,
                 map =>
-                    map.MapFrom(src => src.MonitorLinkedTo != null
+                    map.MapFrom(src => src.PumpsTo != null
                         ? new RecipientMonitorLinkedToCreatedDto()
                         {
-                            RecipientType = src.MonitorLinkedTo.RecipientType,
-                            MacAddress = src.MonitorLinkedTo.MacAddress,
-                            MaxHeight = src.MonitorLinkedTo.MaxHeight,
-                            MinHeight = src.MonitorLinkedTo.MinHeight,
-                            RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
-                            Name = src.MonitorLinkedTo.Name
+                            WaterTankType = src.PumpsTo.WaterTankType,
+                            MaxHeight = src.PumpsTo.LevelWhenFull,
+                            MinHeight = src.PumpsTo.LevelWhenEmpty,
+                            WaterTankId = src.PumpsTo.WaterTankId,
+                            Name = src.PumpsTo.Name
                         }
                         : null));
-        CreateMap<RecipientMonitor, RecipientMonitorUpdatedDto>()
-            .ForMember(dst => dst.RecipientMonitorLinkedTo,
+        CreateMap<WaterTank, WaterTankUpdatedDto>()
+            .ForMember(dst => dst.WaterTankLinkedTo,
                 map =>
-                    map.MapFrom(src => src.MonitorLinkedTo != null
+                    map.MapFrom(src => src.PumpsTo != null
                         ? new RecipientMonitorLinkedToUpdatedDto()
                         {
-                            RecipientType = src.MonitorLinkedTo.RecipientType,
-                            MacAddress = src.MonitorLinkedTo.MacAddress,
-                            MaxHeight = src.MonitorLinkedTo.MaxHeight,
-                            MinHeight = src.MonitorLinkedTo.MinHeight,
-                            RecipientMonitorId = src.MonitorLinkedTo.RecipientMonitorId,
-                            Name = src.MonitorLinkedTo.Name
+                            WaterTankType = src.PumpsTo.WaterTankType,
+                            MaxHeight = src.PumpsTo.LevelWhenFull,
+                            MinHeight = src.PumpsTo.LevelWhenEmpty,
+                            WaterTankId = src.PumpsTo.WaterTankId,
+                            Name = src.PumpsTo.Name
                         }
                         : null));
-        CreateMap<RecipientMonitorPostDto, RecipientMonitor>()
+        CreateMap<WaterTankCreateDto, WaterTank>()
             .ForMember(dst => dst.IsActive,
                 config =>
                     config.MapFrom(src => true))
-            .ForMember(dst => dst.RecipientMonitorId,
+            .ForMember(dst => dst.WaterTankId,
                 config =>
-                    config.MapFrom(src => RecipientMonitorId.New()));
-        CreateMap<RecipientMonitorPutDto, RecipientMonitor>()
+                    config.MapFrom(src => WaterTankId.New()));
+        CreateMap<WaterTankUpdateDto, WaterTank>()
             .ForMember(dst => dst.IsActive,
                 config =>
                     config.MapFrom(src => true))
-            .ForMember(dst => dst.RecipientMonitorId,
+            .ForMember(dst => dst.WaterTankId,
                 config =>
-                    config.MapFrom(src => RecipientMonitorId.New()))
-            .ForMember(dst => dst.RecipientMonitorId,
+                    config.MapFrom(src => WaterTankId.New()))
+            .ForMember(dst => dst.WaterTankId,
                 config => config.MapFrom(
-                    src => src.RecipientMonitorId));
+                    src => src.WaterTankId));
 
-        CreateMap<RecipientMonitor, RecipientMonitorForMonitorsTableDto>()
-            .ForMember(
-                dst => dst.LinkedRecipientMonitorMacAddress,
-                map =>
-                    map.MapFrom(src => src.MonitorLinkedTo != null
-                        ? src.MonitorLinkedTo.MacAddress
-                        : null))
+        CreateMap<WaterTank, WaterTankForTableDto>()
             .ForMember(
                 dst => dst.RecipientLevelPercentage,
                 map => map.MapFrom(
-                    src => src.RecipientLogs.Any()
-                        ? src.RecipientLogs[0].LevelHeight
+                    src => src.WaterTankLogs.Any()
+                        ? src.WaterTankLogs[0].Level
                         : (int?)null))
             .ForMember(
                 dst => dst.RecipientState,
                 map => map.MapFrom(
                     src =>
-                        src.RecipientLogs.Any()
-                            ? src.RecipientLogs[0].RecipientState
-                            : (RecipientState?)null));
+                        src.WaterTankLogs.Any()
+                            ? src.WaterTankLogs[0].WaterTankState
+                            : (WaterTankState?)null));
 
-        CreateMap<RecipientMonitor, RecipientMonitorDto>()
-            .ForMember(
-                dst => dst.MonitorLinkedToMacAddress,
-                map =>
-                    map.MapFrom(src => src.MonitorLinkedTo != null
-                        ? src.MonitorLinkedTo.MacAddress
-                        : null));
+        CreateMap<WaterTank, WaterTankDto>();
     }
 }

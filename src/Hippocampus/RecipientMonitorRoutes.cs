@@ -12,19 +12,19 @@ public static class RecipientMonitorRoutes
     {
         var recipientMonitorsGroup = app.MapGroup("RecipientMonitors");
         recipientMonitorsGroup.MapPost("", CreateNewRecipientMonitor).WithSummary("Created a new Recipient Monitor")
-            .Produces<RecipientMonitorCreatedDto>()
+            .Produces<WaterTankCreatedDto>()
             .Produces<MessageResponse>(400);
         recipientMonitorsGroup.MapGet("list", GetListOfRecipientMonitors).WithSummary("Get the list of all Monitors")
-            .Produces<IEnumerable<RecipientMonitorForMonitorsTableDto>>();
+            .Produces<IEnumerable<WaterTankForTableDto>>();
         recipientMonitorsGroup.MapPut("", PutRecipientMonitor);
         recipientMonitorsGroup.MapGet("{monitorId}", GetMonitor);
     }
 
     private static async Task<IResult> CreateNewRecipientMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
-        RecipientMonitorPostDto monitor)
+        WaterTankCreateDto monitor)
     {
-        var serviceResult = await recipientMonitorServices.InsertNewRecipientMonitor(monitor);
+        var serviceResult = await recipientMonitorServices.InsertNewWaterTank(monitor);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
@@ -33,33 +33,33 @@ public static class RecipientMonitorRoutes
     private static async Task<IResult> GetListOfRecipientMonitors(
         [FromServices] IRecipientMonitorServices recipientMonitorServices)
     {
-        return Results.Ok(await recipientMonitorServices.GetRecipientMonitorsForMonitorsTable());
+        return Results.Ok(await recipientMonitorServices.GetWaterTanksForTable());
     }
 
     private static async Task<IResult> PutRecipientMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
-        [FromBody] RecipientMonitorPutDto putMonitor)
+        [FromBody] WaterTankUpdateDto updateMonitor)
     {
-        var serviceResult = await recipientMonitorServices.UpdateRecipientMonitor(putMonitor);
+        var serviceResult = await recipientMonitorServices.UpdateWaterTank(updateMonitor);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 
     private static async Task<IResult> GetMonitor(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
-        RecipientMonitorId monitorId)
+        WaterTankId monitorId)
     {
-        var serviceResult = await recipientMonitorServices.GetRecipientMonitorById(monitorId);
+        var serviceResult = await recipientMonitorServices.GetWaterTank(monitorId);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 
     private static async Task<IResult> UpdateRecipientLevel(
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
-        [FromQuery] RecipientMonitorId recipientMonitorId,
-        [FromQuery] int levelheight)
+        [FromQuery] WaterTankId waterTankId,
+        [FromQuery] int newLevel)
     {
-        var serviceResult = await recipientMonitorServices.UpdateLevel(recipientMonitorId, levelheight);
+        var serviceResult = await recipientMonitorServices.UpdateLevel(waterTankId, newLevel);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.NoContent();
     }

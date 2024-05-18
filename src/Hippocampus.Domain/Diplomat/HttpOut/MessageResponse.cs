@@ -1,3 +1,3 @@
 ﻿namespace Hippocampus.Domain.Diplomat.HttpOut;
 
-public record MessageResponse(string Message);
+public record MessageResponse(string? Message);

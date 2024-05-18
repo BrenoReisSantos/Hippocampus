@@ -3,14 +3,14 @@ using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Domain.Diplomat.HttpOut;
 
-public class RecipientMonitorForMonitorsTableDto
+public class WaterTankForTableDto
 {
-    public RecipientMonitorId RecipientMonitorId { get; init; } = RecipientMonitorId.Empty;
+    public WaterTankId WaterTankId { get; init; } = WaterTankId.Empty;
     public MacAddress MacAddress { get; init; } = new();
     public string Name { get; init; } = string.Empty;
-    public RecipientType RecipientType { get; init; }
+    public WaterTankType WaterTankType { get; init; }
     public int? RecipientLevelPercentage { get; init; }
-    public RecipientState? RecipientState { get; init; }
+    public WaterTankState? RecipientState { get; init; }
     public int MaxHeight { get; init; }
     public int MinHeight { get; init; }
     public MacAddress? LinkedRecipientMonitorMacAddress { get; init; }

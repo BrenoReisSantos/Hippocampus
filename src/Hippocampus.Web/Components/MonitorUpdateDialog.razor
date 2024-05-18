@@ -18,31 +18,31 @@
             Características do Monitor
         </MudText>
         <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/>
-        <MudSelect T="RecipientType" @bind-Value="_form.RecipientType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined">
-            @foreach (var recipientType in Enum.GetValues<RecipientType>())
+        <MudSelect T="WaterTankType" @bind-Value="_form.WaterTankType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined">
+            @foreach (var recipientType in Enum.GetValues<WaterTankType>())
             {
                 <MudSelectItem Value="recipientType"/>
             }
         </MudSelect>
         <MudTextField
-            @bind-Value="_form.MinHeight"
+            @bind-Value="_form.LevelWhenEmpty"
             Required
             InputType="InputType.Number"
             Variant="Variant.Outlined"
             Label="Altura Mínima (cm)"/>
         <MudTextField
-            @bind-Value="_form.MaxHeight"
+            @bind-Value="_form.LevelWhenFull"
             Required
             InputType="InputType.Number"
             Variant="Variant.Outlined"
             Label="Altura Máxima (cm)"/>
-        <MudSelect T="MonitorsSelectOption"
+        <MudSelect T="WaterTankSelectOption"
                    @bind-Value="_connectedMonitorSelected"
                    Label="Selecione o Monitor Conectado"
                    Variant="Variant.Outlined">
             @foreach (var monitor in _monitorsSelectOptions)
             {
-                <MudSelectItem T="MonitorsSelectOption" Value="monitor"/>
+                <MudSelectItem T="WaterTankSelectOption" Value="monitor"/>
             }
         </MudSelect>
     </DialogContent>
@@ -70,32 +70,32 @@
 
     [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
 
-    [Parameter] public RecipientMonitorId MonitorId { get; set; }
+    [Parameter] public WaterTankId MonitorId { get; set; }
 
-    readonly RecipientMonitorUpdateForm _form = new();
+    readonly WaterTankUpdateForm _form = new();
     bool _processingForm;
 
-    RecipientMonitorDto? _updatingMonitor;
+    WaterTankDto? _updatingMonitor;
 
-    IEnumerable<MonitorsSelectOption> _monitorsSelectOptions = Enumerable.Empty<MonitorsSelectOption>();
+    IEnumerable<WaterTankSelectOption> _monitorsSelectOptions = Enumerable.Empty<WaterTankSelectOption>();
 
-    MonitorsSelectOption? _connectedMonitorSelected;
+    WaterTankSelectOption? _connectedMonitorSelected;
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await RecipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
-        _monitorsSelectOptions = monitors.Select(m => new MonitorsSelectOption
+        var monitors = await RecipientMonitorServices.GetWaterTanksForTable();
+        _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
-            MacAddress = m.MacAddress,
+            WaterTankLinkedToId = m.WaterTankId,
             Name = m.Name,
-            RecipientMonitorId = m.RecipientMonitorId
+            WaterTankId = m.WaterTankId
         });
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var servicoResultado = await RecipientMonitorServices.GetRecipientMonitorById(MonitorId);
+        var servicoResultado = await RecipientMonitorServices.GetWaterTank(MonitorId);
         _updatingMonitor = servicoResultado.Result;
         await GetMonitorsSelectOptions();
         FillFormWithExistingMonitor();
@@ -104,19 +104,19 @@
     async Task UpdateMonitor()
     {
         _processingForm = true;
-        _form.RecipientMonitorLinkedToMacAddress = _connectedMonitorSelected?.MacAddress;
+        _form.WaterTankLinkedToId = _connectedMonitorSelected?.WaterTankLinkedToId;
 
-        var recipientMonitor = new RecipientMonitorPutDto
+        var recipientMonitor = new WaterTankUpdateDto
         {
-            RecipientMonitorId = MonitorId,
-            MaxHeight = _form.MaxHeight,
-            RecipientMonitorLinkedToMacAddress = _form.RecipientMonitorLinkedToMacAddress,
+            WaterTankId = MonitorId,
+            LevelWhenFull = _form.LevelWhenFull,
+            PumpsToId = _form.WaterTankLinkedToId,
             Name = _form.Name,
-            RecipientType = _form.RecipientType,
-            MinHeight = _form.MinHeight
+            WaterTankType = _form.WaterTankType,
+            LevelWhenEmpty = _form.LevelWhenEmpty
         };
 
-        var response = await RecipientMonitorServices.UpdateRecipientMonitor(recipientMonitor);
+        var response = await RecipientMonitorServices.UpdateWaterTank(recipientMonitor);
         _processingForm = false;
 
         if (response.IsSuccess)
@@ -133,14 +133,14 @@
 
     void FillFormWithExistingMonitor()
     {
-        _form.RecipientMonitorId = _updatingMonitor.RecipientMonitorId;
+        _form.WaterTankId = _updatingMonitor.WaterTankId;
         _form.Name = _updatingMonitor.Name;
-        _form.RecipientType = _updatingMonitor.RecipientType;
+        _form.WaterTankType = _updatingMonitor.WaterTankType;
         _connectedMonitorSelected = _monitorsSelectOptions.SingleOrDefault(
-            monitorOption => monitorOption.MacAddress == _updatingMonitor.MonitorLinkedToMacAddress);
-        _form.RecipientMonitorLinkedToMacAddress = _updatingMonitor.MonitorLinkedToMacAddress;
-        _form.MaxHeight = _updatingMonitor.MaxHeight;
-        _form.MinHeight = _updatingMonitor.MinHeight;
+            monitorOption => monitorOption.WaterTankLinkedToId == _updatingMonitor.WaterTankLinkedToId);
+        _form.WaterTankLinkedToId = _updatingMonitor.WaterTankLinkedToId;
+        _form.LevelWhenFull = _updatingMonitor.MaxHeight;
+        _form.LevelWhenEmpty = _updatingMonitor.MinHeight;
     }
 
 }

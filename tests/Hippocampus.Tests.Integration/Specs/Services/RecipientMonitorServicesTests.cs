@@ -84,7 +84,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         InsertNewRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
@@ -109,11 +109,11 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         InsertNewRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
     {
-        var otherMonitor = new RecipientMonitorBuilder().Generate();
+        var otherMonitor = new WaterTankBuilder().Generate();
         Context.Add(otherMonitor);
         await Context.SaveChangesAsync();
 
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         linkedMonitor.MonitorLinkedTo = otherMonitor;
         Context.Add(linkedMonitor);
 
@@ -146,7 +146,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         InsertNewRecipientMonitor_Should_Return_RecipientMonitorCreatedDto_With_Linked_Monitor()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
@@ -192,11 +192,11 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     [Test]
     public async Task GetRecipientMonitorsForMonitorsTable_Should_Return_List_Of_RecipientMonitorForMonitorsTableDto()
     {
-        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        var linkedMonitors = new WaterTankBuilder().Generate(5);
         Context.AddRange(linkedMonitors);
         await Context.SaveChangesAsync();
 
-        var monitors = new RecipientMonitorBuilder().Generate(5);
+        var monitors = new WaterTankBuilder().Generate(5);
 
         foreach (var (linked, monitor) in linkedMonitors.Zip(monitors))
         {
@@ -229,10 +229,10 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientSate()
     {
-        var monitors = new RecipientMonitorBuilder().Generate(1);
+        var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
 
-        var log = new RecipientLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
+        var log = new WaterTankLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
         Context.Add(log);
 
         await Context.SaveChangesAsync();
@@ -248,10 +248,10 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientLevel()
     {
-        var monitors = new RecipientMonitorBuilder().Generate(1);
+        var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
 
-        var log = new RecipientLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
+        var log = new WaterTankLogBuilder().WithRecipientMonitor(monitors[0]).Generate();
         Context.Add(log);
 
         await Context.SaveChangesAsync();
@@ -266,29 +266,29 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     [Test]
     public async Task UpdateRecipientMonitor_Should_Return_RecipientMonitorCreatedDto()
     {
-        var monitorLinkedTo = new RecipientMonitorBuilder().Generate();
-        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(monitorLinkedTo).Generate();
+        var monitorLinkedTo = new WaterTankBuilder().Generate();
+        var monitor = new WaterTankBuilder().WithLinkedWaterTank(monitorLinkedTo).Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var otherRecipientMonitor = new RecipientMonitorBuilder().Generate();
+        var otherRecipientMonitor = new WaterTankBuilder().Generate();
         Context.Add(otherRecipientMonitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorToUpdate = new RecipientMonitorPutDtoBuilder()
+        var monitorToUpdate = new WaterTankUpdateDtoBuilder()
             .WithRecipientType(Faker.PickRandomWithout(otherRecipientMonitor.RecipientType))
-            .WithRecipientMonitorId(monitor.RecipientMonitorId)
-            .WithRecipientMonitorLinkedToMacAddress(otherRecipientMonitor.MacAddress).Generate();
+            .WithWaterTankId(monitor.RecipientMonitorId)
+            .WithWaterTankLinkedToId(otherRecipientMonitor.MacAddress).Generate();
 
         var subject = await _recipientMonitorServices.UpdateRecipientMonitor(monitorToUpdate);
 
         var expectedResult = new RecipientMonitorUpdatedDto
         {
             Name = monitorToUpdate.Name,
-            MaxHeight = monitorToUpdate.MaxHeight,
-            MinHeight = monitorToUpdate.MinHeight,
+            MaxHeight = monitorToUpdate.LevelWhenFull,
+            MinHeight = monitorToUpdate.LevelWhenEmpty,
             RecipientType = monitorToUpdate.RecipientType,
             MacAddress = monitor.MacAddress,
             RecipientMonitorLinkedTo = new RecipientMonitorLinkedToUpdatedDto
@@ -316,13 +316,13 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     [Test]
     public async Task UpdateRecipientMonitor_Should_Return_Error_For_MinHeight_Bigger_Than_MaxHeight()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
-            .WithRecipientMonitorId(monitor.RecipientMonitorId).WithInvalidMaxAndMinHeight().Generate();
+        var recipientMonitorPutDto = new WaterTankUpdateDtoBuilder()
+            .WithWaterTankId(monitor.RecipientMonitorId).WithInvalidFullAndEmptyValue().Generate();
 
         var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
 
@@ -336,14 +336,14 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         UpdateRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
-            .WithRecipientMonitorId(monitor.RecipientMonitorId)
-            .WithRecipientMonitorLinkedToMacAddress(new MacAddress(Faker.Internet.Mac()))
+        var recipientMonitorPutDto = new WaterTankUpdateDtoBuilder()
+            .WithWaterTankId(monitor.RecipientMonitorId)
+            .WithWaterTankLinkedToId(new MacAddress(Faker.Internet.Mac()))
             .Generate();
 
         var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
@@ -360,19 +360,19 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         UpdateRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
-        var monitor = new RecipientMonitorBuilder()
-            .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
+        var monitor = new WaterTankBuilder()
+            .WithWaterTankType(Faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorToUpdate = new RecipientMonitorPutDtoBuilder()
-            .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
-            .WithRecipientMonitorId(monitor.RecipientMonitorId)
+        var monitorToUpdate = new WaterTankUpdateDtoBuilder()
+            .WithWaterTankLinkedToId(linkedMonitor.MacAddress)
+            .WithWaterTankId(monitor.RecipientMonitorId)
             .WithRecipientType(linkedMonitor.RecipientType)
             .Generate();
 
@@ -392,11 +392,11 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     public async Task
         UpdateRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
     {
-        var otherMonitor = new RecipientMonitorBuilder().Generate();
+        var otherMonitor = new WaterTankBuilder().Generate();
         Context.Add(otherMonitor);
         await Context.SaveChangesAsync();
 
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         linkedMonitor.MonitorLinkedTo = otherMonitor;
         Context.Add(linkedMonitor);
 
@@ -404,14 +404,14 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         await Context.SaveChangesAsync();
 
-        var monitorToBeUpdated = new RecipientMonitorBuilder().Generate();
+        var monitorToBeUpdated = new WaterTankBuilder().Generate();
         Context.Add(monitorToBeUpdated);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var recipientMonitorPutDto = new RecipientMonitorPutDtoBuilder()
-            .WithRecipientMonitorId(monitorToBeUpdated.RecipientMonitorId)
-            .WithRecipientMonitorLinkedToMacAddress(linkedMonitor.MacAddress)
+        var recipientMonitorPutDto = new WaterTankUpdateDtoBuilder()
+            .WithWaterTankId(monitorToBeUpdated.RecipientMonitorId)
+            .WithWaterTankLinkedToId(linkedMonitor.MacAddress)
             .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 

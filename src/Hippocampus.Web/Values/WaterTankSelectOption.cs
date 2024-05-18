@@ -3,11 +3,11 @@ using Hippocampus.Domain.Models.Values;
 
 namespace Hippocampus.Web.Values;
 
-public record MonitorsSelectOption
+public record WaterTankSelectOption
 {
-    public RecipientMonitorId RecipientMonitorId { get; init; }
+    public WaterTankId WaterTankId { get; init; }
     public string Name { get; init; } = "";
-    public MacAddress MacAddress { get; init; } = MacAddress.Empty;
+    public WaterTankId WaterTankLinkedToId { get; init; }
 
     public override string ToString()
     {

@@ -19,7 +19,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Return_Created_RecipientMonitor()
     {
-        var recipientInsert = new RecipientMonitorBuilder().Generate();
+        var recipientInsert = new WaterTankBuilder().Generate();
 
         var subject = await _recipientMonitorRepository.InsertRecipientMonitor(recipientInsert);
 
@@ -46,7 +46,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Save_RecipientMonitor_In_Database()
     {
-        var recipientInsert = new RecipientMonitorBuilder().Generate();
+        var recipientInsert = new WaterTankBuilder().Generate();
 
         var insertedRecipientMonitor = await _recipientMonitorRepository.InsertRecipientMonitor(recipientInsert);
 
@@ -77,11 +77,11 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Return_Created_RecipientMonitor_With_Linked_Monitor()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
-        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+        var monitor = new WaterTankBuilder().WithLinkedWaterTank(linkedMonitor).Generate();
 
         var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
@@ -124,11 +124,11 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Be_Created_With_LinkedMonitor()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
-        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+        var monitor = new WaterTankBuilder().WithLinkedWaterTank(linkedMonitor).Generate();
 
         var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
@@ -152,11 +152,11 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task InsertRecipientMonitor_Should_Link_LinkedMonitor_With_Base_Monitor()
     {
-        var linkedMonitor = new RecipientMonitorBuilder().Generate();
+        var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
-        var monitor = new RecipientMonitorBuilder().WithLinkedMonitor(linkedMonitor).Generate();
+        var monitor = new WaterTankBuilder().WithLinkedWaterTank(linkedMonitor).Generate();
 
         var expected = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
@@ -181,12 +181,12 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     public async Task
         GetAllRecipientMonitorsWithLinkedMonitor_Should_Return_All_RecipientMonitors_From_Database_With_Each_One_Linked_Monitor()
     {
-        var linkedMonitors = new RecipientMonitorBuilder().Generate(5);
+        var linkedMonitors = new WaterTankBuilder().Generate(5);
         Context.AddRange(linkedMonitors);
 
         await Context.SaveChangesAsync();
 
-        var monitors = new RecipientMonitorBuilder().Generate(5);
+        var monitors = new WaterTankBuilder().Generate(5);
 
         foreach (var (linkedMonitor, monitor) in linkedMonitors.Zip(monitors))
         {
@@ -208,16 +208,16 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     public async Task
         GetAllRecipientMonitorsWithLinkedMonitor_Should_Have_Most_Recent_RecipientLog()
     {
-        var monitors = new RecipientMonitorBuilder().Generate(1);
+        var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
 
         var mostRecentDate = Faker.Date.Recent().ToUniversalTime();
 
-        var monitorMostRecentLog = new RecipientLogBuilder().WithLogDate(mostRecentDate)
+        var monitorMostRecentLog = new WaterTankLogBuilder().WithLogDate(mostRecentDate)
             .WithRecipientMonitor(monitors[0]).Generate();
         Context.Add(monitorMostRecentLog);
 
-        var othersLogs = new RecipientLogBuilder().WithRegisterDateBefore(mostRecentDate)
+        var othersLogs = new WaterTankLogBuilder().WithRegisterDateBefore(mostRecentDate)
             .WithRecipientMonitor(monitors[0]).Generate(10);
         Context.AddRange(othersLogs);
 
@@ -234,13 +234,13 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task UpdateRecipientMonitor_Should_Update_Existing_RecipientMonitor()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
 
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
+        var monitorUpdated = new WaterTankBuilder().WithId(monitor.RecipientMonitorId).Generate();
 
         monitor.Name = Faker.Random.Words(3);
         monitor.MinHeight = Faker.Random.Int(0, 50);
@@ -268,13 +268,13 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task UpdateRecipientMonitor_Should_Update_Existing_RecipientMonitor_On_Database()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
 
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new RecipientMonitorBuilder().WithId(monitor.RecipientMonitorId).Generate();
+        var monitorUpdated = new WaterTankBuilder().WithId(monitor.RecipientMonitorId).Generate();
 
         monitor.Name = Faker.Random.Words(3);
         monitor.MinHeight = Faker.Random.Int(0, 50);
@@ -304,7 +304,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     [Test]
     public async Task DeleteRecipientMonitor_Should_Set_IsActive_Collumn_To_False()
     {
-        var monitor = new RecipientMonitorBuilder().Generate();
+        var monitor = new WaterTankBuilder().Generate();
 
         Context.Add(monitor);
         await Context.SaveChangesAsync();

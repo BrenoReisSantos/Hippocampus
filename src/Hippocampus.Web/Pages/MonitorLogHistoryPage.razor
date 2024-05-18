@@ -10,7 +10,7 @@
 
 <MudGrid>
     <MudItem md="4">
-        <MudSelect T="MonitorsSelectOption"
+        <MudSelect T="WaterTankSelectOption"
                    SelectedValuesChanged="OnMonitorSelectClose"
                    @bind-Value="_monitorSelected"
                    Label="Selecione um Monitor"
@@ -18,7 +18,7 @@
                    Class="d-flex">
             @foreach (var monitor in _monitorsSelectOptions)
             {
-                <MudSelectItem T="MonitorsSelectOption" Value="monitor"/>
+                <MudSelectItem T="WaterTankSelectOption" Value="monitor"/>
             }
         </MudSelect>
     </MudItem>
@@ -41,11 +41,11 @@
 </MudContainer>
 
 @code {
-    IEnumerable<MonitorsSelectOption> _monitorsSelectOptions = Enumerable.Empty<MonitorsSelectOption>();
-    IEnumerable<RecipientMonitorForMonitorsTableDto> _monitors = Enumerable.Empty<RecipientMonitorForMonitorsTableDto>();
-    MonitorsSelectOption? _monitorSelected;
+    IEnumerable<WaterTankSelectOption> _monitorsSelectOptions = Enumerable.Empty<WaterTankSelectOption>();
+    IEnumerable<WaterTankForTableDto> _monitors = Enumerable.Empty<WaterTankForTableDto>();
+    WaterTankSelectOption? _monitorSelected;
 
-    IEnumerable<RecipientLog> _logs = new List<RecipientLog>();
+    IEnumerable<WaterTankLog> _logs = new List<WaterTankLog>();
 
     string[] _xAxis = Array.Empty<string>();
     ChartSeries _monitorSeries = new() { Name = "", Data = Array.Empty<double>() };
@@ -58,13 +58,13 @@
         await base.OnInitializedAsync();
     }
 
-    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetRecipientMonitorsForMonitorsTable();
+    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetWaterTanksForTable();
 
     void CreateSelectOptions()
     {
-        _monitorsSelectOptions = _monitors.Select(m => new MonitorsSelectOption
+        _monitorsSelectOptions = _monitors.Select(m => new WaterTankSelectOption
         {
-            RecipientMonitorId = m.RecipientMonitorId,
+            WaterTankId = m.WaterTankId,
             Name = m.Name
         });
     }
@@ -81,18 +81,18 @@
         if (_monitorSelected is null) return;
         var today = DateTime.UtcNow;
         var yesterday = today.AddDays(-1);
-        var serviceResult = await RecipientMonitorsServices.GetMonitorLogsInAGivenDateRange(_monitorSelected.RecipientMonitorId, DateTime.MinValue, today);
+        var serviceResult = await RecipientMonitorsServices.GetWaterTankLogsForDateRange(_monitorSelected.WaterTankId, DateTime.MinValue, today);
 
         if (serviceResult.IsFailure)
             return;
 
-        _logs = serviceResult.Result?.OrderBy(l => l.RegisterDate) ?? _logs;
+        _logs = serviceResult.Result?.OrderBy(l => l.LogDate) ?? _logs;
     }
 
     void AssemblyLineGraphData()
     {
-        _xAxis = _logs.Select(l => l.RegisterDate.ToString("dd/MM HH:mm")).ToArray();
-        _recipientLevelRegisters = _logs.Select(l => (double)l.LevelHeight).ToArray();
+        _xAxis = _logs.Select(l => l.LogDate.ToString("dd/MM HH:mm")).ToArray();
+        _recipientLevelRegisters = _logs.Select(l => (double)l.Level).ToArray();
         _monitorSeries = new ChartSeries { Name = $"{_monitorSelected?.Name} History", Data = _recipientLevelRegisters };
     }
 
