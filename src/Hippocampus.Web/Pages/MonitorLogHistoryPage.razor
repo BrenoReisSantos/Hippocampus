@@ -58,7 +58,7 @@
         await base.OnInitializedAsync();
     }
 
-    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetWaterTanksForTable();
+    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetForTable();
 
     void CreateSelectOptions()
     {
@@ -81,7 +81,7 @@
         if (_monitorSelected is null) return;
         var today = DateTime.UtcNow;
         var yesterday = today.AddDays(-1);
-        var serviceResult = await RecipientMonitorsServices.GetWaterTankLogsForDateRange(_monitorSelected.WaterTankId, DateTime.MinValue, today);
+        var serviceResult = await RecipientMonitorsServices.GetLogsForDateRange(_monitorSelected.WaterTankId, DateTime.MinValue, today);
 
         if (serviceResult.IsFailure)
             return;

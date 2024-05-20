@@ -10,7 +10,7 @@ public static class ClockMocker
     {
         var faker = new Faker("pt_BR");
         var fakeClock = A.Fake<IClock>();
-        A.CallTo(() => fakeClock.Now).Returns(faker.Date.Recent());
+        A.CallTo(() => fakeClock.Now).Returns(faker.Date.Recent().ToUniversalTime());
         return fakeClock;
     }
 }

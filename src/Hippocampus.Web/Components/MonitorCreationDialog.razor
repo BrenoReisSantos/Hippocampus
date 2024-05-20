@@ -17,7 +17,6 @@
             Características do Monitor
         </MudText>
         <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/>
-        <MudTextField @bind-Value="_form.WaterTankLikedToId" Required Variant="Variant.Outlined" Label="Id do Reservatório"/>
         <MudSelect T="WaterTankType" @bind-Value="_form.WaterTankType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined">
             @foreach (var recipientType in Enum.GetValues<WaterTankType>())
             {
@@ -29,16 +28,16 @@
             Required
             InputType="InputType.Number"
             Variant="Variant.Outlined"
-            Label="Altura Mínima (cm)"/>
+            Label="Altura quando vazio (cm)"/>
         <MudTextField
             @bind-Value="_form.LevelWhenFull"
             Required
             InputType="InputType.Number"
             Variant="Variant.Outlined"
-            Label="Altura Máxima (cm)"/>
+            Label="Altura quando cheio (cm)"/>
         <MudSelect T="WaterTankSelectOption"
                    @bind-Value="_connectedMonitorSelected"
-                   Label="Selecione o Monitor Conectado"
+                   Label="Bombear água para..."
                    Variant="Variant.Outlined">
             @foreach (var monitor in _monitorsSelectOptions)
             {
@@ -79,7 +78,7 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await RecipientMonitorServices.GetWaterTanksForTable();
+        var monitors = await RecipientMonitorServices.GetForTable();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
             WaterTankLinkedToId = m.WaterTankId,
@@ -106,7 +105,7 @@
             LevelWhenEmpty = _form.LevelWhenEmpty,
             LevelWhenFull = _form.LevelWhenFull
         };
-        var response = await RecipientMonitorServices.InsertNewWaterTank(newRecipientMonitor);
+        var response = await RecipientMonitorServices.Create(newRecipientMonitor);
         var isSuccess = response.IsSuccess;
         _processingForm = false;
         MudDialog?.Close(DialogResult.Ok(isSuccess));

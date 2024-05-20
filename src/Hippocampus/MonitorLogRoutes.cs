@@ -19,7 +19,7 @@ public static class MonitorLogRoutes
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate)
     {
-        var result = await recipientMonitorServices.GetWaterTankLogsForDateRange(monitorId, startDate, endDate);
+        var result = await recipientMonitorServices.GetLogsForDateRange(monitorId, startDate, endDate);
         if (result.IsFailure) return Results.BadRequest(result.Message);
         return Results.Ok(result.Result);
     }

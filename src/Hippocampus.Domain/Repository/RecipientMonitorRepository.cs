@@ -8,12 +8,12 @@ namespace Hippocampus.Domain.Repository;
 
 public interface IWaterTankRepository
 {
-    Task<WaterTank> InsertWaterTank(WaterTank waterTank);
+    Task<WaterTank> Insert(WaterTank waterTank);
     Task<WaterTank?> Get(WaterTankId waterTankId);
-    Task<IEnumerable<WaterTank>> GetAllLinkedMonitor();
-    Task<WaterTank?> Update(WaterTank changedWaterTank);
-    Task<bool> ExistsMonitor(WaterTankId waterTankId);
-    Task DeleteRecipientMonitor(WaterTankId waterTankId);
+    Task<IEnumerable<WaterTank>> GetAll();
+    Task<WaterTank?> Update(WaterTank waterTank);
+    Task<bool> Exists(WaterTankId waterTankId);
+    Task Delete(WaterTankId waterTankId);
 }
 
 public class WaterTankRepository : IWaterTankRepository
@@ -27,30 +27,16 @@ public class WaterTankRepository : IWaterTankRepository
         _clock = clock;
     }
 
-    public async Task<WaterTank> InsertWaterTank(WaterTank waterTank)
+    public async Task<WaterTank> Insert(WaterTank waterTank)
     {
-        WaterTank? linkedRecipientMonitor = null;
-
-        if (waterTank.PumpsTo is not null)
-            linkedRecipientMonitor =
-                await _context.WaterTank.FindAsync(waterTank.PumpsTo?.WaterTankId);
-
-        var newRecipient = new WaterTank()
+        var newRecipient = waterTank with
         {
             Name = waterTank.Name.Trim(),
             CreatedAt = _clock.Now.ToUniversalTime(),
-            IsActive = true,
-            LevelWhenFull = waterTank.LevelWhenFull,
-            LevelWhenEmpty = waterTank.LevelWhenEmpty,
-            Type = waterTank.Type,
             WaterTankId = WaterTankId.New()
         };
-        newRecipient.PumpsTo = linkedRecipientMonitor;
 
         _context.Add(newRecipient);
-
-        if (linkedRecipientMonitor is not null)
-            linkedRecipientMonitor.PumpsTo = newRecipient;
 
         await _context.SaveChangesAsync();
 
@@ -64,7 +50,7 @@ public class WaterTankRepository : IWaterTankRepository
             .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.WaterTankId == waterTankId);
     }
 
-    public async Task<IEnumerable<WaterTank>> GetAllLinkedMonitor()
+    public async Task<IEnumerable<WaterTank>> GetAll()
     {
         return await _context.WaterTank
             .Include(r => r.PumpsTo)
@@ -75,42 +61,40 @@ public class WaterTankRepository : IWaterTankRepository
             .ToListAsync();
     }
 
-    public async Task<WaterTank?> Update(WaterTank changedWaterTank)
+    public async Task<WaterTank?> Update(WaterTank waterTank)
     {
-        var recipientToChange = await _context.WaterTank.Include(r => r.PumpsTo).FirstOrDefaultAsync(
+        var waterTankUpdating = await _context.WaterTank.AsNoTracking().Include(r => r.PumpsTo).FirstOrDefaultAsync(
             r =>
-                r.WaterTankId == changedWaterTank.WaterTankId);
+                r.WaterTankId == waterTank.WaterTankId);
 
-        if (recipientToChange is null) return null;
+        if (waterTankUpdating is null) return null;
 
-        recipientToChange.Name = changedWaterTank.Name;
-        recipientToChange.LevelWhenFull = changedWaterTank.LevelWhenFull;
-        recipientToChange.LevelWhenEmpty = changedWaterTank.LevelWhenEmpty;
-        recipientToChange.Type = changedWaterTank.Type;
-        recipientToChange.UpdatedAt = _clock.Now.ToUniversalTime();
-
-        if (changedWaterTank.PumpsTo is not null)
+        waterTankUpdating = waterTankUpdating with
         {
-            var linkedMonitor =
-                await _context.WaterTank.FindAsync(changedWaterTank.PumpsTo.WaterTankId);
-            if (linkedMonitor is not null) recipientToChange.PumpsTo = linkedMonitor;
-        }
-        else
-        {
-            recipientToChange.PumpsTo = null;
-        }
+            Name = waterTank.Name.Trim(),
+            LevelWhenFull = waterTank.LevelWhenFull,
+            LevelWhenEmpty = waterTank.LevelWhenEmpty,
+            CreatedAt = waterTankUpdating.CreatedAt,
+            CurrentLevel = waterTank.CurrentLevel,
+            IsActive = waterTank.IsActive,
+            State = waterTank.State,
+            Type = waterTank.Type,
+            PumpingWater = waterTank.PumpingWater,
+            UpdatedAt = _clock.Now.ToUniversalTime(),
+            PumpsTo = waterTank.PumpsTo,
+        };
 
+        _context.Update(waterTankUpdating);
         await _context.SaveChangesAsync();
-
-        return recipientToChange;
+        return waterTankUpdating;
     }
 
-    public async Task<bool> ExistsMonitor(WaterTankId waterTankId)
+    public async Task<bool> Exists(WaterTankId waterTankId)
     {
         return await _context.WaterTank.AnyAsync(r => r.WaterTankId == waterTankId);
     }
 
-    public async Task DeleteRecipientMonitor(WaterTankId waterTankId)
+    public async Task Delete(WaterTankId waterTankId)
     {
         var monitor = await _context.WaterTank.FindAsync(waterTankId);
         if (monitor is null) return;

@@ -9,7 +9,7 @@ public static class AssertionConfiguration
     {
         AssertionOptions.AssertEquivalencyUsing(options =>
             options.Using<DateTime>(ctx =>
-                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMilliseconds(900)))
+                    ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromMilliseconds(500)))
                 .WhenTypeIs<DateTime>());
     }
 }

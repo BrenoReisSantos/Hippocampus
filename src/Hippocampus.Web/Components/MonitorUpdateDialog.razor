@@ -83,7 +83,7 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await RecipientMonitorServices.GetWaterTanksForTable();
+        var monitors = await RecipientMonitorServices.GetForTable();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
             WaterTankLinkedToId = m.WaterTankId,
@@ -95,7 +95,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var servicoResultado = await RecipientMonitorServices.GetWaterTank(MonitorId);
+        var servicoResultado = await RecipientMonitorServices.Get(MonitorId);
         _updatingMonitor = servicoResultado.Result;
         await GetMonitorsSelectOptions();
         FillFormWithExistingMonitor();
@@ -116,7 +116,7 @@
             LevelWhenEmpty = _form.LevelWhenEmpty
         };
 
-        var response = await RecipientMonitorServices.UpdateWaterTank(recipientMonitor);
+        var response = await RecipientMonitorServices.Update(recipientMonitor);
         _processingForm = false;
 
         if (response.IsSuccess)

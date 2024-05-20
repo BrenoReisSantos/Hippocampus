@@ -54,7 +54,7 @@
     public async Task UpdateTable()
     {
         _tableDataLoading = true;
-        _testTableData = await RecipientMonitorServices.GetWaterTanksForTable();
+        _testTableData = await RecipientMonitorServices.GetForTable();
         _tableDataLoading = false;
         StateHasChanged();
     }

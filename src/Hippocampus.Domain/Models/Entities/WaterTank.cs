@@ -30,13 +30,13 @@ public record WaterTank
     public WaterTankType Type { get; set; } = WaterTankType.OnTop;
     public int CurrentLevel { get; init; }
     public WaterTankState State { get; init; } = WaterTankState.Empty;
-    public int LevelWhenEmpty { get; set; }
-    public int LevelWhenFull { get; set; }
+    public int LevelWhenEmpty { get; init; }
+    public int LevelWhenFull { get; init; }
     public bool? PumpingWater { get; init; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
-    public WaterTank? PumpsTo { get; set; }
+    public DateTime? UpdatedAt { get; init; }
+    public WaterTank? PumpsTo { get; init; }
     public List<WaterTank>? PumpedFrom { get; init; }
     public IList<WaterTankLog>? WaterTankLogs { get; init; }
 }

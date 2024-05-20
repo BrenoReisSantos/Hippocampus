@@ -10,12 +10,12 @@ namespace Hippocampus.Domain.Services;
 
 public interface IRecipientMonitorServices
 {
-    Task<ServiceResult<WaterTankCreatedDto>> InsertNewWaterTank(WaterTankCreateDto waterTank);
-    Task<IEnumerable<WaterTankForTableDto>> GetWaterTanksForTable();
-    Task<ServiceResult<WaterTankUpdatedDto>> UpdateWaterTank(WaterTankUpdateDto waterTank);
-    Task<ServiceResult<WaterTankDto>> GetWaterTank(WaterTankId monitorId);
+    Task<ServiceResult<WaterTankCreatedDto>> Create(WaterTankCreateDto waterTank);
+    Task<IEnumerable<WaterTankForTableDto>> GetForTable();
+    Task<ServiceResult<WaterTankUpdatedDto>> Update(WaterTankUpdateDto waterTank);
+    Task<ServiceResult<WaterTankDto>> Get(WaterTankId monitorId);
 
-    Task<ServiceResult<IEnumerable<WaterTankLog>>> GetWaterTankLogsForDateRange(WaterTankId monitorId,
+    Task<ServiceResult<IEnumerable<WaterTankLog>>> GetLogsForDateRange(WaterTankId monitorId,
         DateTime? startDate, DateTime? endDate);
 
     Task<ServiceResult> UpdateLevel(WaterTankId waterTankId, int newLevel);
@@ -30,7 +30,7 @@ public class WaterTankService(
 {
     private readonly IClock _clock = clock;
 
-    public async Task<ServiceResult<WaterTankCreatedDto>> InsertNewWaterTank(
+    public async Task<ServiceResult<WaterTankCreatedDto>> Create(
         WaterTankCreateDto waterTank)
     {
         if (waterTank.LevelWhenFull < waterTank.LevelWhenEmpty)
@@ -50,24 +50,24 @@ public class WaterTankService(
         }
 
         var waterTankCreating = mapper.Map<WaterTank>(waterTank);
-        if (waterTankLinkedTo is not null) waterTankCreating.PumpsTo = waterTankLinkedTo;
+        if (waterTankLinkedTo is not null) waterTankCreating = waterTankCreating with { PumpsTo = waterTankLinkedTo };
 
-        var newMonitor = await waterTankRepository.InsertWaterTank(waterTankCreating);
+        var newMonitor = await waterTankRepository.Insert(waterTankCreating);
 
         var recipientMonitorCreatedDto = mapper.Map<WaterTankCreatedDto>(newMonitor);
 
         return ServiceResult<WaterTankCreatedDto>.Success(recipientMonitorCreatedDto);
     }
 
-    public async Task<IEnumerable<WaterTankForTableDto>> GetWaterTanksForTable()
+    public async Task<IEnumerable<WaterTankForTableDto>> GetForTable()
     {
-        var monitors = await waterTankRepository.GetAllLinkedMonitor();
+        var monitors = await waterTankRepository.GetAll();
         return mapper.Map<IEnumerable<WaterTankForTableDto>>(monitors);
     }
 
-    public async Task<ServiceResult<WaterTankUpdatedDto>> UpdateWaterTank(WaterTankUpdateDto waterTank)
+    public async Task<ServiceResult<WaterTankUpdatedDto>> Update(WaterTankUpdateDto waterTank)
     {
-        var existsWaterTank = await waterTankRepository.ExistsMonitor(waterTank.WaterTankId);
+        var existsWaterTank = await waterTankRepository.Exists(waterTank.WaterTankId);
 
         if (!existsWaterTank)
             return ServiceResult<WaterTankUpdatedDto>.Error(
@@ -94,7 +94,7 @@ public class WaterTankService(
             return ServiceResult<WaterTankUpdatedDto>.Error(
                 $"Monitor de ID {waterTank.WaterTankId} não encontrado");
 
-        if (waterTankLinkedTo is not null) waterTankUpdating.PumpsTo = waterTankLinkedTo;
+        if (waterTankLinkedTo is not null) waterTankUpdating = waterTankUpdating with { PumpsTo = waterTankLinkedTo };
 
         var updatedMonitor = await waterTankRepository.Update(waterTankUpdating);
 
@@ -103,20 +103,20 @@ public class WaterTankService(
         return ServiceResult<WaterTankUpdatedDto>.Success(recipientMonitorCreatedDto);
     }
 
-    public async Task<ServiceResult<WaterTankDto>> GetWaterTank(WaterTankId waterTankId)
+    public async Task<ServiceResult<WaterTankDto>> Get(WaterTankId waterTankId)
     {
         var monitor = await waterTankRepository.Get(waterTankId);
         var mappedMonitor = mapper.Map<WaterTankDto>(monitor);
         return ServiceResult<WaterTankDto>.Success(mappedMonitor);
     }
 
-    public async Task<ServiceResult<IEnumerable<WaterTankLog>>> GetWaterTankLogsForDateRange(
+    public async Task<ServiceResult<IEnumerable<WaterTankLog>>> GetLogsForDateRange(
         WaterTankId monitorId, DateTime? startDate, DateTime? endDate)
     {
         var startDateTreated = startDate ?? DateTime.UtcNow.AddDays(-30);
         var endDateTreated = endDate ?? DateTime.UtcNow;
 
-        var monitorExists = await waterTankRepository.ExistsMonitor(monitorId);
+        var monitorExists = await waterTankRepository.Exists(monitorId);
 
         if (!monitorExists)
             return ServiceResult<IEnumerable<WaterTankLog>>.Error("Monitor não existe");
