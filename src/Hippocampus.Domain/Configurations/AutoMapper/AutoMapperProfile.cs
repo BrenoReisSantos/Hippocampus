@@ -15,7 +15,6 @@ public class AutoMapperProfile : Profile
                     map.MapFrom(src => src.PumpsTo != null
                         ? new RecipientMonitorLinkedToCreatedDto()
                         {
-                            WaterTankType = src.PumpsTo.Type,
                             MaxHeight = src.PumpsTo.LevelWhenFull,
                             MinHeight = src.PumpsTo.LevelWhenEmpty,
                             WaterTankId = src.PumpsTo.WaterTankId,
@@ -28,7 +27,6 @@ public class AutoMapperProfile : Profile
                     map.MapFrom(src => src.PumpsTo != null
                         ? new RecipientMonitorLinkedToUpdatedDto()
                         {
-                            WaterTankType = src.PumpsTo.Type,
                             MaxHeight = src.PumpsTo.LevelWhenFull,
                             MinHeight = src.PumpsTo.LevelWhenEmpty,
                             WaterTankId = src.PumpsTo.WaterTankId,
@@ -59,14 +57,7 @@ public class AutoMapperProfile : Profile
                 map => map.MapFrom(
                     src => src.WaterTankLogs.Any()
                         ? src.WaterTankLogs[0].Level
-                        : (int?)null))
-            .ForMember(
-                dst => dst.RecipientState,
-                map => map.MapFrom(
-                    src =>
-                        src.WaterTankLogs.Any()
-                            ? src.WaterTankLogs[0].State
-                            : (WaterTankState?)null));
+                        : (int?)null));
 
         CreateMap<WaterTank, WaterTankDto>();
     }

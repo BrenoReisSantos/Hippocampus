@@ -18,25 +18,10 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Nome">@context.Name</MudTd>
-        <MudTd Style="text-align:left" DataLabel="Tipo">@context.WaterTankType</MudTd>
         <MudTd Style="text-align:center" DataLabel="Nível">@context.RecipientLevelPercentage%</MudTd>
         <MudTd Style="text-align:center" DataLabel="Endereço MAC">@context.MacAddress</MudTd>
         <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MinHeight</MudTd>
         <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MaxHeight</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Estado">
-            @switch (context.RecipientState)
-            {
-                case WaterTankState.Full:
-                    <FullRecipientBar/>
-                    break;
-                case WaterTankState.Average:
-                    <AverageRecipientBar/>
-                    break;
-                case WaterTankState.Empty:
-                    <EmptyRecipientBar/>
-                    break;
-            }
-        </MudTd>
         <MudTd Style="text-align:center" DataLabel="Endereço MAC do Monitor Conectado">@context.LinkedRecipientMonitorMacAddress</MudTd>
     </RowTemplate>
 </MudTable>

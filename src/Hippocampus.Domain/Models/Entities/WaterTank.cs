@@ -27,23 +27,15 @@ public record WaterTank
 {
     public WaterTankId WaterTankId { get; init; } = WaterTankId.New();
     public string Name { get; set; } = string.Empty;
-    public WaterTankType Type { get; set; } = WaterTankType.OnTop;
     public int CurrentLevel { get; init; }
-    public WaterTankState State { get; init; } = WaterTankState.Empty;
     public int LevelWhenEmpty { get; init; }
     public int LevelWhenFull { get; init; }
     public bool? PumpingWater { get; init; }
     public bool IsActive { get; set; }
+    public bool? BypassMode { get; init; }
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; init; }
     public WaterTank? PumpsTo { get; init; }
-    public List<WaterTank>? PumpedFrom { get; init; }
+    public WaterTank? PumpedFrom { get; init; }
     public IList<WaterTankLog>? WaterTankLogs { get; init; }
-}
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum WaterTankType : byte
-{
-    Cistern,
-    OnTop
 }

@@ -9,7 +9,6 @@ public class WaterTankLogConfiguration : IEntityTypeConfiguration<WaterTankLog>
     public void Configure(EntityTypeBuilder<WaterTankLog> builder)
     {
         builder.Property(wlog => wlog.WaterTankLogId).ValueGeneratedOnAdd();
-        builder.Property(wlog => wlog.State).HasConversion<string>();
         builder.HasAlternateKey(wlog => new { wlog.WaterTankId, wlog.LogDate });
         builder.HasIndex(wlog => wlog.LogDate).IsDescending();
         builder.HasOne<WaterTank>(wlog => wlog.WaterTank);

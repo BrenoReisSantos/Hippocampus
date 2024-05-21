@@ -9,7 +9,7 @@ namespace Hippocampus.Domain.Repository;
 public interface IWaterTankLogRepository
 {
     Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId);
-    Task<WaterTankLog> InsertRecipientLog(WaterTankLog waterTankLog);
+    Task<WaterTankLog> Insert(WaterTankLog waterTankLog);
 
     Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(WaterTankId monitorId,
         DateTime startDate, DateTime endDate);
@@ -32,7 +32,7 @@ public class WaterTankLogRepository : IWaterTankLogRepository
             .FirstOrDefaultAsync(r => r.WaterTankId == waterTankId);
     }
 
-    public async Task<WaterTankLog> InsertRecipientLog(WaterTankLog waterTankLog)
+    public async Task<WaterTankLog> Insert(WaterTankLog waterTankLog)
     {
         var recipientToLogFor = await
             _context.WaterTank.SingleOrDefaultAsync(
@@ -41,7 +41,6 @@ public class WaterTankLogRepository : IWaterTankLogRepository
         {
             WaterTank = recipientToLogFor,
             LogDate = _clock.Now.ToUniversalTime(),
-            State = waterTankLog.State,
             Level = waterTankLog.Level
         };
 

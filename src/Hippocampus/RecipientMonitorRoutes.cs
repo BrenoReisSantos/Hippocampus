@@ -18,6 +18,7 @@ public static class RecipientMonitorRoutes
             .Produces<IEnumerable<WaterTankForTableDto>>();
         recipientMonitorsGroup.MapPut("", PutRecipientMonitor);
         recipientMonitorsGroup.MapGet("{monitorId}", GetMonitor);
+        recipientMonitorsGroup.MapGet("{monitorId}/{level}", UpdateLevel);
     }
 
     private static async Task<IResult> CreateNewRecipientMonitor(
@@ -54,12 +55,12 @@ public static class RecipientMonitorRoutes
         return Results.Ok(serviceResult.Result);
     }
 
-    private static async Task<IResult> UpdateRecipientLevel(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+    private static async Task<IResult> UpdateLevel(
+        [FromServices] IWaterTankLevelUpdateProcessor waterTankLevelUpdateProcessor,
         [FromQuery] WaterTankId waterTankId,
         [FromQuery] int newLevel)
     {
-        var serviceResult = await recipientMonitorServices.UpdateLevel(waterTankId, newLevel);
+        var serviceResult = await waterTankLevelUpdateProcessor.Update(waterTankId, newLevel);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.NoContent();
     }

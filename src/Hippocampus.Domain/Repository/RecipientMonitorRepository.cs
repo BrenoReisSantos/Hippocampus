@@ -77,8 +77,6 @@ public class WaterTankRepository : IWaterTankRepository
             CreatedAt = waterTankUpdating.CreatedAt,
             CurrentLevel = waterTank.CurrentLevel,
             IsActive = waterTank.IsActive,
-            State = waterTank.State,
-            Type = waterTank.Type,
             PumpingWater = waterTank.PumpingWater,
             UpdatedAt = _clock.Now.ToUniversalTime(),
             PumpsTo = waterTank.PumpsTo,

@@ -3,6 +3,7 @@ using System;
 using Hippocampus.Domain.Repository.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Hippocampus.Domain.Migrations
 {
     [DbContext(typeof(HippocampusContext))]
-    partial class HippocampusContextModelSnapshot : ModelSnapshot
+    [Migration("20240521022718_AddedGardenModeColumn")]
+    partial class AddedGardenModeColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,14 +30,14 @@ namespace Hippocampus.Domain.Migrations
                     b.Property<Guid>("WaterTankId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool?>("BypassMode")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CurrentLevel")
                         .HasColumnType("integer");
+
+                    b.Property<bool?>("GardenMode")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -56,13 +59,19 @@ namespace Hippocampus.Domain.Migrations
                     b.Property<Guid?>("PumpsToWaterTankId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("WaterTankId");
 
-                    b.HasIndex("PumpsToWaterTankId")
-                        .IsUnique();
+                    b.HasIndex("PumpsToWaterTankId");
 
                     b.ToTable("WaterTank");
                 });
@@ -75,7 +84,7 @@ namespace Hippocampus.Domain.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("WaterTankLogId"));
 
-                    b.Property<bool?>("BypassMode")
+                    b.Property<bool?>("GardenMode")
                         .HasColumnType("boolean");
 
                     b.Property<int>("Level")
@@ -86,6 +95,10 @@ namespace Hippocampus.Domain.Migrations
 
                     b.Property<bool?>("PumpingWater")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("WaterTankId")
                         .HasColumnType("uuid");
@@ -103,8 +116,8 @@ namespace Hippocampus.Domain.Migrations
             modelBuilder.Entity("Hippocampus.Domain.Models.Entities.WaterTank", b =>
                 {
                     b.HasOne("Hippocampus.Domain.Models.Entities.WaterTank", "PumpsTo")
-                        .WithOne("PumpedFrom")
-                        .HasForeignKey("Hippocampus.Domain.Models.Entities.WaterTank", "PumpsToWaterTankId");
+                        .WithMany("PumpedFrom")
+                        .HasForeignKey("PumpsToWaterTankId");
 
                     b.Navigation("PumpsTo");
                 });

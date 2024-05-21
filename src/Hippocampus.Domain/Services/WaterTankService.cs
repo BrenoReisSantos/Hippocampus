@@ -2,7 +2,6 @@
 using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
-using Hippocampus.Domain.Operations;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services.ApplicationValues;
 
@@ -17,8 +16,6 @@ public interface IRecipientMonitorServices
 
     Task<ServiceResult<IEnumerable<WaterTankLog>>> GetLogsForDateRange(WaterTankId monitorId,
         DateTime? startDate, DateTime? endDate);
-
-    Task<ServiceResult> UpdateLevel(WaterTankId waterTankId, int newLevel);
 }
 
 public class WaterTankService(
@@ -124,15 +121,5 @@ public class WaterTankService(
         var logs = await waterTankLogMonitor.GetLogsForMonitorInAGivenDateRangeAsync(monitorId, startDateTreated,
             endDateTreated);
         return ServiceResult<IEnumerable<WaterTankLog>>.Success(logs);
-    }
-
-    public async Task<ServiceResult> UpdateLevel(WaterTankId waterTankId, int newLevel)
-    {
-        var monitor = await waterTankRepository.Get(waterTankId);
-        if (monitor is null) return ServiceResult.Error("Reservatório não existe");
-        var monitorWithChanges = new RecipientMonitorLevelUpdateCalculator(monitor).UpdateLevel(newLevel);
-        await waterTankRepository.Update(monitorWithChanges);
-
-        return ServiceResult.Success();
     }
 }

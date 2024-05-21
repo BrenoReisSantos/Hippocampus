@@ -10,10 +10,10 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
     {
         RuleFor(r => r.WaterTankId, faker => new WaterTankId(faker.Random.Guid()));
         RuleFor(r => r.Name, faker => faker.Random.Word());
-        RuleFor(r => r.Type, faker => faker.PickRandom<WaterTankType>());
         RuleFor(r => r.CreatedAt, faker => faker.Date.Past().ToUniversalTime());
         RuleFor(r => r.UpdatedAt, faker => faker.Date.Recent().ToUniversalTime());
         RuleFor(w => w.PumpingWater, faker => faker.Random.Bool());
+        RuleFor(w => w.BypassMode, faker => faker.Random.Bool());
         RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(0, 100));
         RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(51, 100));
         RuleFor(r => r.LevelWhenEmpty, faker => faker.Random.Int(0, 50));
@@ -32,12 +32,6 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
     public WaterTankBuilder WithId(WaterTankId waterTankId)
     {
         RuleFor(r => r.WaterTankId, waterTankId);
-        return this;
-    }
-
-    public WaterTankBuilder WithWaterTankType(WaterTankType waterTankType)
-    {
-        RuleFor(r => r.Type, waterTankType);
         return this;
     }
 

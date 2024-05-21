@@ -9,6 +9,5 @@ public class WaterTankUpdateDto
     public string Name { get; init; } = string.Empty;
     public int LevelWhenEmpty { get; init; }
     public int LevelWhenFull { get; init; }
-    public WaterTankType WaterTankType { get; init; }
     public WaterTankId? PumpsToId { get; init; }
 }

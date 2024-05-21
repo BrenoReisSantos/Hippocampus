@@ -15,9 +15,8 @@ public class RecipientConfiguration : IEntityTypeConfiguration<WaterTank>
     public void Configure(EntityTypeBuilder<WaterTank> builder)
     {
         builder.Property(r => r.WaterTankId).HasConversion<WaterTankId.EfCoreValueConverter>();
-        builder.Property(r => r.Type).HasConversion<string>();
         builder.Property(r => r.Name).HasMaxLength(100);
-        builder.HasOne<WaterTank>(w => w.PumpsTo).WithMany(w => w.PumpedFrom);
+        builder.HasOne<WaterTank>(w => w.PumpsTo).WithOne(w => w.PumpedFrom);
         builder.HasMany<WaterTankLog>(w => w.WaterTankLogs);
     }
 }

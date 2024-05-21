@@ -12,19 +12,12 @@ public sealed class WaterTankUpdateDtoBuilder : AutoFaker<WaterTankUpdatedDto>
         RuleFor(r => r.Name, faker => faker.Random.Word());
         RuleFor(r => r.LevelWhenEmpty, faker => faker.Random.Int(0, 50));
         RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(51, 100));
-        RuleFor(r => r.WaterTankType, faker => faker.PickRandom<WaterTankType>());
         RuleFor(r => r.WaterTankLinkedTo, faker => null);
     }
 
     public WaterTankUpdateDtoBuilder WithWaterTankId(WaterTankId waterTankId)
     {
         RuleFor(r => r.WaterTankId, waterTankId);
-        return this;
-    }
-
-    public WaterTankUpdateDtoBuilder WithRecipientType(WaterTankType waterTankType)
-    {
-        RuleFor(r => r.WaterTankType, waterTankType);
         return this;
     }
 

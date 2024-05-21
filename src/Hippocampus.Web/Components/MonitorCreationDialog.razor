@@ -17,12 +17,6 @@
             Características do Monitor
         </MudText>
         <MudTextField @bind-Value="_form.Name" Required Variant="Variant.Outlined" Label="Nome"/>
-        <MudSelect T="WaterTankType" @bind-Value="_form.WaterTankType" Required Label="Tipo do Recipient do Monitor" Variant="Variant.Outlined">
-            @foreach (var recipientType in Enum.GetValues<WaterTankType>())
-            {
-                <MudSelectItem Value="recipientType"/>
-            }
-        </MudSelect>
         <MudTextField
             @bind-Value="_form.LevelWhenEmpty"
             Required
@@ -100,7 +94,6 @@
         var newRecipientMonitor = new WaterTankCreateDto
         {
             Name = _form.Name,
-            WaterTankType = _form.WaterTankType,
             PumpsToId = _form.WaterTankLikedToId,
             LevelWhenEmpty = _form.LevelWhenEmpty,
             LevelWhenFull = _form.LevelWhenFull

@@ -8,6 +8,5 @@ public class RecipientLogRegisterDto
 {
     public MacAddress MacAddress { get; init; } = new();
     public LevelPercentage LevelPercentage { get; init; } = new();
-    public WaterTankState WaterTankState { get; init; } = WaterTankState.Average;
     public WaterTankId WaterTankId { get; init; } = WaterTankId.New();
 }
