@@ -28,16 +28,29 @@ public class WaterTankLevelUpdateProcessor(
             return ServiceResult.Success();
         }
 
-        if (ShouldPump(waterTank))
-        {
+        if (MustPump(waterTank))
             waterTank = waterTank with
             {
                 PumpingWater = true,
             };
-        }
+
+        if (CantPump(waterTank))
+            waterTank = waterTank with
+            {
+                PumpingWater = false,
+            };
 
         await _waterTankRepository.Update(waterTank);
+        await _waterTankLogService.Log(waterTank);
         return ServiceResult.Success();
+    }
+
+    private bool CantPump(WaterTank waterTank)
+    {
+        if (waterTank.PumpsTo is null) return false;
+
+        return waterTank.PumpsTo.CurrentLevel >= waterTank.PumpsTo.LevelWhenFull ||
+               waterTank.CurrentLevel <= waterTank.LevelWhenEmpty;
     }
 
     private static bool IsBypassingPumpRules(WaterTank waterTank)
@@ -45,7 +58,7 @@ public class WaterTankLevelUpdateProcessor(
         return waterTank.BypassMode is not null && waterTank.BypassMode.Value;
     }
 
-    private bool ShouldPump(WaterTank waterTank)
+    private bool MustPump(WaterTank waterTank)
     {
         if (waterTank.PumpsTo is null) return false;
 
