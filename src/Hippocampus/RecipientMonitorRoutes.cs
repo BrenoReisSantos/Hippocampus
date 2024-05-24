@@ -2,6 +2,7 @@
 using Hippocampus.Domain.Diplomat.HttpOut;
 using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hippocampus.Api;
@@ -18,7 +19,9 @@ public static class RecipientMonitorRoutes
             .Produces<IEnumerable<WaterTankForTableDto>>();
         recipientMonitorsGroup.MapPut("", PutRecipientMonitor);
         recipientMonitorsGroup.MapGet("{monitorId}", GetMonitor);
-        recipientMonitorsGroup.MapGet("{monitorId}/{level}", UpdateLevel);
+        recipientMonitorsGroup.MapPut("updateLevel/{monitorId}/{level}", UpdateLevel);
+        recipientMonitorsGroup.MapPut("turnOnPump/{monitorId}", TurnOnPump);
+        recipientMonitorsGroup.MapPut("turnOffPump/{monitorId}", TurnOffPump);
     }
 
     private static async Task<IResult> CreateNewRecipientMonitor(
@@ -61,6 +64,24 @@ public static class RecipientMonitorRoutes
         [FromQuery] int newLevel)
     {
         var serviceResult = await waterTankLevelUpdateProcessor.Update(waterTankId, newLevel);
+        if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> TurnOnPump(
+        [FromServices] IPumpControlService pumpControlService,
+        [FromQuery] WaterTankId waterTankId)
+    {
+        var serviceResult = await pumpControlService.ControlPump(waterTankId, true);
+        if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> TurnOffPump(
+        [FromServices] IPumpControlService pumpControlService,
+        [FromQuery] WaterTankId waterTankId)
+    {
+        var serviceResult = await pumpControlService.ControlPump(waterTankId, false);
         if (serviceResult.IsFailure) return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.NoContent();
     }
