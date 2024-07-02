@@ -40,4 +40,26 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
         RuleFor(monitor => monitor.WaterTankLogs, logs);
         return this;
     }
+
+    public WaterTankBuilder WithAverageLevel()
+    {
+        RuleFor(w => w.LevelWhenFull, 100);
+        RuleFor(w => w.LevelWhenEmpty, 0);
+        RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(1, 99));
+        return this;
+    }
+
+    public WaterTankBuilder WithEmptyLevel()
+    {
+        RuleFor(w => w.LevelWhenEmpty, 50);
+        RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(0, 49));
+        return this;
+    }
+
+    public WaterTankBuilder WithFullLevel()
+    {
+        RuleFor(w => w.LevelWhenFull, 100);
+        RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(101, 150));
+        return this;
+    }
 }

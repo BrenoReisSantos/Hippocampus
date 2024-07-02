@@ -57,32 +57,32 @@ public class ServiceFixture
 
     private ProgramFactory InitializeProgramFactory()
     {
-        return new ProgramFactory(builder => builder.ConfigureAppConfiguration(config =>
-            {
-                config.AddInMemoryCollection(
-                    new Dictionary<string, string>
-                    {
-                        ["TokenSettings:Key"] = Guid.NewGuid().ToString("N")
-                    }
-                );
-                ConfigureAppConfiguration(config);
-            })
-            .ConfigureTestServices(services =>
-            {
-                services.Replace(ServiceDescriptor.Singleton(ClockMocker.Mock()));
-                ConfigureTestServices(services);
-            }));
+        return new ProgramFactory(builder =>
+            builder
+                .ConfigureAppConfiguration(config =>
+                {
+                    config.AddInMemoryCollection(
+                        new Dictionary<string, string>
+                        {
+                            ["TokenSettings:Key"] = Guid.NewGuid().ToString("N")
+                        }
+                    );
+                    ConfigureAppConfiguration(config);
+                })
+                .ConfigureTestServices(services =>
+                {
+                    services.Replace(ServiceDescriptor.Singleton(ClockMocker.Mock()));
+                    ConfigureTestServices(services);
+                })
+        );
     }
 
-    protected virtual void ConfigureTestServices(IServiceCollection services)
-    {
-    }
+    protected virtual void ConfigureTestServices(IServiceCollection services) { }
 
-    protected virtual void ConfigureAppConfiguration(IConfigurationBuilder configuration)
-    {
-    }
+    protected virtual void ConfigureAppConfiguration(IConfigurationBuilder configuration) { }
 
-    protected T GetService<T>() where T : notnull
+    protected T GetService<T>()
+        where T : notnull
     {
         return TestScope.ServiceProvider.GetRequiredService<T>();
     }

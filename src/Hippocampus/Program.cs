@@ -18,28 +18,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
 
-builder.Services
-    .AddSingleton<IClock>(new Clock())
-    .AddDbContext<HippocampusContext>(
-        options => options.UseNpgsql(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-        ));
+builder
+    .Services.AddSingleton<IClock>(new Clock())
+    .AddDbContext<HippocampusContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+    );
 
-builder.Services.AddAutoMapper(config =>
-    config.AddProfile(typeof(AutoMapperProfile)));
+builder.Services.AddAutoMapper(config => config.AddProfile(typeof(AutoMapperProfile)));
 
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    options.SerializerOptions.Converters.Add(new MacAddressJsonConverter());
-    options.SerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.WriteIndented = false;
-}).Configure<JsonOptions>(options =>
-{
-    options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
-    options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
-});
+builder
+    .Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.SerializerOptions.Converters.Add(new MacAddressJsonConverter());
+        options.SerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
+        options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.SerializerOptions.WriteIndented = false;
+    })
+    .Configure<JsonOptions>(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
+        options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
+    });
 
 builder.Services.AddTransient<IWaterTankRepository, WaterTankRepository>();
 builder.Services.AddTransient<IWaterTankLogRepository, WaterTankLogRepository>();

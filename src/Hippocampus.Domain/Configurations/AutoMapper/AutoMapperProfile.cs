@@ -10,54 +10,53 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<WaterTank, WaterTankCreatedDto>()
-            .ForMember(dst => dst.RecipientMonitorLinkedTo,
+            .ForMember(
+                dst => dst.RecipientMonitorLinkedTo,
                 map =>
-                    map.MapFrom(src => src.PumpsTo != null
-                        ? new RecipientMonitorLinkedToCreatedDto()
-                        {
-                            MaxHeight = src.PumpsTo.LevelWhenFull,
-                            MinHeight = src.PumpsTo.LevelWhenEmpty,
-                            WaterTankId = src.PumpsTo.WaterTankId,
-                            Name = src.PumpsTo.Name
-                        }
-                        : null));
+                    map.MapFrom(src =>
+                        src.PumpsTo != null
+                            ? new RecipientMonitorLinkedToCreatedDto()
+                            {
+                                MaxHeight = src.PumpsTo.LevelWhenFull,
+                                MinHeight = src.PumpsTo.LevelWhenEmpty,
+                                WaterTankId = src.PumpsTo.WaterTankId,
+                                Name = src.PumpsTo.Name
+                            }
+                            : null
+                    )
+            );
         CreateMap<WaterTank, WaterTankUpdatedDto>()
-            .ForMember(dst => dst.WaterTankLinkedTo,
+            .ForMember(
+                dst => dst.WaterTankLinkedTo,
                 map =>
-                    map.MapFrom(src => src.PumpsTo != null
-                        ? new RecipientMonitorLinkedToUpdatedDto()
-                        {
-                            MaxHeight = src.PumpsTo.LevelWhenFull,
-                            MinHeight = src.PumpsTo.LevelWhenEmpty,
-                            WaterTankId = src.PumpsTo.WaterTankId,
-                            Name = src.PumpsTo.Name
-                        }
-                        : null));
+                    map.MapFrom(src =>
+                        src.PumpsTo != null
+                            ? new RecipientMonitorLinkedToUpdatedDto()
+                            {
+                                MaxHeight = src.PumpsTo.LevelWhenFull,
+                                MinHeight = src.PumpsTo.LevelWhenEmpty,
+                                WaterTankId = src.PumpsTo.WaterTankId,
+                                Name = src.PumpsTo.Name
+                            }
+                            : null
+                    )
+            );
         CreateMap<WaterTankCreateDto, WaterTank>()
-            .ForMember(dst => dst.IsActive,
-                config =>
-                    config.MapFrom(src => true))
-            .ForMember(dst => dst.WaterTankId,
-                config =>
-                    config.MapFrom(src => WaterTankId.New()));
+            .ForMember(dst => dst.IsActive, config => config.MapFrom(src => true))
+            .ForMember(dst => dst.WaterTankId, config => config.MapFrom(src => WaterTankId.New()));
         CreateMap<WaterTankUpdateDto, WaterTank>()
-            .ForMember(dst => dst.IsActive,
-                config =>
-                    config.MapFrom(src => true))
-            .ForMember(dst => dst.WaterTankId,
-                config =>
-                    config.MapFrom(src => WaterTankId.New()))
-            .ForMember(dst => dst.WaterTankId,
-                config => config.MapFrom(
-                    src => src.WaterTankId));
+            .ForMember(dst => dst.IsActive, config => config.MapFrom(src => true))
+            .ForMember(dst => dst.WaterTankId, config => config.MapFrom(src => WaterTankId.New()))
+            .ForMember(dst => dst.WaterTankId, config => config.MapFrom(src => src.WaterTankId));
 
         CreateMap<WaterTank, WaterTankForTableDto>()
             .ForMember(
                 dst => dst.RecipientLevelPercentage,
-                map => map.MapFrom(
-                    src => src.WaterTankLogs.Any()
-                        ? src.WaterTankLogs[0].Level
-                        : (int?)null));
+                map =>
+                    map.MapFrom(src =>
+                        src.WaterTankLogs.Any() ? src.WaterTankLogs[0].Level : (int?)null
+                    )
+            );
 
         CreateMap<WaterTank, WaterTankDto>();
     }

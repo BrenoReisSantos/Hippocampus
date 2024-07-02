@@ -18,8 +18,7 @@ public class DatabaseFixture : ServiceFixture
         configuration.AddInMemoryCollection(
             new Dictionary<string, string>
             {
-                ["ConnectionStrings:DefaultConnection"] =
-                    TestDatabaseConnectionString
+                ["ConnectionStrings:DefaultConnection"] = TestDatabaseConnectionString
             }
         );
         base.ConfigureAppConfiguration(configuration);

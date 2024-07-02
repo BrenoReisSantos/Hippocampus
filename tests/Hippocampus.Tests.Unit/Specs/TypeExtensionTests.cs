@@ -15,7 +15,11 @@ public class TypeExtensionTests : BaseTest
     [TestCase("12345678912", "###.###.###-##", "123.456.789-12")]
     [TestCase("123456789AB", "###.###.###-##", "123.456.789-AB")]
     [TestCase("ABCDEFGHIJK", "###.###.###-##", "ABC.DEF.GHI-JK")]
-    public void FormatMask_Should_Return_With_Correct_Format(string value, string format, string expected)
+    public void FormatMask_Should_Return_With_Correct_Format(
+        string value,
+        string format,
+        string expected
+    )
     {
         var maskedString = value.FormatMask(format);
         maskedString.Should().Be(expected);
@@ -40,9 +44,9 @@ public class TypeExtensionTests : BaseTest
     [TestCase("...-")]
     [TestCase("::::")]
     [TestCase("-.!@$^&*()")]
-    public void
-        FormatMask_Should_Return_Format_String_Without_Substitute_Char_When_Passed_Format_Doesnt_Contain_SubstituteChar(
-            string format)
+    public void FormatMask_Should_Return_Format_String_Without_Substitute_Char_When_Passed_Format_Doesnt_Contain_SubstituteChar(
+        string format
+    )
     {
         var maskedString = "123456789".FormatMask(format);
         maskedString.Should().Be(format);

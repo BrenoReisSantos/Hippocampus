@@ -1,3 +1,3 @@
-global using NUnit.Framework;
-global using FluentAssertions;
 global using Bogus;
+global using FluentAssertions;
+global using NUnit.Framework;

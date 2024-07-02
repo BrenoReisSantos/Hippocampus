@@ -25,7 +25,9 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     {
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder().Generate();
 
-        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
         var expectedResult = new RecipientMonitorCreatedDto()
         {
@@ -44,45 +46,48 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .Should()
             .BeEquivalentTo(
                 expected,
-                config =>
-                    config
-                        .Excluding(r => r.Result!.RecipientMonitorId));
+                config => config.Excluding(r => r.Result!.RecipientMonitorId)
+            );
     }
 
     [Test]
     public async Task InsertNewRecipientMonitor_Should_Return_Error_For_MinHeight_Bigger_Than_MaxHeight()
     {
-        var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder().WithInvalidMaxAndMinHeight().Generate();
+        var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
+            .WithInvalidMaxAndMinHeight()
+            .Generate();
 
-        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
-            "Altura máxima não pode ser menor que altura mínima");
+            "Altura máxima não pode ser menor que altura mínima"
+        );
 
         subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        InsertNewRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
+    public async Task InsertNewRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
     {
         var recipientMonitorPostDto = new RecipientMonitorPostDtoBuilder()
             .WithRecipientMonitorLinkedToMacAddress(new MacAddress(Faker.Internet.Mac()))
             .Generate();
 
-        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
-        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error("Monitor Relacionado não encontrado");
+        var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
+            "Monitor Relacionado não encontrado"
+        );
 
-        subject
-            .Should()
-            .BeEquivalentTo(
-                expected);
+        subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        InsertNewRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
+    public async Task InsertNewRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
     {
         var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
@@ -93,21 +98,19 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithRecipientType(linkedMonitor.RecipientType)
             .Generate();
 
-        var subject =
-            await _recipientMonitorServices
-                .InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
-            "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
+            "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado"
+        );
 
-        subject
-            .Should()
-            .BeEquivalentTo(expected);
+        subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        InsertNewRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
+    public async Task InsertNewRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
     {
         var otherMonitor = new WaterTankBuilder().Generate();
         Context.Add(otherMonitor);
@@ -126,25 +129,24 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
-        var subject =
-            await _recipientMonitorServices
-                .InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
-            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})");
+            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})"
+        );
 
         subject
             .Should()
             .BeEquivalentTo(
                 expected,
-                config =>
-                    config
-                        .Excluding(r => r.Result!.RecipientMonitorId));
+                config => config.Excluding(r => r.Result!.RecipientMonitorId)
+            );
     }
 
     [Test]
-    public async Task
-        InsertNewRecipientMonitor_Should_Return_RecipientMonitorCreatedDto_With_Linked_Monitor()
+    public async Task InsertNewRecipientMonitor_Should_Return_RecipientMonitorCreatedDto_With_Linked_Monitor()
     {
         var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
@@ -155,9 +157,9 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
-        var subject =
-            await _recipientMonitorServices
-                .InsertNewRecipientMonitor(recipientMonitorPostDto);
+        var subject = await _recipientMonitorServices.InsertNewRecipientMonitor(
+            recipientMonitorPostDto
+        );
 
         var expectedResult = new RecipientMonitorCreatedDto()
         {
@@ -184,9 +186,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .Should()
             .BeEquivalentTo(
                 expected,
-                config =>
-                    config
-                        .Excluding(r => r.Result!.RecipientMonitorId));
+                config => config.Excluding(r => r.Result!.RecipientMonitorId)
+            );
     }
 
     [Test]
@@ -209,25 +210,26 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         var subject = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
 
-        var expected = Enumerable.Concat(monitors, linkedMonitors).Select(m => new RecipientMonitorForMonitorsTableDto
-        {
-            RecipientType = m.RecipientType,
-            MacAddress = m.MacAddress,
-            MaxHeight = m.MaxHeight,
-            MinHeight = m.MinHeight,
-            RecipientMonitorId = m.RecipientMonitorId,
-            Name = m.Name,
-            LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
-            RecipientLevelPercentage = null,
-            RecipientState = null
-        });
+        var expected = Enumerable
+            .Concat(monitors, linkedMonitors)
+            .Select(m => new RecipientMonitorForMonitorsTableDto
+            {
+                RecipientType = m.RecipientType,
+                MacAddress = m.MacAddress,
+                MaxHeight = m.MaxHeight,
+                MinHeight = m.MinHeight,
+                RecipientMonitorId = m.RecipientMonitorId,
+                Name = m.Name,
+                LinkedRecipientMonitorMacAddress = m.MonitorLinkedTo?.MacAddress,
+                RecipientLevelPercentage = null,
+                RecipientState = null
+            });
 
         subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientSate()
+    public async Task GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientSate()
     {
         var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
@@ -237,7 +239,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         await Context.SaveChangesAsync();
 
-        var monitorsForTable = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+        var monitorsForTable =
+            await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
 
         var subject = monitorsForTable.ToList()[0].RecipientState;
 
@@ -245,8 +248,7 @@ public class RecipientMonitorServicesTests : DatabaseFixture
     }
 
     [Test]
-    public async Task
-        GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientLevel()
+    public async Task GetRecipientMonitorsForMonitorsTable_Should_Return_RecipientMonitorForMonitorsTableDto_With_RecipientLevel()
     {
         var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
@@ -256,7 +258,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
 
         await Context.SaveChangesAsync();
 
-        var monitorsForTable = await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
+        var monitorsForTable =
+            await _recipientMonitorServices.GetRecipientMonitorsForMonitorsTable();
 
         var subject = monitorsForTable.ToList()[0].RecipientLevelPercentage;
 
@@ -280,7 +283,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         var monitorToUpdate = new WaterTankUpdateDtoBuilder()
             .WithRecipientType(Faker.PickRandomWithout(otherRecipientMonitor.RecipientType))
             .WithWaterTankId(monitor.RecipientMonitorId)
-            .WithWaterTankLinkedToId(otherRecipientMonitor.MacAddress).Generate();
+            .WithWaterTankLinkedToId(otherRecipientMonitor.MacAddress)
+            .Generate();
 
         var subject = await _recipientMonitorServices.UpdateRecipientMonitor(monitorToUpdate);
 
@@ -308,9 +312,8 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .Should()
             .BeEquivalentTo(
                 expected,
-                config =>
-                    config
-                        .Excluding(r => r.Result!.RecipientMonitorId));
+                config => config.Excluding(r => r.Result!.RecipientMonitorId)
+            );
     }
 
     [Test]
@@ -322,19 +325,23 @@ public class RecipientMonitorServicesTests : DatabaseFixture
         Context.ChangeTracker.Clear();
 
         var recipientMonitorPutDto = new WaterTankUpdateDtoBuilder()
-            .WithWaterTankId(monitor.RecipientMonitorId).WithInvalidFullAndEmptyValue().Generate();
+            .WithWaterTankId(monitor.RecipientMonitorId)
+            .WithInvalidFullAndEmptyValue()
+            .Generate();
 
-        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(
+            recipientMonitorPutDto
+        );
 
         var expected = ServiceResult<RecipientMonitorUpdatedDto>.Error(
-            "Altura máxima não pode ser menor que altura mínima");
+            "Altura máxima não pode ser menor que altura mínima"
+        );
 
         subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        UpdateRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
+    public async Task UpdateRecipientMonitor_Should_Return_Error_For_PostDto_Has_Linked_Monitor_MacAddress_But_Linked_Monitor_Not_Found()
     {
         var monitor = new WaterTankBuilder().Generate();
         Context.Add(monitor);
@@ -346,26 +353,27 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithWaterTankLinkedToId(new MacAddress(Faker.Internet.Mac()))
             .Generate();
 
-        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(recipientMonitorPutDto);
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(
+            recipientMonitorPutDto
+        );
 
-        var expected = ServiceResult<RecipientMonitorUpdatedDto>.Error("Monitor Relacionado não encontrado");
+        var expected = ServiceResult<RecipientMonitorUpdatedDto>.Error(
+            "Monitor Relacionado não encontrado"
+        );
 
-        subject
-            .Should()
-            .BeEquivalentTo(
-                expected);
+        subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        UpdateRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
+    public async Task UpdateRecipientMonitor_Should_Return_Error_For_Linked_Monitor_Has_Same_RecipientType_As_Monitor_Being_Inserted()
     {
         var linkedMonitor = new WaterTankBuilder().Generate();
         Context.Add(linkedMonitor);
         await Context.SaveChangesAsync();
 
         var monitor = new WaterTankBuilder()
-            .WithWaterTankType(Faker.PickRandomWithout(linkedMonitor.RecipientType)).Generate();
+            .WithWaterTankType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
+            .Generate();
         Context.Add(monitor);
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
@@ -376,21 +384,17 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithRecipientType(linkedMonitor.RecipientType)
             .Generate();
 
-        var subject =
-            await _recipientMonitorServices
-                .UpdateRecipientMonitor(monitorToUpdate);
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(monitorToUpdate);
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
-            "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado");
+            "o Monitor cadastrado sendo cadastrado não pode pertencer ao mesmo tipo de recipient que o monitor conectado"
+        );
 
-        subject
-            .Should()
-            .BeEquivalentTo(expected);
+        subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
-    public async Task
-        UpdateRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
+    public async Task UpdateRecipientMonitor_Should_Return_Error_For_Trying_To_Link_With_A_Monitor_Already_Linked()
     {
         var otherMonitor = new WaterTankBuilder().Generate();
         Context.Add(otherMonitor);
@@ -415,19 +419,19 @@ public class RecipientMonitorServicesTests : DatabaseFixture
             .WithRecipientType(Faker.PickRandomWithout(linkedMonitor.RecipientType))
             .Generate();
 
-        var subject =
-            await _recipientMonitorServices
-                .UpdateRecipientMonitor(recipientMonitorPutDto);
+        var subject = await _recipientMonitorServices.UpdateRecipientMonitor(
+            recipientMonitorPutDto
+        );
 
         var expected = ServiceResult<RecipientMonitorCreatedDto>.Error(
-            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})");
+            $"O monitor a se conectar já está conectado com um outro. ({otherMonitor.Name} with Macaddress {otherMonitor.MacAddress})"
+        );
 
         subject
             .Should()
             .BeEquivalentTo(
                 expected,
-                config =>
-                    config
-                        .Excluding(r => r.Result!.RecipientMonitorId));
+                config => config.Excluding(r => r.Result!.RecipientMonitorId)
+            );
     }
 }

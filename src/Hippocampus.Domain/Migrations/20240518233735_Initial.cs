@@ -17,7 +17,11 @@ namespace Hippocampus.Domain.Migrations
                 columns: table => new
                 {
                     WaterTankId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Name = table.Column<string>(
+                        type: "character varying(100)",
+                        maxLength: 100,
+                        nullable: false
+                    ),
                     Type = table.Column<string>(type: "text", nullable: false),
                     CurrentLevel = table.Column<int>(type: "integer", nullable: false),
                     State = table.Column<int>(type: "integer", nullable: false),
@@ -25,8 +29,14 @@ namespace Hippocampus.Domain.Migrations
                     LevelWhenFull = table.Column<int>(type: "integer", nullable: false),
                     PumpingWater = table.Column<bool>(type: "boolean", nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
+                    UpdatedAt = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: true
+                    ),
                     PumpsToWaterTankId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
@@ -36,53 +46,67 @@ namespace Hippocampus.Domain.Migrations
                         name: "FK_WaterTank_WaterTank_PumpsToWaterTankId",
                         column: x => x.PumpsToWaterTankId,
                         principalTable: "WaterTank",
-                        principalColumn: "WaterTankId");
-                });
+                        principalColumn: "WaterTankId"
+                    );
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "WaterTankLog",
                 columns: table => new
                 {
-                    WaterTankLogId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WaterTankLogId = table
+                        .Column<long>(type: "bigint", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Level = table.Column<int>(type: "integer", nullable: false),
                     State = table.Column<string>(type: "text", nullable: false),
                     PumpingWater = table.Column<bool>(type: "boolean", nullable: true),
-                    LogDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LogDate = table.Column<DateTime>(
+                        type: "timestamp with time zone",
+                        nullable: false
+                    ),
                     WaterTankId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WaterTankLog", x => x.WaterTankLogId);
-                    table.UniqueConstraint("AK_WaterTankLog_WaterTankId_LogDate", x => new { x.WaterTankId, x.LogDate });
+                    table.UniqueConstraint(
+                        "AK_WaterTankLog_WaterTankId_LogDate",
+                        x => new { x.WaterTankId, x.LogDate }
+                    );
                     table.ForeignKey(
                         name: "FK_WaterTankLog_WaterTank_WaterTankId",
                         column: x => x.WaterTankId,
                         principalTable: "WaterTank",
                         principalColumn: "WaterTankId",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_WaterTank_PumpsToWaterTankId",
                 table: "WaterTank",
-                column: "PumpsToWaterTankId");
+                column: "PumpsToWaterTankId"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_WaterTankLog_LogDate",
                 table: "WaterTankLog",
                 column: "LogDate",
-                descending: new bool[0]);
+                descending: new bool[0]
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "WaterTankLog");
+            migrationBuilder.DropTable(name: "WaterTankLog");
 
-            migrationBuilder.DropTable(
-                name: "WaterTank");
+            migrationBuilder.DropTable(name: "WaterTank");
         }
     }
 }

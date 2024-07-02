@@ -7,18 +7,21 @@ namespace Hippocampus.Domain.Services;
 
 public interface IPumpControlService
 {
-    Task<ServiceResult> ControlPump(WaterTankId waterTankId, bool setPumpPower);
+    Task<ServiceResult> ControlPump(WaterTankId waterTankId, PumpPower pumpPower);
 }
 
-public class PumpControlService(IWaterTankRepository _waterTankRepository, WaterTankLogService _waterTankLogService)
-    : IPumpControlService
+public class PumpControlService(
+    IWaterTankRepository _waterTankRepository,
+    IWaterTankLogService _waterTankLogService
+) : IPumpControlService
 {
-    public async Task<ServiceResult> ControlPump(WaterTankId waterTankId, bool setPumpPower)
+    public async Task<ServiceResult> ControlPump(WaterTankId waterTankId, PumpPower pumpPower)
     {
         var waterTank = await _waterTankRepository.Get(waterTankId);
-        if (waterTank is null) return ServiceResult.Error("Não foi possível encontrar o reservatório");
+        if (waterTank is null)
+            return ServiceResult.Error("Não foi possível encontrar o reservatório");
 
-        if (setPumpPower)
+        if (pumpPower == PumpPower.On)
             waterTank = new PumpManager(waterTank).TurnPumpOn();
         else
             waterTank = new PumpManager(waterTank).TurnPumpOff();
@@ -28,4 +31,10 @@ public class PumpControlService(IWaterTankRepository _waterTankRepository, Water
 
         return ServiceResult.Success();
     }
+}
+
+public enum PumpPower
+{
+    Off,
+    On,
 }

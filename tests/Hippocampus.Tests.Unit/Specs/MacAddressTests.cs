@@ -16,9 +16,7 @@ public class MacAddressTests : BaseTest
     public void MacAddress_Should_Instatiate_With_Valid_MacAddress_String(string macAddrressString)
     {
         var testingMacAddress = new MacAddress(macAddrressString);
-        testingMacAddress
-            .Should()
-            .BeEquivalentTo(new MacAddress(macAddrressString));
+        testingMacAddress.Should().BeEquivalentTo(new MacAddress(macAddrressString));
     }
 
     [TestCase("123456789abc", "123456789abc")]
@@ -27,11 +25,13 @@ public class MacAddressTests : BaseTest
     [TestCase("ff:ff:ff:ff:ff:ff", "ffffffffffff")]
     [TestCase("ff-ff-ff-ff-ff-ff", "ffffffffffff")]
     [TestCase("ffff.ffff.ffff", "ffffffffffff")]
-    public void MacAddress_Should_Have_Valid_Value(string macAddrressString, string expectedMacAddress)
+    public void MacAddress_Should_Have_Valid_Value(
+        string macAddrressString,
+        string expectedMacAddress
+    )
     {
         var testingMacAddress = new MacAddress(macAddrressString);
-        testingMacAddress
-            .Value.Should().Be(expectedMacAddress);
+        testingMacAddress.Value.Should().Be(expectedMacAddress);
     }
 
     [TestCase("123456789abc", "12:34:56:78:9a:bc")]
@@ -40,12 +40,13 @@ public class MacAddressTests : BaseTest
     [TestCase("ff:ff:ff:ff:ff:ff", "ff:ff:ff:ff:ff:ff")]
     [TestCase("ff-ff-ff-ff-ff-ff", "ff:ff:ff:ff:ff:ff")]
     [TestCase("ffff.ffff.ffff", "ff:ff:ff:ff:ff:ff")]
-    public void MacAddress_ToString_Should_Return_Colon_Format(string macAddrressString, string expected)
+    public void MacAddress_ToString_Should_Return_Colon_Format(
+        string macAddrressString,
+        string expected
+    )
     {
         var testingMacAddress = new MacAddress(macAddrressString);
-        testingMacAddress
-            .ToString(MacAddress.Mask.Colon)
-            .Should().Be(expected);
+        testingMacAddress.ToString(MacAddress.Mask.Colon).Should().Be(expected);
     }
 
     [TestCase("")]
@@ -59,7 +60,9 @@ public class MacAddressTests : BaseTest
     [TestCase("ff-ff-ff-ff-ff-fff")]
     [TestCase("ffff.ffff.fffff")]
     [TestCase("ffff.ffff ffff")]
-    public void MacAddress_Should_Not_Instatiate_With_Invalid_MacAddress_String(string macAddrressString)
+    public void MacAddress_Should_Not_Instatiate_With_Invalid_MacAddress_String(
+        string macAddrressString
+    )
     {
         var testingMacAddress = () => new MacAddress(macAddrressString);
         testingMacAddress
@@ -83,11 +86,13 @@ public class MacAddressTests : BaseTest
         var macAddressText = faker.Internet.Mac();
         var macAddress = new MacAddress(macAddressText);
         var anonymousObjectWithMacAddress = new { MacAddress = macAddress };
-        var serializedAnonymousObjectWithMacAddress = JsonSerializer.Serialize(anonymousObjectWithMacAddress);
-        var propertyName = anonymousObjectWithMacAddress.GetType().GetProperties()[0].Name;
-        serializedAnonymousObjectWithMacAddress.Should().Be(
-            $"{{\"{propertyName}\":\"{macAddress.ToString(MacAddress.Mask.Colon)}\"}}"
+        var serializedAnonymousObjectWithMacAddress = JsonSerializer.Serialize(
+            anonymousObjectWithMacAddress
         );
+        var propertyName = anonymousObjectWithMacAddress.GetType().GetProperties()[0].Name;
+        serializedAnonymousObjectWithMacAddress
+            .Should()
+            .Be($"{{\"{propertyName}\":\"{macAddress.ToString(MacAddress.Mask.Colon)}\"}}");
     }
 
     [Test]
@@ -95,7 +100,9 @@ public class MacAddressTests : BaseTest
     {
         var macAddressText = _fake.Internet.Mac();
         var recipientLevelJson = @$"{{""Value"": ""{macAddressText}""}}";
-        var serializedMacAddressSut = JsonSerializer.Deserialize<Sut<MacAddress>>(recipientLevelJson);
+        var serializedMacAddressSut = JsonSerializer.Deserialize<Sut<MacAddress>>(
+            recipientLevelJson
+        );
         var expected = new Sut<MacAddress>(new MacAddress(macAddressText));
         serializedMacAddressSut.Should().BeEquivalentTo(expected);
     }

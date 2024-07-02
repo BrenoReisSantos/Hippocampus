@@ -18,7 +18,8 @@ public partial struct WaterTankId
     public static implicit operator WaterTankId(string guidText)
     {
         var success = Guid.TryParse(guidText, out var guid);
-        if (success) return new WaterTankId(guid);
+        if (success)
+            return new WaterTankId(guid);
         throw new Exception($"\"{guidText}\" não é um GUID válido");
     }
 }

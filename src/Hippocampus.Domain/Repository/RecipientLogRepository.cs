@@ -11,8 +11,11 @@ public interface IWaterTankLogRepository
     Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId);
     Task<WaterTankLog> Insert(WaterTankLog waterTankLog);
 
-    Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(WaterTankId monitorId,
-        DateTime startDate, DateTime endDate);
+    Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(
+        WaterTankId monitorId,
+        DateTime startDate,
+        DateTime endDate
+    );
 }
 
 public class WaterTankLogRepository : IWaterTankLogRepository
@@ -28,15 +31,16 @@ public class WaterTankLogRepository : IWaterTankLogRepository
 
     public async Task<WaterTankLog?> GetMostRecentRecipientLogAsync(WaterTankId waterTankId)
     {
-        return await _context.WaterTankLog.OrderByDescending(r => r.LogDate)
+        return await _context
+            .WaterTankLog.OrderByDescending(r => r.LogDate)
             .FirstOrDefaultAsync(r => r.WaterTankId == waterTankId);
     }
 
     public async Task<WaterTankLog> Insert(WaterTankLog waterTankLog)
     {
-        var recipientToLogFor = await
-            _context.WaterTank.SingleOrDefaultAsync(
-                r => r.WaterTankId == waterTankLog.WaterTank.WaterTankId);
+        var recipientToLogFor = await _context.WaterTank.SingleOrDefaultAsync(r =>
+            r.WaterTankId == waterTankLog.WaterTank.WaterTankId
+        );
         var recipientLogToInsert = new WaterTankLog
         {
             WaterTank = recipientToLogFor,
@@ -51,14 +55,20 @@ public class WaterTankLogRepository : IWaterTankLogRepository
         return recipientLogToInsert;
     }
 
-    public async Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(WaterTankId monitorId,
-        DateTime startDate, DateTime endDate)
+    public async Task<IEnumerable<WaterTankLog>> GetLogsForMonitorInAGivenDateRangeAsync(
+        WaterTankId monitorId,
+        DateTime startDate,
+        DateTime endDate
+    )
     {
         var startDateUtc = startDate.ToUniversalTime();
         var endDateUtc = endDate.ToUniversalTime();
-        return await _context.WaterTankLog.Where(log =>
-                log.WaterTankId == monitorId && log.LogDate >= startDateUtc &&
-                log.LogDate <= endDateUtc)
+        return await _context
+            .WaterTankLog.Where(log =>
+                log.WaterTankId == monitorId
+                && log.LogDate >= startDateUtc
+                && log.LogDate <= endDateUtc
+            )
             .ToListAsync();
     }
 }

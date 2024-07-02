@@ -15,7 +15,9 @@ public class DatabaseFixture : IDisposable
 
     public DatabaseFixture()
     {
-        Context = new HippocampusContext(new DbContextOptionsBuilder().UseNpgsql(connectionString).Options);
+        Context = new HippocampusContext(
+            new DbContextOptionsBuilder().UseNpgsql(connectionString).Options
+        );
         MigrateDatabase();
     }
 
@@ -41,7 +43,6 @@ public class DatabaseFixture : IDisposable
         await respawner.ResetAsync(connection);
     }
 
-
     public void Dispose()
     {
         Context.Database.EnsureDeleted();
@@ -49,6 +50,4 @@ public class DatabaseFixture : IDisposable
 }
 
 [CollectionDefinition("database")]
-public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture>
-{
-}
+public class DatabaseCollectionFixture : ICollectionFixture<DatabaseFixture> { }

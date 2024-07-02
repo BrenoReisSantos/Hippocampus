@@ -23,21 +23,33 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         await Context.SaveChangesAsync();
 
         var mostRecentLogRegisterDate = Faker.Date.Recent().ToUniversalTime();
-        var mostRecentLog = new WaterTankLogBuilder().WithLogDate(mostRecentLogRegisterDate)
-            .WithRecipientMonitor(recipientMonitor).Generate();
+        var mostRecentLog = new WaterTankLogBuilder()
+            .WithLogDate(mostRecentLogRegisterDate)
+            .WithRecipientMonitor(recipientMonitor)
+            .Generate();
         Context.RecipientLogs.Add(mostRecentLog);
 
-        var otherLogs = new WaterTankLogBuilder().WithRegisterDateBefore(mostRecentLogRegisterDate)
-            .WithRecipientMonitor(recipientMonitor).Generate(10);
+        var otherLogs = new WaterTankLogBuilder()
+            .WithRegisterDateBefore(mostRecentLogRegisterDate)
+            .WithRecipientMonitor(recipientMonitor)
+            .Generate(10);
         Context.AddRange(otherLogs);
 
         await Context.SaveChangesAsync();
 
-        var subject = await _recipientLogRepository.GetMostRecentRecipientLogAsync(recipientMonitor.RecipientMonitorId);
+        var subject = await _recipientLogRepository.GetMostRecentRecipientLogAsync(
+            recipientMonitor.RecipientMonitorId
+        );
 
-        subject.Should().BeEquivalentTo(mostRecentLog,
-            config => config.Excluding(recipientLog => recipientLog.RecipientMonitor)
-                .Excluding(recipientLog => recipientLog.RecipientLogId));
+        subject
+            .Should()
+            .BeEquivalentTo(
+                mostRecentLog,
+                config =>
+                    config
+                        .Excluding(recipientLog => recipientLog.RecipientMonitor)
+                        .Excluding(recipientLog => recipientLog.RecipientLogId)
+            );
     }
 
     [Test]
@@ -47,7 +59,8 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         Context.Add(recipient);
         await Context.SaveChangesAsync();
 
-        var recipientLog = new WaterTankLogBuilder().WithLogDate(Clock.Now.ToUniversalTime())
+        var recipientLog = new WaterTankLogBuilder()
+            .WithLogDate(Clock.Now.ToUniversalTime())
             .WithRecipientMonitor(recipient)
             .Generate();
 
@@ -62,8 +75,12 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             LevelHeight = recipientLog.LevelHeight,
             RegisterDate = recipientLog.RegisterDate
         };
-        subject.Should()
-            .BeEquivalentTo(expected, config => config.Excluding(rlog => rlog.RecipientMonitor.RecipientLogs));
+        subject
+            .Should()
+            .BeEquivalentTo(
+                expected,
+                config => config.Excluding(rlog => rlog.RecipientMonitor.RecipientLogs)
+            );
     }
 
     [Test]
@@ -81,7 +98,8 @@ public class RecipientLogRepositoryTests : DatabaseFixture
         for (var i = 0; i < logsQuantity; i++)
         {
             var logDate = baseDate.AddMinutes(minutesDistance * i);
-            var recipientLog = new WaterTankLogBuilder().WithLogDate(logDate)
+            var recipientLog = new WaterTankLogBuilder()
+                .WithLogDate(logDate)
                 .WithRecipientMonitor(recipient)
                 .Generate();
             expectedRecipientLogs.Add(recipientLog);
@@ -89,11 +107,17 @@ public class RecipientLogRepositoryTests : DatabaseFixture
             await Context.SaveChangesAsync();
         }
 
-        var recoveredLogs =
-            await _recipientLogRepository.GetLogsForMonitorInAGivenDateRangeAsync(recipient.RecipientMonitorId,
-                baseDate, baseDate.AddMinutes(minutesDistance * (logsQuantity - 1)));
+        var recoveredLogs = await _recipientLogRepository.GetLogsForMonitorInAGivenDateRangeAsync(
+            recipient.RecipientMonitorId,
+            baseDate,
+            baseDate.AddMinutes(minutesDistance * (logsQuantity - 1))
+        );
 
-        recoveredLogs.Should()
-            .BeEquivalentTo(expectedRecipientLogs, config => config.Excluding(r => r.RecipientMonitor));
+        recoveredLogs
+            .Should()
+            .BeEquivalentTo(
+                expectedRecipientLogs,
+                config => config.Excluding(r => r.RecipientMonitor)
+            );
     }
 }

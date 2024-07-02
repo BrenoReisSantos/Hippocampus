@@ -14,25 +14,23 @@ namespace Hippocampus.Domain.Migrations
                 name: "GardenMode",
                 table: "WaterTankLog",
                 type: "boolean",
-                nullable: true);
+                nullable: true
+            );
 
             migrationBuilder.AddColumn<bool>(
                 name: "GardenMode",
                 table: "WaterTank",
                 type: "boolean",
-                nullable: true);
+                nullable: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "GardenMode",
-                table: "WaterTankLog");
+            migrationBuilder.DropColumn(name: "GardenMode", table: "WaterTankLog");
 
-            migrationBuilder.DropColumn(
-                name: "GardenMode",
-                table: "WaterTank");
+            migrationBuilder.DropColumn(name: "GardenMode", table: "WaterTank");
         }
     }
 }

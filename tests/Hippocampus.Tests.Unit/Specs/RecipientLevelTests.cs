@@ -16,9 +16,7 @@ public class RecipientLevelTests
     {
         var recipientLevel = _fake.Random.Byte(0, 100);
         var recipientLevelToTest = new LevelPercentage(recipientLevel);
-        recipientLevelToTest
-            .Should()
-            .BeEquivalentTo(new LevelPercentage(recipientLevel));
+        recipientLevelToTest.Should().BeEquivalentTo(new LevelPercentage(recipientLevel));
     }
 
     [Test]
@@ -27,8 +25,7 @@ public class RecipientLevelTests
     {
         var recipientLevel = _fake.Random.Byte(0, 100);
         var recipientLevelToTest = new LevelPercentage(recipientLevel);
-        recipientLevelToTest
-            .Value.Should().Be(recipientLevel);
+        recipientLevelToTest.Value.Should().Be(recipientLevel);
     }
 
     [Test]
@@ -81,11 +78,13 @@ public class RecipientLevelTests
         var recipientLevel = _fake.Random.Byte(0, 100);
         var recipientLevelToTest = new LevelPercentage(recipientLevel);
         var anonymousObjectWithRecipientValue = new { RecipientLevel = recipientLevel };
-        var serializedAnonymousObjectWithMacAddress = JsonSerializer.Serialize(anonymousObjectWithRecipientValue);
-        var propertyName = anonymousObjectWithRecipientValue.GetType().GetProperties()[0].Name;
-        serializedAnonymousObjectWithMacAddress.Should().Be(
-            $"{{\"{propertyName}\":{recipientLevelToTest.Value}}}"
+        var serializedAnonymousObjectWithMacAddress = JsonSerializer.Serialize(
+            anonymousObjectWithRecipientValue
         );
+        var propertyName = anonymousObjectWithRecipientValue.GetType().GetProperties()[0].Name;
+        serializedAnonymousObjectWithMacAddress
+            .Should()
+            .Be($"{{\"{propertyName}\":{recipientLevelToTest.Value}}}");
     }
 
     // FIXME

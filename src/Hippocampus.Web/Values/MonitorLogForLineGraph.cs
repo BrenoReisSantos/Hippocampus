@@ -8,4 +8,3 @@
 //     public DateTime RegisterDate { get; init; }
 //     public Guid RecipientMonitorId { get; init; }
 // }
-

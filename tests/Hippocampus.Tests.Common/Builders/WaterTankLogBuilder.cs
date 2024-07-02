@@ -10,7 +10,10 @@ public sealed class WaterTankLogBuilder : AutoFaker<WaterTankLog>
     public WaterTankLogBuilder()
     {
         Ignore(recipientLog => recipientLog.WaterTankLogId);
-        RuleFor(recipientLog => recipientLog.LogDate, faker => faker.Date.Recent().ToUniversalTime());
+        RuleFor(
+            recipientLog => recipientLog.LogDate,
+            faker => faker.Date.Recent().ToUniversalTime()
+        );
         RuleFor(recipientLog => recipientLog.Level, faker => faker.Random.Int(0, 1000));
         Ignore(recipientLog => recipientLog.WaterTank);
         Ignore(recipientLog => recipientLog.WaterTankId);
@@ -24,7 +27,10 @@ public sealed class WaterTankLogBuilder : AutoFaker<WaterTankLog>
 
     public WaterTankLogBuilder WithRegisterDateBefore(DateTime referenceDate)
     {
-        RuleFor(recipientLog => recipientLog.LogDate, faker => faker.Date.Past(refDate: referenceDate));
+        RuleFor(
+            recipientLog => recipientLog.LogDate,
+            faker => faker.Date.Past(refDate: referenceDate)
+        );
         return this;
     }
 

@@ -9,7 +9,9 @@ public static class Extensions
     {
         using (var asyncScope = webApp.Services.CreateAsyncScope())
         {
-            using (var context = asyncScope.ServiceProvider.GetRequiredService<HippocampusContext>())
+            using (
+                var context = asyncScope.ServiceProvider.GetRequiredService<HippocampusContext>()
+            )
             {
                 try
                 {

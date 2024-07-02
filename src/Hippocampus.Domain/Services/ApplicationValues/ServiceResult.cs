@@ -34,18 +34,19 @@ public class ServiceResult<TResult> : ServiceResult
 {
     public TResult? Result { get; private set; }
 
-    private ServiceResult(TResult result) : base(true)
+    private ServiceResult(TResult result)
+        : base(true)
     {
         Result = result;
     }
 
-    private ServiceResult(string message, bool isSuccess) : base(message, isSuccess)
-    {
-    }
+    private ServiceResult(string message, bool isSuccess)
+        : base(message, isSuccess) { }
 
-    public static ServiceResult<TResult> Success(TResult result) => new ServiceResult<TResult>(result);
+    public static ServiceResult<TResult> Success(TResult result) =>
+        new ServiceResult<TResult>(result);
 
-    public new static ServiceResult<TResult> Error(string message)
+    public static new ServiceResult<TResult> Error(string message)
     {
         return new ServiceResult<TResult>(message, false);
     }

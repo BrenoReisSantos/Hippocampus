@@ -6,9 +6,7 @@ public static class TypesExtensions
 {
     public static string FormatMask(this string value, string mask)
     {
-        return string.IsNullOrEmpty(value)
-            ? string.Empty
-            : value.Mask(mask);
+        return string.IsNullOrEmpty(value) ? string.Empty : value.Mask(mask);
     }
 
     private static string Mask(this string value, string mask, char substituteChar = '#')
@@ -18,7 +16,8 @@ public static class TypesExtensions
         for (var index = 0; index < mask.Length; index++)
             if (result[index].CompareTo(substituteChar) == 0)
                 result[index] = value[step++];
-            else result[index] = mask[index];
+            else
+                result[index] = mask[index];
 
         return new string(result);
     }

@@ -17,10 +17,16 @@ public static class MonitorLogRoutes
         [FromServices] IRecipientMonitorServices recipientMonitorServices,
         WaterTankId monitorId,
         [FromQuery] DateTime? startDate,
-        [FromQuery] DateTime? endDate)
+        [FromQuery] DateTime? endDate
+    )
     {
-        var result = await recipientMonitorServices.GetLogsForDateRange(monitorId, startDate, endDate);
-        if (result.IsFailure) return Results.BadRequest(result.Message);
+        var result = await recipientMonitorServices.GetLogsForDateRange(
+            monitorId,
+            startDate,
+            endDate
+        );
+        if (result.IsFailure)
+            return Results.BadRequest(result.Message);
         return Results.Ok(result.Result);
     }
 }

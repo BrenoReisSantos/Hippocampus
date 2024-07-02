@@ -12,4 +12,3 @@
 //     public RecipientState? RecipientState { get; init; } = null;
 //     public string LinkedRecipientMonitorMacAddress { get; init; } = string.Empty;
 // }
-

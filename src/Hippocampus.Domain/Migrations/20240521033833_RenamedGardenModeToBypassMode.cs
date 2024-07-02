@@ -13,7 +13,8 @@ namespace Hippocampus.Domain.Migrations
             migrationBuilder.RenameColumn(
                 name: "GardenMode",
                 table: "WaterTank",
-                newName: "BypassMode");
+                newName: "BypassMode"
+            );
         }
 
         /// <inheritdoc />
@@ -22,7 +23,8 @@ namespace Hippocampus.Domain.Migrations
             migrationBuilder.RenameColumn(
                 name: "BypassMode",
                 table: "WaterTank",
-                newName: "GardenMode");
+                newName: "GardenMode"
+            );
         }
     }
 }

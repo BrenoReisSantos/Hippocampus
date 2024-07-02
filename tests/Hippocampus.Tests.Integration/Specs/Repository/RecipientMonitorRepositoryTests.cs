@@ -37,10 +37,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         subject
             .Should()
-            .BeEquivalentTo(
-                expected,
-                config =>
-                    config.Excluding(r => r.RecipientMonitorId));
+            .BeEquivalentTo(expected, config => config.Excluding(r => r.RecipientMonitorId));
     }
 
     [Test]
@@ -48,12 +45,13 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     {
         var recipientInsert = new WaterTankBuilder().Generate();
 
-        var insertedRecipientMonitor = await _recipientMonitorRepository.InsertRecipientMonitor(recipientInsert);
+        var insertedRecipientMonitor = await _recipientMonitorRepository.InsertRecipientMonitor(
+            recipientInsert
+        );
 
-        var subject =
-            await Context.RecipientMonitors.SingleOrDefaultAsync(
-                rm =>
-                    rm.RecipientMonitorId == insertedRecipientMonitor.RecipientMonitorId);
+        var subject = await Context.RecipientMonitors.SingleOrDefaultAsync(rm =>
+            rm.RecipientMonitorId == insertedRecipientMonitor.RecipientMonitorId
+        );
 
         var expected = new RecipientMonitor()
         {
@@ -68,10 +66,7 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
             UpdatedAt = null
         };
 
-        subject
-            .Should()
-            .BeEquivalentTo(
-                expected);
+        subject.Should().BeEquivalentTo(expected);
     }
 
     [Test]
@@ -118,7 +113,8 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
                     config
                         .Excluding(r => r.RecipientMonitorId)
                         .Excluding(r => r.MonitorLinkedTo.MonitorLinkedTo)
-                        .IgnoringCyclicReferences());
+                        .IgnoringCyclicReferences()
+            );
     }
 
     [Test]
@@ -133,20 +129,12 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
         var subject = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
         Context.ChangeTracker.Clear();
-        var expected =
-            await Context.RecipientMonitors
-                .AsSplitQuery()
-                .Include(r => r.MonitorLinkedTo)
-                .SingleOrDefaultAsync(
-                    r => r.RecipientMonitorId == subject.RecipientMonitorId);
+        var expected = await Context
+            .RecipientMonitors.AsSplitQuery()
+            .Include(r => r.MonitorLinkedTo)
+            .SingleOrDefaultAsync(r => r.RecipientMonitorId == subject.RecipientMonitorId);
 
-        subject
-            .Should()
-            .BeEquivalentTo(
-                expected,
-                config =>
-                    config
-                        .IgnoringCyclicReferences());
+        subject.Should().BeEquivalentTo(expected, config => config.IgnoringCyclicReferences());
     }
 
     [Test]
@@ -161,25 +149,18 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
         var expected = await _recipientMonitorRepository.InsertRecipientMonitor(monitor);
 
         Context.ChangeTracker.Clear();
-        var subject =
-            await Context.RecipientMonitors
-                .AsSplitQuery()
-                .Include(r => r.MonitorLinkedTo)
-                .SingleOrDefaultAsync(
-                    r => r.RecipientMonitorId == linkedMonitor.RecipientMonitorId);
+        var subject = await Context
+            .RecipientMonitors.AsSplitQuery()
+            .Include(r => r.MonitorLinkedTo)
+            .SingleOrDefaultAsync(r => r.RecipientMonitorId == linkedMonitor.RecipientMonitorId);
 
-        subject.MonitorLinkedTo
-            .Should()
-            .BeEquivalentTo(
-                expected,
-                config =>
-                    config
-                        .IgnoringCyclicReferences());
+        subject
+            .MonitorLinkedTo.Should()
+            .BeEquivalentTo(expected, config => config.IgnoringCyclicReferences());
     }
 
     [Test]
-    public async Task
-        GetAllRecipientMonitorsWithLinkedMonitor_Should_Return_All_RecipientMonitors_From_Database_With_Each_One_Linked_Monitor()
+    public async Task GetAllRecipientMonitorsWithLinkedMonitor_Should_Return_All_RecipientMonitors_From_Database_With_Each_One_Linked_Monitor()
     {
         var linkedMonitors = new WaterTankBuilder().Generate(5);
         Context.AddRange(linkedMonitors);
@@ -205,20 +186,23 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
     }
 
     [Test]
-    public async Task
-        GetAllRecipientMonitorsWithLinkedMonitor_Should_Have_Most_Recent_RecipientLog()
+    public async Task GetAllRecipientMonitorsWithLinkedMonitor_Should_Have_Most_Recent_RecipientLog()
     {
         var monitors = new WaterTankBuilder().Generate(1);
         Context.AddRange(monitors);
 
         var mostRecentDate = Faker.Date.Recent().ToUniversalTime();
 
-        var monitorMostRecentLog = new WaterTankLogBuilder().WithLogDate(mostRecentDate)
-            .WithRecipientMonitor(monitors[0]).Generate();
+        var monitorMostRecentLog = new WaterTankLogBuilder()
+            .WithLogDate(mostRecentDate)
+            .WithRecipientMonitor(monitors[0])
+            .Generate();
         Context.Add(monitorMostRecentLog);
 
-        var othersLogs = new WaterTankLogBuilder().WithRegisterDateBefore(mostRecentDate)
-            .WithRecipientMonitor(monitors[0]).Generate(10);
+        var othersLogs = new WaterTankLogBuilder()
+            .WithRegisterDateBefore(mostRecentDate)
+            .WithRecipientMonitor(monitors[0])
+            .Generate(10);
         Context.AddRange(othersLogs);
 
         await Context.SaveChangesAsync();
@@ -227,8 +211,15 @@ public class RecipientMonitorRepositoryTests : DatabaseFixture
 
         var subject = returnedValue.ToArray()[0].RecipientLogs[0];
 
-        subject.Should().BeEquivalentTo(monitorMostRecentLog,
-            config => config.Excluding(logSubject => logSubject.RecipientMonitor).IgnoringCyclicReferences());
+        subject
+            .Should()
+            .BeEquivalentTo(
+                monitorMostRecentLog,
+                config =>
+                    config
+                        .Excluding(logSubject => logSubject.RecipientMonitor)
+                        .IgnoringCyclicReferences()
+            );
     }
 
     [Test]

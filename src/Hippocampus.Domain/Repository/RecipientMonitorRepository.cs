@@ -43,31 +43,34 @@ public class WaterTankRepository : IWaterTankRepository
         return newRecipient;
     }
 
-    public async Task<WaterTank?> Get(
-        WaterTankId waterTankId)
+    public async Task<WaterTank?> Get(WaterTankId waterTankId)
     {
-        return await _context.WaterTank.Include(recipientMonitor => recipientMonitor.PumpsTo)
+        return await _context
+            .WaterTank.Include(recipientMonitor => recipientMonitor.PumpsTo)
             .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.WaterTankId == waterTankId);
     }
 
     public async Task<IEnumerable<WaterTank>> GetAll()
     {
-        return await _context.WaterTank
-            .Include(r => r.PumpsTo)
+        return await _context
+            .WaterTank.Include(r => r.PumpsTo)
             .Include(recipient =>
-                recipient.WaterTankLogs.OrderByDescending(
-                        recipientLog => recipientLog.LogDate)
-                    .Take(1))
+                recipient
+                    .WaterTankLogs.OrderByDescending(recipientLog => recipientLog.LogDate)
+                    .Take(1)
+            )
             .ToListAsync();
     }
 
     public async Task<WaterTank?> Update(WaterTank waterTank)
     {
-        var waterTankUpdating = await _context.WaterTank.AsNoTracking().Include(r => r.PumpsTo).FirstOrDefaultAsync(
-            r =>
-                r.WaterTankId == waterTank.WaterTankId);
+        var waterTankUpdating = await _context
+            .WaterTank.AsNoTracking()
+            .Include(r => r.PumpsTo)
+            .FirstOrDefaultAsync(r => r.WaterTankId == waterTank.WaterTankId);
 
-        if (waterTankUpdating is null) return null;
+        if (waterTankUpdating is null)
+            return null;
 
         waterTankUpdating = waterTankUpdating with
         {
@@ -95,7 +98,8 @@ public class WaterTankRepository : IWaterTankRepository
     public async Task Delete(WaterTankId waterTankId)
     {
         var monitor = await _context.WaterTank.FindAsync(waterTankId);
-        if (monitor is null) return;
+        if (monitor is null)
+            return;
         monitor.IsActive = false;
         await _context.SaveChangesAsync();
     }

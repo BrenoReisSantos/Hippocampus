@@ -17,7 +17,8 @@ public class LevelPercentage
 
     public LevelPercentage(int value)
     {
-        if (!InBounds(value)) throw RecipientLevelOutOfBounds(value);
+        if (!InBounds(value))
+            throw RecipientLevelOutOfBounds(value);
         Value = value;
     }
 
@@ -28,7 +29,9 @@ public class LevelPercentage
 
     private static Exception RecipientLevelOutOfBounds(int value)
     {
-        return new ArgumentException($"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}");
+        return new ArgumentException(
+            $"RecipientLevel accepts values between {MinimumLevel} and {MaximumLevel}"
+        );
     }
 
     public static implicit operator int(LevelPercentage levelPercentage)
@@ -44,13 +47,21 @@ public class LevelPercentage
 
 public class RecipientLevelJsonConverter : JsonConverter<LevelPercentage>
 {
-    public override LevelPercentage Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override LevelPercentage Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         var level = reader.GetByte();
         return new LevelPercentage(level);
     }
 
-    public override void Write(Utf8JsonWriter writer, LevelPercentage value, JsonSerializerOptions options)
+    public override void Write(
+        Utf8JsonWriter writer,
+        LevelPercentage value,
+        JsonSerializerOptions options
+    )
     {
         writer.WriteNumberValue(value.Value);
     }

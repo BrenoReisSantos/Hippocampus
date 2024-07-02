@@ -37,10 +37,7 @@ public class WaterTankRepositoryTests : BaseTest, IDisposable
 
         var actual = await _sut.Insert(waterTank);
 
-        var expected = waterTank with
-        {
-            CreatedAt = _clock.Now,
-        };
+        var expected = waterTank with { CreatedAt = _clock.Now, };
 
         actual.Should().BeEquivalentTo(expected, options => options.Excluding(w => w.WaterTankId));
     }
@@ -52,12 +49,10 @@ public class WaterTankRepositoryTests : BaseTest, IDisposable
 
         var returned = await _sut.Insert(waterTank);
 
-        var expected = waterTank with
-        {
-            CreatedAt = _clock.Now,
-        };
+        var expected = waterTank with { CreatedAt = _clock.Now, };
 
-        var actual = await _context.WaterTank.AsNoTracking()
+        var actual = await _context
+            .WaterTank.AsNoTracking()
             .FirstOrDefaultAsync(w => w.WaterTankId == returned.WaterTankId);
 
         actual.Should().BeEquivalentTo(expected, options => options.Excluding(w => w.WaterTankId));
@@ -72,7 +67,9 @@ public class WaterTankRepositoryTests : BaseTest, IDisposable
         await _context.SaveChangesAsync();
         _context.ChangeTracker.Clear();
 
-        var waterTankGenerated = new WaterTankBuilder().WithId(waterTankInDatabase.WaterTankId).Generate();
+        var waterTankGenerated = new WaterTankBuilder()
+            .WithId(waterTankInDatabase.WaterTankId)
+            .Generate();
 
         var actual = await _sut.Update(waterTankGenerated);
 
@@ -94,12 +91,15 @@ public class WaterTankRepositoryTests : BaseTest, IDisposable
         await _context.SaveChangesAsync();
         _context.ChangeTracker.Clear();
 
-        var waterTankGenerated = new WaterTankBuilder().WithId(waterTankInDatabase.WaterTankId).Generate();
+        var waterTankGenerated = new WaterTankBuilder()
+            .WithId(waterTankInDatabase.WaterTankId)
+            .Generate();
 
         await _sut.Update(waterTankGenerated);
 
-        var actual =
-            await _context.WaterTank.FirstOrDefaultAsync(w => w.WaterTankId == waterTankInDatabase.WaterTankId);
+        var actual = await _context.WaterTank.FirstOrDefaultAsync(w =>
+            w.WaterTankId == waterTankInDatabase.WaterTankId
+        );
 
         var expected = waterTankGenerated with
         {

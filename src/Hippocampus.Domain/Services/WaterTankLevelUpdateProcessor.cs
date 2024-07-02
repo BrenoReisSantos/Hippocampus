@@ -12,19 +12,24 @@ public interface IWaterTankLevelUpdateProcessor
 
 public class WaterTankLevelUpdateProcessor(
     WaterTankRepository _waterTankRepository,
-    WaterTankLogService _waterTankLogService)
+    WaterTankLogService _waterTankLogService
+)
 {
     public async Task<ServiceResult> Update(WaterTankId waterTankId, int level)
     {
         var waterTank = await _waterTankRepository.Get(waterTankId);
-        if (waterTank is null) return ServiceResult.Success();
+        if (waterTank is null)
+            return ServiceResult.Success();
 
         waterTank = waterTank with { CurrentLevel = level };
 
-        if (IsBypassingPumpRules(waterTank)) return ServiceResult.Success();
+        if (IsBypassingPumpRules(waterTank))
+            return ServiceResult.Success();
 
-        if (MustPump(waterTank)) waterTank = new PumpManager(waterTank).TurnPumpOn();
-        if (CantPump(waterTank)) waterTank = new PumpManager(waterTank).TurnPumpOff();
+        if (MustPump(waterTank))
+            waterTank = new PumpManager(waterTank).TurnPumpOn();
+        if (CantPump(waterTank))
+            waterTank = new PumpManager(waterTank).TurnPumpOff();
 
         await _waterTankRepository.Update(waterTank);
         await _waterTankLogService.Log(waterTank);
@@ -33,17 +38,20 @@ public class WaterTankLevelUpdateProcessor(
 
     private WaterTank UpdatePumpingState(WaterTank waterTank)
     {
-        if (MustPump(waterTank)) waterTank = new PumpManager(waterTank).TurnPumpOn();
-        if (CantPump(waterTank)) waterTank = new PumpManager(waterTank).TurnPumpOff();
+        if (MustPump(waterTank))
+            waterTank = new PumpManager(waterTank).TurnPumpOn();
+        if (CantPump(waterTank))
+            waterTank = new PumpManager(waterTank).TurnPumpOff();
         return waterTank;
     }
 
     private bool CantPump(WaterTank waterTank)
     {
-        if (waterTank.PumpsTo is null) return false;
+        if (waterTank.PumpsTo is null)
+            return false;
 
-        return waterTank.PumpsTo.CurrentLevel >= waterTank.PumpsTo.LevelWhenFull ||
-               waterTank.CurrentLevel <= waterTank.LevelWhenEmpty;
+        return waterTank.PumpsTo.CurrentLevel >= waterTank.PumpsTo.LevelWhenFull
+            || waterTank.CurrentLevel <= waterTank.LevelWhenEmpty;
     }
 
     private static bool IsBypassingPumpRules(WaterTank waterTank) =>
@@ -51,9 +59,10 @@ public class WaterTankLevelUpdateProcessor(
 
     private bool MustPump(WaterTank waterTank)
     {
-        if (waterTank.PumpsTo is null) return false;
+        if (waterTank.PumpsTo is null)
+            return false;
 
-        return waterTank.PumpsTo.CurrentLevel <= waterTank.PumpsTo.LevelWhenEmpty &&
-               waterTank.CurrentLevel > waterTank.LevelWhenEmpty;
+        return waterTank.PumpsTo.CurrentLevel <= waterTank.PumpsTo.LevelWhenEmpty
+            && waterTank.CurrentLevel > waterTank.LevelWhenEmpty;
     }
 }

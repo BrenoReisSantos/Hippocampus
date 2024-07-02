@@ -55,7 +55,8 @@ public partial class MacAddress : IEquatable<MacAddress>
 
     public static implicit operator MacAddress?(string? macAddress)
     {
-        if (macAddress is null) return null;
+        if (macAddress is null)
+            return null;
         return new MacAddress(macAddress);
     }
 
@@ -73,31 +74,31 @@ public partial class MacAddress : IEquatable<MacAddress>
     {
         return mask switch
         {
-            Mask.Colon =>
-                Value.FormatMask("##:##:##:##:##:##"),
-            Mask.Dot =>
-                Value.FormatMask("####.####.####"),
-            Mask.Hyphen =>
-                Value.FormatMask("##-##-##-##-##-##"),
-            Mask.None =>
-                Value.FormatMask("############"),
-            _ =>
-                Value
+            Mask.Colon => Value.FormatMask("##:##:##:##:##:##"),
+            Mask.Dot => Value.FormatMask("####.####.####"),
+            Mask.Hyphen => Value.FormatMask("##-##-##-##-##-##"),
+            Mask.None => Value.FormatMask("############"),
+            _ => Value
         };
     }
 
     public bool Equals(MacAddress? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
         return Value == other.Value;
     }
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != GetType()) return false;
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
         return Equals((MacAddress)obj);
     }
 
@@ -109,13 +110,21 @@ public partial class MacAddress : IEquatable<MacAddress>
 
 public class MacAddressJsonConverter : JsonConverter<MacAddress>
 {
-    public override MacAddress? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override MacAddress? Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         var macAddressString = reader.GetString();
         return macAddressString is null ? new MacAddress() : new MacAddress(macAddressString);
     }
 
-    public override void Write(Utf8JsonWriter writer, MacAddress value, JsonSerializerOptions options)
+    public override void Write(
+        Utf8JsonWriter writer,
+        MacAddress value,
+        JsonSerializerOptions options
+    )
     {
         writer.WriteStringValue(value.ToString(MacAddress.Mask.Colon));
     }

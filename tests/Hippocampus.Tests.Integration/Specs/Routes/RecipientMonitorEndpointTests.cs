@@ -29,17 +29,25 @@ public class RecipientMonitorEndpointTests : ApiFixture
             RecipientType = recipientToCreate.RecipientType
         };
 
-        subject.Should().Be200Ok().And.BeAs(expected, config => config.Excluding(r => r.RecipientMonitorId));
+        subject
+            .Should()
+            .Be200Ok()
+            .And.BeAs(expected, config => config.Excluding(r => r.RecipientMonitorId));
     }
 
     [Test]
     public async Task CreateNewRecipientMonitor_Should_Return_400BadRequest_With_Error_Message()
     {
-        var recipientToCreate = new RecipientMonitorPostDtoBuilder().WithInvalidMaxAndMinHeight().Generate();
+        var recipientToCreate = new RecipientMonitorPostDtoBuilder()
+            .WithInvalidMaxAndMinHeight()
+            .Generate();
 
         var subject = await Api.PostAsync(RouteUrl, JsonContent.Create(recipientToCreate));
 
-        subject.Should().Be400BadRequest().And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
+        subject
+            .Should()
+            .Be400BadRequest()
+            .And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
     }
 
     [Test]
@@ -65,9 +73,11 @@ public class RecipientMonitorEndpointTests : ApiFixture
         foreach (var monitor in allRecipientMonitors)
         {
             var log = new WaterTankLogBuilder().Generate();
-            var monitorFromDatabase =
-                await Context.RecipientMonitors.Include(databaseMonitor => databaseMonitor.RecipientLogs)
-                    .SingleAsync(databaseMonitor => databaseMonitor.RecipientMonitorId == monitor.RecipientMonitorId);
+            var monitorFromDatabase = await Context
+                .RecipientMonitors.Include(databaseMonitor => databaseMonitor.RecipientLogs)
+                .SingleAsync(databaseMonitor =>
+                    databaseMonitor.RecipientMonitorId == monitor.RecipientMonitorId
+                );
 
             monitorFromDatabase!.RecipientLogs.Add(log);
             await Context.SaveChangesAsync();
@@ -76,8 +86,10 @@ public class RecipientMonitorEndpointTests : ApiFixture
 
         var subject = await Api.GetAsync("api/RecipientMonitors/list");
 
-        var expected = Context.RecipientMonitors.Include(monitor => monitor.MonitorLinkedTo)
-            .Include(monitor => monitor.RecipientLogs).Select(fakeMonitor => new RecipientMonitorForMonitorsTableDto
+        var expected = Context
+            .RecipientMonitors.Include(monitor => monitor.MonitorLinkedTo)
+            .Include(monitor => monitor.RecipientLogs)
+            .Select(fakeMonitor => new RecipientMonitorForMonitorsTableDto
             {
                 RecipientType = fakeMonitor.RecipientType,
                 MacAddress = fakeMonitor.MacAddress,
@@ -88,7 +100,8 @@ public class RecipientMonitorEndpointTests : ApiFixture
                 LinkedRecipientMonitorMacAddress = fakeMonitor.MonitorLinkedTo.MacAddress,
                 RecipientLevelPercentage = fakeMonitor.RecipientLogs[0].LevelHeight,
                 RecipientState = fakeMonitor.RecipientLogs[0].RecipientState
-            }).ToList();
+            })
+            .ToList();
 
         subject.Should().Be200Ok().And.BeAs(expected);
     }
@@ -102,7 +115,8 @@ public class RecipientMonitorEndpointTests : ApiFixture
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new WaterTankUpdateDtoBuilder().WithWaterTankId(monitor.RecipientMonitorId)
+        var monitorUpdated = new WaterTankUpdateDtoBuilder()
+            .WithWaterTankId(monitor.RecipientMonitorId)
             .Generate();
 
         monitor.Name = Faker.Random.Words(3);
@@ -133,7 +147,8 @@ public class RecipientMonitorEndpointTests : ApiFixture
         await Context.SaveChangesAsync();
         Context.ChangeTracker.Clear();
 
-        var monitorUpdated = new WaterTankUpdateDtoBuilder().WithInvalidFullAndEmptyValue()
+        var monitorUpdated = new WaterTankUpdateDtoBuilder()
+            .WithInvalidFullAndEmptyValue()
             .WithWaterTankId(monitor.RecipientMonitorId)
             .Generate();
 
@@ -143,6 +158,9 @@ public class RecipientMonitorEndpointTests : ApiFixture
 
         var subject = await Api.PutAsync($"{RouteUrl}/", JsonContent.Create(monitorUpdated));
 
-        subject.Should().Be400BadRequest().And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
+        subject
+            .Should()
+            .Be400BadRequest()
+            .And.HaveErrorMessage("Altura máxima não pode ser menor que altura mínima");
     }
 }
