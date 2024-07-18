@@ -62,4 +62,10 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
         RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(101, 150));
         return this;
     }
+
+    public WaterTankBuilder WithOtherWaterTankToPumpTo()
+    {
+        RuleFor(r => r.PumpsTo, new WaterTankBuilder().WithAverageLevel().Generate());
+        return this;
+    }
 }

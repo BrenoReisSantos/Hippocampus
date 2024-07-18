@@ -2,7 +2,9 @@
 
 #nullable disable
 
+#pragma warning disable IDE0161
 namespace Hippocampus.Domain.Migrations
+#pragma warning restore IDE0161
 {
     /// <inheritdoc />
     public partial class RenamedGardenModeToBypassMode : Migration

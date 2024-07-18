@@ -13,6 +13,12 @@
       "commands": [
         "dotnet-csharpier"
       ]
+    },
+    "dotnet-stryker": {
+      "version": "4.0.6",
+      "commands": [
+        "dotnet-stryker"
+      ]
     }
   }
 }

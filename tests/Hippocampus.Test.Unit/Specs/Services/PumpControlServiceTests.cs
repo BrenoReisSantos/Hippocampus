@@ -1,5 +1,4 @@
-﻿using Hippocampus.Domain.Models.Entities;
-using Hippocampus.Domain.Repository;
+﻿using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services;
 using Hippocampus.Tests.Common;
 using Hippocampus.Tests.Common.Builders;
@@ -29,7 +28,7 @@ public class PumpControlServiceTests : BaseTest, IDisposable
     [Fact]
     public async Task ControlPumpTurningOn_AverageLevelWaterTank_ShouldUpdateWaterTankWithPumpingTrue()
     {
-        var waterTank = new WaterTankBuilder().WithAverageLevel().Generate();
+        var waterTank = new WaterTankBuilder().WithOtherWaterTankToPumpTo().WithAverageLevel().Generate();
 
         _waterTankRepositoryFake.Get(waterTank.WaterTankId).Returns(waterTank);
 
