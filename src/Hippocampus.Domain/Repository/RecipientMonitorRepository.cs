@@ -29,11 +29,16 @@ public class WaterTankRepository : IWaterTankRepository
 
     public async Task<WaterTank> Insert(WaterTank waterTank)
     {
+        var waterTankPumpedTo = waterTank.PumpsTo is null
+            ? null
+            : await _context.WaterTank.FindAsync(waterTank.PumpsTo.WaterTankId);
+
         var newRecipient = waterTank with
         {
             Name = waterTank.Name.Trim(),
             CreatedAt = _clock.Now.ToUniversalTime(),
-            WaterTankId = WaterTankId.New()
+            WaterTankId = WaterTankId.New(),
+            PumpsTo = waterTankPumpedTo,
         };
 
         _context.Add(newRecipient);
@@ -46,7 +51,9 @@ public class WaterTankRepository : IWaterTankRepository
     public async Task<WaterTank?> Get(WaterTankId waterTankId)
     {
         return await _context
-            .WaterTank.Include(recipientMonitor => recipientMonitor.PumpsTo)
+            .WaterTank.AsNoTracking()
+            .Include(recipientMonitor => recipientMonitor.PumpsTo)
+            .Include(waterTank => waterTank.PumpedFrom)
             .SingleOrDefaultAsync(recipientMonitor => recipientMonitor.WaterTankId == waterTankId);
     }
 
@@ -64,20 +71,20 @@ public class WaterTankRepository : IWaterTankRepository
 
     public async Task<WaterTank?> Update(WaterTank waterTank)
     {
-        var waterTankUpdating = await _context
-            .WaterTank.AsNoTracking()
+        var currentWaterTank = await _context
+            .WaterTank
             .Include(r => r.PumpsTo)
             .FirstOrDefaultAsync(r => r.WaterTankId == waterTank.WaterTankId);
 
-        if (waterTankUpdating is null)
+        if (currentWaterTank is null)
             return null;
 
-        waterTankUpdating = waterTankUpdating with
+        var updatedWaterTank = currentWaterTank with
         {
             Name = waterTank.Name.Trim(),
             LevelWhenFull = waterTank.LevelWhenFull,
             LevelWhenEmpty = waterTank.LevelWhenEmpty,
-            CreatedAt = waterTankUpdating.CreatedAt,
+            CreatedAt = currentWaterTank.CreatedAt,
             CurrentLevel = waterTank.CurrentLevel,
             IsActive = waterTank.IsActive,
             PumpingWater = waterTank.PumpingWater,
@@ -85,9 +92,10 @@ public class WaterTankRepository : IWaterTankRepository
             PumpsTo = waterTank.PumpsTo,
         };
 
-        _context.Update(waterTankUpdating);
+        _context.WaterTank.Entry(currentWaterTank).CurrentValues.SetValues(updatedWaterTank);
+
         await _context.SaveChangesAsync();
-        return waterTankUpdating;
+        return currentWaterTank;
     }
 
     public async Task<bool> Exists(WaterTankId waterTankId)

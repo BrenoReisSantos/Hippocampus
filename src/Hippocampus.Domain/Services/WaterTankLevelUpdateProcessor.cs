@@ -1,47 +1,45 @@
-﻿using Hippocampus.Domain.Models.Entities;
+﻿using Hippocampus.Domain.Diplomat.HttpIn;
+using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Operations;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services.ApplicationValues;
 
 namespace Hippocampus.Domain.Services;
 
-public interface IWaterTankLevelUpdateProcessor
+public interface IWaterTankStateUpdateProcessor
 {
-    Task<ServiceResult> Update(WaterTankId waterTankId, int level);
+    Task<ServiceResult> UpdateWaterTankStateForWaterLevel(WaterTankId waterTankId,
+        WaterTankLevelUpdateDto waterTankLevelUpdateDto);
 }
 
-public class WaterTankLevelUpdateProcessor(
-    WaterTankRepository _waterTankRepository,
-    WaterTankLogService _waterTankLogService
-)
+public class WaterTankStateUpdateProcessor(
+    IWaterTankRepository waterTankRepository,
+    IWaterTankLogService waterTankLogService
+) : IWaterTankStateUpdateProcessor
 {
-    public async Task<ServiceResult> Update(WaterTankId waterTankId, int level)
+    public async Task<ServiceResult> UpdateWaterTankStateForWaterLevel(WaterTankId waterTankId,
+        WaterTankLevelUpdateDto waterTankLevelUpdateDto)
     {
-        var waterTank = await _waterTankRepository.Get(waterTankId);
+        var waterTank = await waterTankRepository.Get(waterTankId);
         if (waterTank is null)
-            return ServiceResult.Success();
+            return ServiceResult.Error($"Reservatório de água não encontrado para o Id {waterTankId}");
 
-        waterTank = waterTank with { CurrentLevel = level };
+        waterTank = waterTank with { CurrentLevel = waterTankLevelUpdateDto.WaterLevel };
 
-        if (IsBypassingPumpRules(waterTank))
-            return ServiceResult.Success();
+        waterTank = ControlWaterTankPumpingState(waterTank);
 
-        if (MustPump(waterTank))
-            waterTank = new PumpManager(waterTank).TurnPumpOn();
-        if (CantPump(waterTank))
-            waterTank = new PumpManager(waterTank).TurnPumpOff();
-
-        await _waterTankRepository.Update(waterTank);
-        await _waterTankLogService.Log(waterTank);
+        await waterTankRepository.Update(waterTank);
+        await waterTankLogService.Log(waterTank);
         return ServiceResult.Success();
     }
 
-    private WaterTank UpdatePumpingState(WaterTank waterTank)
+    private WaterTank ControlWaterTankPumpingState(WaterTank waterTank)
     {
+        var pumpManager = new PumpManager(waterTank);
         if (MustPump(waterTank))
-            waterTank = new PumpManager(waterTank).TurnPumpOn();
+            waterTank = pumpManager.TurnPumpOn();
         if (CantPump(waterTank))
-            waterTank = new PumpManager(waterTank).TurnPumpOff();
+            waterTank = pumpManager.TurnPumpOff();
         return waterTank;
     }
 
@@ -51,11 +49,8 @@ public class WaterTankLevelUpdateProcessor(
             return false;
 
         return waterTank.PumpsTo.CurrentLevel >= waterTank.PumpsTo.LevelWhenFull
-            || waterTank.CurrentLevel <= waterTank.LevelWhenEmpty;
+               || waterTank.CurrentLevel <= waterTank.LevelWhenEmpty;
     }
-
-    private static bool IsBypassingPumpRules(WaterTank waterTank) =>
-        waterTank.BypassMode is not null && waterTank.BypassMode.Value;
 
     private bool MustPump(WaterTank waterTank)
     {
@@ -63,6 +58,9 @@ public class WaterTankLevelUpdateProcessor(
             return false;
 
         return waterTank.PumpsTo.CurrentLevel <= waterTank.PumpsTo.LevelWhenEmpty
-            && waterTank.CurrentLevel > waterTank.LevelWhenEmpty;
+               && waterTank.CurrentLevel > waterTank.LevelWhenEmpty;
     }
+
+    private static bool IsBypassingPumpRules(WaterTank waterTank) =>
+        waterTank.BypassMode is not null && waterTank.BypassMode.Value;
 }

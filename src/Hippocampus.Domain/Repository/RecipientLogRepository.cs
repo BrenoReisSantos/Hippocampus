@@ -39,8 +39,9 @@ public class WaterTankLogRepository : IWaterTankLogRepository
     public async Task<WaterTankLog> Insert(WaterTankLog waterTankLog)
     {
         var recipientToLogFor = await _context.WaterTank.SingleOrDefaultAsync(r =>
-            r.WaterTankId == waterTankLog.WaterTank.WaterTankId
+            r.WaterTankId == waterTankLog.WaterTankId
         );
+        
         var recipientLogToInsert = new WaterTankLog
         {
             WaterTank = recipientToLogFor,

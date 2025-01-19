@@ -2,7 +2,7 @@
 @using Hippocampus.Domain.Services
 @using Hippocampus.Domain.Diplomat.HttpOut
 @using Hippocampus.Domain.Models.Entities
-@inject IRecipientMonitorServices RecipientMonitorServices
+@inject IWaterTankService WaterTankService
 @inject IDialogService DialogService
 
 <MudTable OnRowClick="OpenUpdateMonitorDialog" T="WaterTankForTableDto" Loading="_tableDataLoading" Height="500px" Elevation="0" Outlined="false" Items="_testTableData" Hover="true">
@@ -39,7 +39,7 @@
     public async Task UpdateTable()
     {
         _tableDataLoading = true;
-        _testTableData = await RecipientMonitorServices.GetForTable();
+        _testTableData = await WaterTankService.GetForTable();
         _tableDataLoading = false;
         StateHasChanged();
     }

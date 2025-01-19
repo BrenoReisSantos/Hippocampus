@@ -4,7 +4,7 @@
 @using Hippocampus.Domain.Diplomat.HttpOut
 @using Hippocampus.Web.Values
 @using Hippocampus.Domain.Diplomat.HttpIn
-@inject IRecipientMonitorServices RecipientMonitorServices
+@inject IWaterTankService WaterTankService
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -77,7 +77,7 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await RecipientMonitorServices.GetForTable();
+        var monitors = await WaterTankService.GetForTable();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
             WaterTankLinkedToId = m.WaterTankId,
@@ -89,7 +89,7 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var servicoResultado = await RecipientMonitorServices.Get(MonitorId);
+        var servicoResultado = await WaterTankService.Get(MonitorId);
         _updatingMonitor = servicoResultado.Result;
         await GetMonitorsSelectOptions();
         FillFormWithExistingMonitor();
@@ -109,7 +109,7 @@
             LevelWhenEmpty = _form.LevelWhenEmpty
         };
 
-        var response = await RecipientMonitorServices.Update(recipientMonitor);
+        var response = await WaterTankService.Update(recipientMonitor);
         _processingForm = false;
 
         if (response.IsSuccess)

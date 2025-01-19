@@ -10,7 +10,7 @@ public class WaterTankCreatedDto
     public string Name { get; init; } = string.Empty;
     public int MaxHeight { get; init; }
     public int MinHeight { get; init; }
-    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; init; }
     public RecipientMonitorLinkedToCreatedDto? RecipientMonitorLinkedTo { get; init; }
 }
 

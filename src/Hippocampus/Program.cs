@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Hippocampus.Api;
 using Hippocampus.Domain.Configurations.AutoMapper;
+using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Models.Values;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Repository.Context;
@@ -30,20 +31,14 @@ builder
     .Services.ConfigureHttpJsonOptions(options =>
     {
         options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.SerializerOptions.Converters.Add(new MacAddressJsonConverter());
-        options.SerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
         options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        options.SerializerOptions.WriteIndented = false;
-    })
-    .Configure<JsonOptions>(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new MacAddressJsonConverter());
-        options.JsonSerializerOptions.Converters.Add(new RecipientLevelJsonConverter());
     });
 
 builder.Services.AddTransient<IWaterTankRepository, WaterTankRepository>();
+builder.Services.AddTransient<IWaterTankService, WaterTankService>();
 builder.Services.AddTransient<IWaterTankLogRepository, WaterTankLogRepository>();
-builder.Services.AddTransient<IRecipientMonitorServices, WaterTankService>();
+builder.Services.AddTransient<IWaterTankLogService, WaterTankLogService>();
+builder.Services.AddTransient<IWaterTankStateUpdateProcessor, WaterTankStateUpdateProcessor>();
 
 var app = builder.Build();
 

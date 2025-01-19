@@ -11,70 +11,73 @@ public static class RecipientMonitorRoutes
 {
     public static void MapMonitorRoutes(this IEndpointRouteBuilder app)
     {
-        var recipientMonitorsGroup = app.MapGroup("RecipientMonitors");
+        var recipientMonitorsGroup = app.MapGroup("WaterTank");
         recipientMonitorsGroup
-            .MapPost("", CreateNewRecipientMonitor)
-            .WithSummary("Created a new Recipient Monitor")
+            .MapPost("", PostWaterTank)
+            .WithSummary("Created a new Water Tank")
             .Produces<WaterTankCreatedDto>()
             .Produces<MessageResponse>(400);
         recipientMonitorsGroup
             .MapGet("list", GetListOfRecipientMonitors)
-            .WithSummary("Get the list of all Monitors")
+            .WithSummary("Get the list of all WaterTanks")
             .Produces<IEnumerable<WaterTankForTableDto>>();
         recipientMonitorsGroup.MapPut("", PutRecipientMonitor);
         recipientMonitorsGroup.MapGet("{monitorId}", GetMonitor);
-        recipientMonitorsGroup.MapPut("updateLevel/{waterTankId}/{newLevel}", UpdateLevel);
+        recipientMonitorsGroup.MapPatch("updateLevel/{waterTankId}", ExecuteWaterTankStateUpdate);
         recipientMonitorsGroup.MapPut("turnOnPump/{waterTankId}", TurnOnPump);
         recipientMonitorsGroup.MapPut("turnOffPump/{waterTankId}", TurnOffPump);
     }
 
-    private static async Task<IResult> CreateNewRecipientMonitor(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices,
-        WaterTankCreateDto monitor
+    private static async Task<IResult> PostWaterTank(
+        [FromServices] IWaterTankService waterTankService,
+        WaterTankCreateDto waterTank
     )
     {
-        var serviceResult = await recipientMonitorServices.Create(monitor);
+        var serviceResult = await waterTankService.Create(waterTank);
         if (serviceResult.IsFailure)
             return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 
     private static async Task<IResult> GetListOfRecipientMonitors(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices
+        [FromServices] IWaterTankService waterTankService
     )
     {
-        return Results.Ok(await recipientMonitorServices.GetForTable());
+        return Results.Ok(await waterTankService.GetForTable());
     }
 
     private static async Task<IResult> PutRecipientMonitor(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+        [FromServices] IWaterTankService waterTankService,
         [FromBody] WaterTankUpdateDto updateMonitor
     )
     {
-        var serviceResult = await recipientMonitorServices.Update(updateMonitor);
+        var serviceResult = await waterTankService.Update(updateMonitor);
         if (serviceResult.IsFailure)
             return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 
     private static async Task<IResult> GetMonitor(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+        [FromServices] IWaterTankService waterTankService,
         WaterTankId monitorId
     )
     {
-        var serviceResult = await recipientMonitorServices.Get(monitorId);
+        var serviceResult = await waterTankService.Get(monitorId);
         if (serviceResult.IsFailure)
             return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.Ok(serviceResult.Result);
     }
 
-    private static async Task<IResult> UpdateLevel(
-        [FromServices] IWaterTankLevelUpdateProcessor waterTankLevelUpdateProcessor,
-        [FromQuery] WaterTankId waterTankId,
-        [FromQuery] int newLevel
+    private static async Task<IResult> ExecuteWaterTankStateUpdate(
+        [FromServices] IWaterTankStateUpdateProcessor waterTankStateUpdateProcessor,
+        [FromRoute] Guid waterTankId,
+        [FromBody] WaterTankLevelUpdateDto waterTankLevelUpdateDto
     )
     {
-        var serviceResult = await waterTankLevelUpdateProcessor.Update(waterTankId, newLevel);
+        WaterTankId.TryParse(waterTankId.ToString(), out var convertedWaterTankId);
+        var serviceResult =
+            await waterTankStateUpdateProcessor.UpdateWaterTankStateForWaterLevel(convertedWaterTankId,
+                waterTankLevelUpdateDto);
         if (serviceResult.IsFailure)
             return Results.BadRequest(new MessageResponse(serviceResult.Message));
         return Results.NoContent();

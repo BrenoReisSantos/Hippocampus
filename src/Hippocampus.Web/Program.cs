@@ -20,7 +20,7 @@ builder.Services.AddSingleton<IClock>(new Clock());
 builder.Services.AddAutoMapper(config => config.AddProfile(typeof(AutoMapperProfile)));
 
 builder.Services.AddMudServices();
-builder.Services.AddTransient<IRecipientMonitorServices, WaterTankService>();
+builder.Services.AddTransient<IWaterTankService, WaterTankService>();
 builder.Services.AddTransient<IWaterTankRepository, WaterTankRepository>();
 builder.Services.AddTransient<IWaterTankLogRepository, WaterTankLogRepository>();
 

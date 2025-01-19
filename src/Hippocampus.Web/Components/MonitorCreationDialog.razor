@@ -4,7 +4,7 @@
 @using Hippocampus.Domain.Models.Entities
 @using Hippocampus.Domain.Models.Values
 @using Hippocampus.Web.Values
-@inject IRecipientMonitorServices RecipientMonitorServices
+@inject IWaterTankService WaterTankService
 
 <MudDialog>
     <TitleContent>
@@ -72,7 +72,7 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await RecipientMonitorServices.GetForTable();
+        var monitors = await WaterTankService.GetForTable();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
             WaterTankLinkedToId = m.WaterTankId,
@@ -98,7 +98,7 @@
             LevelWhenEmpty = _form.LevelWhenEmpty,
             LevelWhenFull = _form.LevelWhenFull
         };
-        var response = await RecipientMonitorServices.Create(newRecipientMonitor);
+        var response = await WaterTankService.Create(newRecipientMonitor);
         var isSuccess = response.IsSuccess;
         _processingForm = false;
         MudDialog?.Close(DialogResult.Ok(isSuccess));

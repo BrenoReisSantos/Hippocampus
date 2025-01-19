@@ -7,7 +7,7 @@ using Hippocampus.Domain.Services.ApplicationValues;
 
 namespace Hippocampus.Domain.Services;
 
-public interface IRecipientMonitorServices
+public interface IWaterTankService
 {
     Task<ServiceResult<WaterTankCreatedDto>> Create(WaterTankCreateDto waterTank);
     Task<IEnumerable<WaterTankForTableDto>> GetForTable();
@@ -26,7 +26,7 @@ public class WaterTankService(
     IWaterTankLogRepository waterTankLogMonitor,
     IClock clock,
     IMapper mapper
-) : IRecipientMonitorServices
+) : IWaterTankService
 {
     private readonly IClock _clock = clock;
 
@@ -46,10 +46,10 @@ public class WaterTankService(
                 return ServiceResult<WaterTankCreatedDto>.Error(
                     $"O Reservatório a se conectar já está conectado com um outro reservatório. (Nome: {waterTankLinkedTo.PumpsTo.Name})"
                 );
-            if (waterTank.PumpsToId is not null)
-                return ServiceResult<WaterTankCreatedDto>.Error(
-                    "Reservatório relacionado não encontrado"
-                );
+            // if (waterTank.PumpsToId is not null)
+            //     return ServiceResult<WaterTankCreatedDto>.Error(
+            //         "Reservatório relacionado não encontrado"
+            //     );
         }
 
         var waterTankCreating = mapper.Map<WaterTank>(waterTank);

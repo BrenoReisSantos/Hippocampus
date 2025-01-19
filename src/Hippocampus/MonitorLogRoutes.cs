@@ -14,13 +14,13 @@ public static class MonitorLogRoutes
     }
 
     private static async Task<IResult> GetMonitorLogs(
-        [FromServices] IRecipientMonitorServices recipientMonitorServices,
+        [FromServices] IWaterTankService waterTankService,
         WaterTankId monitorId,
         [FromQuery] DateTime? startDate,
         [FromQuery] DateTime? endDate
     )
     {
-        var result = await recipientMonitorServices.GetLogsForDateRange(
+        var result = await waterTankService.GetLogsForDateRange(
             monitorId,
             startDate,
             endDate

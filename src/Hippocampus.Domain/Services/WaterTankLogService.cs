@@ -8,7 +8,7 @@ public interface IWaterTankLogService
     Task Log(WaterTank waterTank);
 }
 
-public class WaterTankLogService(WaterTankLogRepository _waterTankLogRepository)
+public class WaterTankLogService(IWaterTankLogRepository _waterTankLogRepository)
     : IWaterTankLogService
 {
     public async Task Log(WaterTank waterTank)

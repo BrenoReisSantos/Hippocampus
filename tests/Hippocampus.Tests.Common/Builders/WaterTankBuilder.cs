@@ -17,15 +17,16 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
         RuleFor(w => w.CurrentLevel, faker => faker.Random.Int(0, 100));
         RuleFor(r => r.LevelWhenFull, faker => faker.Random.Int(51, 100));
         RuleFor(r => r.LevelWhenEmpty, faker => faker.Random.Int(0, 50));
+        RuleFor(r => r.BypassMode, f => f.Random.Bool());
         RuleFor(r => r.IsActive, true);
         Ignore(r => r.WaterTankLogs);
         Ignore(r => r.PumpsTo);
         Ignore(w => w.PumpedFrom);
     }
 
-    public WaterTankBuilder WithLinkedWaterTank(WaterTank linkedWaterTank)
+    public WaterTankBuilder WithPumpsTo(WaterTank waterTank)
     {
-        RuleFor(r => r.PumpsTo, linkedWaterTank);
+        RuleFor(r => r.PumpsTo, waterTank);
         return this;
     }
 
@@ -38,6 +39,12 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
     public WaterTankBuilder WithLogs(IEnumerable<WaterTankLog> logs)
     {
         RuleFor(monitor => monitor.WaterTankLogs, logs);
+        return this;
+    }
+
+    public WaterTankBuilder WithLevel(int level)
+    {
+        RuleFor(x => x.CurrentLevel, level);
         return this;
     }
 
@@ -56,6 +63,12 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
         return this;
     }
 
+    public WaterTankBuilder WithLevelWhenEmpty(int level)
+    {
+        RuleFor(w => w.LevelWhenEmpty, level);
+        return this;
+    }
+
     public WaterTankBuilder WithFullLevel()
     {
         RuleFor(w => w.LevelWhenFull, 100);
@@ -63,9 +76,27 @@ public sealed class WaterTankBuilder : AutoFaker<WaterTank>
         return this;
     }
 
+    public WaterTankBuilder WithLevelWhenFull(int level)
+    {
+        RuleFor(w => w.LevelWhenFull, level);
+        return this;
+    }
+
     public WaterTankBuilder WithOtherWaterTankToPumpTo()
     {
         RuleFor(r => r.PumpsTo, new WaterTankBuilder().WithAverageLevel().Generate());
+        return this;
+    }
+
+    public WaterTankBuilder WithBypassMode(bool bypassMode)
+    {
+        RuleFor(x => x.BypassMode, bypassMode);
+        return this;
+    }
+
+    public WaterTankBuilder WithPumpingWater(bool pumpingWater)
+    {
+        RuleFor(x => x.PumpingWater, pumpingWater);
         return this;
     }
 }
