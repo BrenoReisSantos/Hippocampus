@@ -1,73 +1,80 @@
 @page "/MonitorLogHistory"
+
 @using Hippocampus.Web.Values
 @using Hippocampus.Domain.Diplomat.HttpOut
+@using Hippocampus.Domain.Models.Dto
 @using Hippocampus.Domain.Models.Entities
 @using Hippocampus.Domain.Services
-@inject IWaterTankService RecipientMonitorsServices;
+@using MudBlazor.Charts
+@inject IWaterTankService RecipientMonitorsServices
 
 
 <MudText Typo="Typo.h4" Class="pb-8">Histórico de Monitores</MudText>
 
 <MudGrid>
     <MudItem md="4">
-        <MudSelect T="WaterTankSelectOption"
+        <MudSelect T="WaterTankGetDto"
                    SelectedValuesChanged="OnMonitorSelectClose"
-                   @bind-Value="_monitorSelected"
                    Label="Selecione um Monitor"
-                   Variant="Variant.Outlined"
-                   Class="d-flex">
+                   Dense
+                   @bind-Value="_monitorSelected"
+                   Variant="Variant.Text">
             @foreach (var monitor in _monitorsSelectOptions)
             {
-                <MudSelectItem T="WaterTankSelectOption" Value="monitor"/>
+                <MudSelectItem Value="monitor">@monitor.Name</MudSelectItem>
             }
         </MudSelect>
     </MudItem>
 </MudGrid>
 
-<MudContainer Class="d-flex justify-center" Style="height: 500px">
-    @if (_monitorSelected is not null && _xAxis.Any())
-    {
-        <MudChart
-            Height="500px"
-            ChartType="ChartType.Line"
-            ChartOptions="new ChartOptions { LineStrokeWidth = 1d, YAxisTicks = 10, MaxNumYAxisTicks = 10, XAxisLines = true }"
-            ChartSeries="new() { _monitorSeries }"
-            XAxisLabels="_xAxis"/>
-    }
-    else
-    {
-        <MudText Class="mt-10" Typo="Typo.body2">Nenhum dado a ser mostrado</MudText>
-    }
-</MudContainer>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12">
+        @if (_monitorSelected is not null && _xAxis.Any())
+        {
+            <MudTimeSeriesChart
+                Height="500px"
+                ChartType="ChartType.Line"
+                ChartOptions="new ChartOptions { LineStrokeWidth = 1d, YAxisTicks = 10, MaxNumYAxisTicks = 10, XAxisLines = true }"
+                ChartSeries="new() { _monitorSeries }"
+                XAxisLabels="_xAxis"/>
+        }
+        else
+        {
+            <MudText Class="mt-10" Typo="Typo.body2">Nenhum dado a ser mostrado</MudText>
+        }
+    </MudItem>
+</MudGrid>
 
 @code {
-    IEnumerable<WaterTankSelectOption> _monitorsSelectOptions = Enumerable.Empty<WaterTankSelectOption>();
-    IEnumerable<WaterTankForTableDto> _monitors = Enumerable.Empty<WaterTankForTableDto>();
-    WaterTankSelectOption? _monitorSelected;
+    IEnumerable<WaterTankGetDto> _monitorsSelectOptions = [];
+    IEnumerable<WaterTankGetDto> _monitors = [];
+    WaterTankGetDto? _monitorSelected;
 
     IEnumerable<WaterTankLog> _logs = new List<WaterTankLog>();
 
-    string[] _xAxis = Array.Empty<string>();
-    ChartSeries _monitorSeries = new() { Name = "", Data = Array.Empty<double>() };
-    double[] _recipientLevelRegisters = Array.Empty<double>();
+    string[] _xAxis = [];
+    TimeSeriesChartSeries _monitorSeries = new() { Name = "", Data = [] };
+    List<TimeSeriesChartSeries.TimeValue> _recipientLevelRegisters = [];
 
     protected override async Task OnInitializedAsync()
     {
         await GetMonitors();
-        CreateSelectOptions();
+        _monitorsSelectOptions = _monitors;
+        // CreateSelectOptions();
         await base.OnInitializedAsync();
     }
 
-    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetForTable();
+    async Task GetMonitors() => _monitors = await RecipientMonitorsServices.GetAll();
 
-    void CreateSelectOptions()
-    {
-        _monitorsSelectOptions = _monitors.Select(m => new WaterTankSelectOption
-        {
-            WaterTankId = m.WaterTankId,
-            Name = m.Name
-        });
-    }
+    // void CreateSelectOptions()
+    // {
+    //     _monitorsSelectOptions = _monitors.Select(m => new WaterTankGetDto
+    //     {
+    //         WaterTankId = m.WaterTankId,
+    //         Name = m.Name
+    //     });
+    //     StateHasChanged();
+    // }
 
     async Task OnMonitorSelectClose()
     {
@@ -91,9 +98,10 @@
 
     void AssemblyLineGraphData()
     {
-        _xAxis = _logs.Select(l => l.LogDate.ToString("dd/MM HH:mm")).ToArray();
-        _recipientLevelRegisters = _logs.Select(l => (double)l.Level).ToArray();
-        _monitorSeries = new ChartSeries { Name = $"{_monitorSelected?.Name} History", Data = _recipientLevelRegisters };
+        var logsLimitedForDataRange = _logs.Where(x => x.LogDate >= DateTime.Now.AddMonths(-1)).ToList();
+        _xAxis = logsLimitedForDataRange.Select(l => l.LogDate.ToString("dd/MM HH:mm")).ToArray();
+        _recipientLevelRegisters = logsLimitedForDataRange.Select(l => new TimeSeriesChartSeries.TimeValue(l.LogDate, l.Level)).ToList();
+        _monitorSeries = new TimeSeriesChartSeries { Name = $"{_monitorSelected?.Name} History", Data = _recipientLevelRegisters };
     }
 
 }

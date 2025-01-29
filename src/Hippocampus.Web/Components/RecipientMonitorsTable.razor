@@ -1,34 +1,37 @@
 @using MudBlazor
 @using Hippocampus.Domain.Services
 @using Hippocampus.Domain.Diplomat.HttpOut
+@using Hippocampus.Domain.Models.Dto
 @using Hippocampus.Domain.Models.Entities
 @inject IWaterTankService WaterTankService
 @inject IDialogService DialogService
 
-<MudTable OnRowClick="OpenUpdateMonitorDialog" T="WaterTankForTableDto" Loading="_tableDataLoading" Height="500px" Elevation="0" Outlined="false" Items="_testTableData" Hover="true">
+<MudTable OnRowClick="OpenUpdateMonitorDialog" T="WaterTankGetDto" Loading="_tableDataLoading" Height="500px"
+          Elevation="0" Outlined="false" Items="_testTableData" Hover="true">
     <HeaderContent>
         <MudTh>Nome</MudTh>
-        <MudTh Style="text-align:left">Tipo</MudTh>
-        <MudTh Style="text-align:center">Nível</MudTh>
-        <MudTh Style="text-align:center">Endereço MAC</MudTh>
-        <MudTh Style="text-align:center">Altura Mínima (cm)</MudTh>
-        <MudTh Style="text-align:center">Altura Máxima (cm)</MudTh>
-        <MudTh Style="text-align:center">Estado</MudTh>
-        <MudTh Style="text-align:center">Endereço MAC do Monitor Conectado</MudTh>
+        <MudTh Style="text-align:center">Nível Atual (cm)</MudTh>
+        <MudTh Style="text-align:center">Nível Mínimo (cm)</MudTh>
+        <MudTh Style="text-align:center">Nível Máximo (cm)</MudTh>
+        <MudTh Style="text-align:center">Em Sobreposição?</MudTh>
+        <MudTh Style="text-align:center">Bombeando Água?</MudTh>
+        <MudTh Style="text-align:center">Bombeia Para</MudTh>
+        @* <MudTh Style="text-align:center">Estado</MudTh> *@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Nome">@context.Name</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Nível">@context.RecipientLevelPercentage%</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Endereço MAC">@context.MacAddress</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MinHeight</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.MaxHeight</MudTd>
-        <MudTd Style="text-align:center" DataLabel="Endereço MAC do Monitor Conectado">@context.LinkedRecipientMonitorMacAddress</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Nível">@context.CurrentLevel</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.LevelWhenEmpty</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Altura Mínima">@context.LevelWhenFull</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Em Sobreposição?">@context.BypassMode</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Bombeando Água?">@context.PumpingWater</MudTd>
+        <MudTd Style="text-align:center" DataLabel="Bombeia Para">@context.PumpsTo?.Name</MudTd>
     </RowTemplate>
 </MudTable>
 
 @code {
     bool _tableDataLoading = false;
-    IEnumerable<WaterTankForTableDto> _testTableData = Enumerable.Empty<WaterTankForTableDto>();
+    IEnumerable<WaterTankGetDto> _testTableData = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,12 +42,12 @@
     public async Task UpdateTable()
     {
         _tableDataLoading = true;
-        _testTableData = await WaterTankService.GetForTable();
+        _testTableData = await WaterTankService.GetAll();
         _tableDataLoading = false;
         StateHasChanged();
     }
 
-    async Task OpenUpdateMonitorDialog(TableRowClickEventArgs<WaterTankForTableDto> rowClickEventArgs)
+    async Task OpenUpdateMonitorDialog(TableRowClickEventArgs<WaterTankGetDto> rowClickEventArgs)
     {
         var clickedRow = rowClickEventArgs.Item;
         var dialogArguments = new DialogParameters { { "MonitorId", clickedRow.WaterTankId } };

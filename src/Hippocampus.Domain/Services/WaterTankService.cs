@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
+using Hippocampus.Domain.Models.Dto;
 using Hippocampus.Domain.Models.Entities;
 using Hippocampus.Domain.Repository;
 using Hippocampus.Domain.Services.ApplicationValues;
@@ -10,7 +11,7 @@ namespace Hippocampus.Domain.Services;
 public interface IWaterTankService
 {
     Task<ServiceResult<WaterTankCreatedDto>> Create(WaterTankCreateDto waterTank);
-    Task<IEnumerable<WaterTankForTableDto>> GetForTable();
+    Task<IEnumerable<WaterTankGetDto>> GetAll();
     Task<ServiceResult<WaterTankUpdatedDto>> Update(WaterTankUpdateDto waterTank);
     Task<ServiceResult<WaterTankDto>> Get(WaterTankId monitorId);
 
@@ -63,10 +64,10 @@ public class WaterTankService(
         return ServiceResult<WaterTankCreatedDto>.Success(recipientMonitorCreatedDto);
     }
 
-    public async Task<IEnumerable<WaterTankForTableDto>> GetForTable()
+    public async Task<IEnumerable<WaterTankGetDto>> GetAll()
     {
-        var monitors = await waterTankRepository.GetAll();
-        return mapper.Map<IEnumerable<WaterTankForTableDto>>(monitors);
+        var waterTank =  await waterTankRepository.GetAll();
+        return mapper.Map<IEnumerable<WaterTankGetDto>>(waterTank);
     }
 
     public async Task<ServiceResult<WaterTankUpdatedDto>> Update(WaterTankUpdateDto waterTank)

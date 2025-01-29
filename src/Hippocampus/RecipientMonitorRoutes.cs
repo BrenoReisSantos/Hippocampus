@@ -43,7 +43,7 @@ public static class RecipientMonitorRoutes
         [FromServices] IWaterTankService waterTankService
     )
     {
-        return Results.Ok(await waterTankService.GetForTable());
+        return Results.Ok(await waterTankService.GetAll());
     }
 
     private static async Task<IResult> PutRecipientMonitor(

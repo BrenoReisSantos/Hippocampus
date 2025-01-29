@@ -9,5 +9,4 @@ public class MonitorGet
     public MacAddress MacAddress { get; init; } = MacAddress.Empty;
     public int MaxHeight { get; init; }
     public int MinHeight { get; init; }
-    public MacAddress? MonitorLinkedToMacAddress { get; init; }
 }

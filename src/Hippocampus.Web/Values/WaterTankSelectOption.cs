@@ -7,7 +7,6 @@ public record WaterTankSelectOption
 {
     public WaterTankId WaterTankId { get; init; }
     public string Name { get; init; } = "";
-    public WaterTankId WaterTankLinkedToId { get; init; }
 
     public override string ToString()
     {

@@ -62,7 +62,7 @@
 
 @code {
 
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [CascadingParameter] MudDialog? MudDialog { get; set; }
 
     [Parameter] public WaterTankId MonitorId { get; set; }
 
@@ -77,10 +77,9 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await WaterTankService.GetForTable();
+        var monitors = await WaterTankService.GetAll();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
-            WaterTankLinkedToId = m.WaterTankId,
             Name = m.Name,
             WaterTankId = m.WaterTankId
         });
@@ -98,7 +97,6 @@
     async Task UpdateMonitor()
     {
         _processingForm = true;
-        _form.WaterTankLinkedToId = _connectedMonitorSelected?.WaterTankLinkedToId;
 
         var recipientMonitor = new WaterTankUpdateDto
         {
@@ -113,7 +111,7 @@
         _processingForm = false;
 
         if (response.IsSuccess)
-            MudDialog?.Close(DialogResult.Ok(response.IsSuccess));
+            await MudDialog?.CloseAsync(DialogResult.Ok(response.IsSuccess));
         if (response.IsFailure)
         {
             Snackbar.Add(response.Message, Severity.Warning, config =>
@@ -128,8 +126,6 @@
     {
         _form.WaterTankId = _updatingMonitor.WaterTankId;
         _form.Name = _updatingMonitor.Name;
-        _connectedMonitorSelected = _monitorsSelectOptions.SingleOrDefault(
-            monitorOption => monitorOption.WaterTankLinkedToId == _updatingMonitor.WaterTankLinkedToId);
         _form.WaterTankLinkedToId = _updatingMonitor.WaterTankLinkedToId;
         _form.LevelWhenFull = _updatingMonitor.MaxHeight;
         _form.LevelWhenEmpty = _updatingMonitor.MinHeight;

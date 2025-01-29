@@ -61,7 +61,7 @@
 
 @code {
 
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
+    [CascadingParameter] MudDialog? MudDialog { get; set; }
 
     readonly WaterTankCreateForm _form = new();
     bool _processingForm;
@@ -72,10 +72,9 @@
 
     private async Task GetMonitorsSelectOptions()
     {
-        var monitors = await WaterTankService.GetForTable();
+        var monitors = await WaterTankService.GetAll();
         _monitorsSelectOptions = monitors.Select(m => new WaterTankSelectOption
         {
-            WaterTankLinkedToId = m.WaterTankId,
             Name = m.Name,
             WaterTankId = m.WaterTankId
         });
@@ -90,7 +89,6 @@
     async Task CreateMonitor()
     {
         _processingForm = true;
-        _form.WaterTankLikedToId = _connectedMonitorSelected?.WaterTankLinkedToId;
         var newRecipientMonitor = new WaterTankCreateDto
         {
             Name = _form.Name,
@@ -101,7 +99,7 @@
         var response = await WaterTankService.Create(newRecipientMonitor);
         var isSuccess = response.IsSuccess;
         _processingForm = false;
-        MudDialog?.Close(DialogResult.Ok(isSuccess));
+        await MudDialog?.CloseAsync(DialogResult.Ok(isSuccess));
     }
 
 }

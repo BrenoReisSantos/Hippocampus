@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Hippocampus.Domain.Diplomat.HttpIn;
 using Hippocampus.Domain.Diplomat.HttpOut;
+using Hippocampus.Domain.Models.Dto;
 using Hippocampus.Domain.Models.Entities;
 
 namespace Hippocampus.Domain.Configurations.AutoMapper;
@@ -59,5 +60,7 @@ public class AutoMapperProfile : Profile
             );
 
         CreateMap<WaterTank, WaterTankDto>();
+        CreateMap<WaterTank, WaterTankGetDto>();
+        CreateMap<WaterTank, SimplifiedWaterTankGetDto>();
     }
 }
